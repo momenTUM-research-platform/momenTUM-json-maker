@@ -1,0 +1,263 @@
+{
+    "title": "Schema for schema",
+    "type": "object",
+    "properties": {
+        "study_id": {
+            "title": "study_id",
+            "type": "string",
+            "title:": "Study ID",
+            "description": "An identifier for the study which is sent to the server with response data."
+        },
+        "study_name": {
+            "type": "string",
+            "title": "Study Name",
+            "description": "The name of the current study."
+        },
+        "instructions": {
+            "type": "string",
+            "title": "Instructions",
+            "description": "Brief description/instructions for the study that is displayed in the app. Basic HTML supported."
+        },
+        "banner_url": {
+            "title": "Banner Url",
+            "type": "string",
+            "description": "The URL to an image that will be displayed on the home page of your study. It will be displayed at 100% width and maintain the aspect ratio of the original image."
+        },
+        "support_email": {
+            "title": "Support Email",
+            "type": "string",
+            "decription": "An email address that participants can contact for support with the study."
+        },
+        "support_url": {
+            "title": "Support URL",
+            "type": "string",
+            "description": "A web link to the study's homepage or support information that is linked to in the app."
+        },
+        "ethics": {
+            "title": "Ethics",
+            "type": "string",
+            "description": "An ethics statement for the study."
+        },
+        "pls": {
+            "title": "Plain Language Statement",
+            "type": "string"
+        },
+        "empty_msg": {
+            "title": "empty_msg",
+            "type": "string",
+            "description": "A web URL to a PDF file containing the study's Plain Language Statement."
+        },
+        "post_url": {
+            "title": "post_url",
+            "type": "string"
+        },
+        "conditions": {
+            "title": "conditions",
+            "type": "array",
+            "items": {
+                "title": "items",
+                "type": "string"
+            }
+        },
+        "cache": {
+            "title": "cache",
+            "type": "boolean"
+        },
+        "modules": {
+            "title": "modules",
+            "type": "array",
+            "items": {
+                "title": "items",
+                "type": "object",
+                "properties": {
+                    "title": "properties",
+                    "type": {
+                        "title": "type",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "name",
+                        "type": "string"
+                    },
+                    "submit_text": {
+                        "title": "submit_text",
+                        "type": "string"
+                    },
+                    "condition": {
+                        "title": "condition",
+                        "type": "string"
+                    },
+                    "alerts": {
+                        "title": "alerts",
+                        "type": "object",
+                        "properties": {
+                            "title": {
+                                "title": "title",
+                                "type": "string"
+                            },
+                            "message": {
+                                "title": "message",
+                                "type": "string"
+                            },
+                            "start_offset": {
+                                "title": "start_offset",
+                                "type": "number"
+                            },
+                            "duration": {
+                                "title": "duration",
+                                "type": "number"
+                            },
+                            "times": {
+                                "title": "times",
+                                "type": "array",
+                                "items": {
+                                    "title": "items",
+                                    "type": "object",
+                                    "properties": {
+                                        "hours": {
+                                            "title": "hours",
+                                            "type": "number"
+                                        },
+                                        "minutes": {
+                                            "title": "minutes",
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            },
+                            "random": {
+                                "title": "random",
+                                "type": "boolean"
+                            },
+                            "random_interval": {
+                                "title": "random_interval",
+                                "type": "number"
+                            },
+                            "sticky": {
+                                "title": "sticky",
+                                "type": "boolean"
+                            },
+                            "sticky_label": {
+                                "title": "sticky_label",
+                                "type": "string"
+                            },
+                            "timeout": {
+                                "title": "timeout",
+                                "type": "boolean"
+                            },
+                            "timeout_after": {
+                                "title": "timeout_after",
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "graph": {
+                        "title": "graph",
+                        "type": "object",
+                        "properties": {
+                            "display": {
+                                "title": "display",
+                                "type": "boolean"
+                            },
+                            "variable": {
+                                "title": "variable",
+                                "type": "string"
+                            },
+                            "title": {
+                                "title": "title",
+                                "type": "string"
+                            },
+                            "blurb": {
+                                "title": "blurb",
+                                "type": "string"
+                            },
+                            "type": {
+                                "title": "type",
+                                "type": "string",
+                                "enum": [
+                                    "line",
+                                    "bar"
+                                ]
+                            },
+                            "max_points": {
+                                "title": "max_points",
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "sections": {
+                        "title": "sections",
+                        "type": "array",
+                        "items": {
+                            "title": "items",
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "shuffle": {
+                                    "title": "shuffle",
+                                    "type": "boolean"
+                                },
+                                "questions": {
+                                    "title": "questions",
+                                    "type": "array",
+                                    "items": {
+                                        "title": "items",
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "title": "Properties",
+                                                "type": "string"
+                                            },
+                                            "text": {
+                                                "title": "text",
+                                                "type": "string"
+                                            },
+                                            "required": {
+                                                "title": "required",
+                                                "type": "boolean"
+                                            },
+                                            "title": "},",
+                                            "type": {
+                                                "title": "type",
+                                                "type": "string",
+                                                "enum": [
+                                                    "instruction",
+                                                    "datetime",
+                                                    "multi",
+                                                    "text",
+                                                    "slider",
+                                                    "video",
+                                                    "audio",
+                                                    "yesno"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "uuid": {
+                        "title": "uuid",
+                        "type": "string"
+                    },
+                    "unlock_after": {
+                        "title": "unlock_after",
+                        "type": "array",
+                        "items": {
+                            "title": "items",
+                            "type": "string"
+                        }
+                    },
+                    "shuffle": {
+                        "title": "shuffle",
+                        "type": "boolean"
+                    }
+                }
+            }
+        }
+    }
+}

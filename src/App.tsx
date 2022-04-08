@@ -1,45 +1,23 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import Form from "@rjsf/chakra-ui";
+import schema from "../schema.json";
+import { JSONSchema7 } from "json-schema";
+import styled from "styled-components";
+import "./App.css";
+
+const Container = styled.div`
+  margin: 100px;
+`;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const uiSchema = {
+    title: { "ui:widget": "hidden" },
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+    <Container>
+      <Form schema={schema as JSONSchema7} uiSchema={uiSchema} />
+    </Container>
+  );
 }
 
-export default App
+export default App;
