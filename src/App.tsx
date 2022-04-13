@@ -1,5 +1,5 @@
 import Form from "@rjsf/chakra-ui";
-import schema from "../schema.json";
+import schema from "../schema2.json";
 import { JSONSchema7 } from "json-schema";
 import styled from "styled-components";
 import "./App.css";
