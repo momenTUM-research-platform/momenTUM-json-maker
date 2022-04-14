@@ -1,12 +1,13 @@
 {
   "name": "momentum-json-maker",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "cypress open"
+    "test": "cypress open",
+    "ci": "cypress run"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.1.7",

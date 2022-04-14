@@ -126,7 +126,7 @@ function App() {
   };
   useEffect(() => {
     // if( form?.properties.study_name && !form?.properties.study_id ) { auto-generate study_id
-      
+
     const validate = validator ? validator : new Ajv().compile(schema);
     validator || setValidator(validate);
     const valid = validate(form);
@@ -140,8 +140,7 @@ function App() {
 
   function download() {
     const data = JSON.stringify(form, null, 2);
-    const uri =
-      "data:application/json;charset=utf-8," + encodeURIComponent(data);
+    const uri = "data:application/json;charset=utf-8," + encodeURIComponent(data);
     const link = document.createElement("a");
     link.href = uri;
     link.download = "form.json";
@@ -152,9 +151,7 @@ function App() {
     <Container>
       <Button onClick={download}>Download JSON file</Button>
       <Button>
-        <a href="https://github.com/TUMChronobiology/momenTUM-json-maker">
-          Github
-        </a>{" "}
+        <a href="https://github.com/TUMChronobiology/momenTUM-json-maker">Github</a>{" "}
       </Button>
       <Toolbar>
         {" "}
@@ -176,7 +173,8 @@ function App() {
 
       <Form
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
-        schema={schema as unknown as JSONSchema7 }
+        //@ts-ignore
+        schema={schema}
         formData={form}
         uiSchema={uiSchema}
         liveValidate={true}

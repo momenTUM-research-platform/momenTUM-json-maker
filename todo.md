@@ -1,3 +1,0 @@
-- Select from conditions
-- select from uuids
-- offsrt >= 0
