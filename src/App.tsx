@@ -69,6 +69,7 @@ function App() {
     const input = document.createElement("input");
     input.type = "file";
     input.onchange = (e) => {
+      // @ts-ignore
       const file = e.target.files![0];
       const reader = new FileReader();
       reader.onload = (e) => {
