@@ -46,29 +46,29 @@ export interface Form {
       name: string;
       shuffle: boolean;
       questions:
-        | (Question & { type: "text"; subtype: string })
-        | (Question & { type: "datetime"; subtype: string })
-        | (Question & { type: "yesno"; yes_text: string; no_text: string })
+        | (Question & { type: "text"; subtype: string })[]
+        | (Question & { type: "datetime"; subtype: string })[]
+        | (Question & { type: "yesno"; yes_text: string; no_text: string })[]
         | (Question & {
             type: "slider";
             min: number;
             max: number;
             hint_left: string;
             hint_right: string;
-          })
+          })[]
         | (Question & {
             type: "multi";
             radio: boolean;
             modal: boolean;
             options: string[];
             shuffle: boolean;
-          })
+          })[]
         | (Question & {
             type: "media";
             subtype: "image" | "video" | "audio";
             src: string;
             thumb: string;
-          });
+          })[];
     }[];
   }[];
   uuid: string;

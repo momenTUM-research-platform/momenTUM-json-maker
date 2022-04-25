@@ -6,6 +6,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import schema from "../schema.json";
 import { Form } from "../types";
+import ToC from "./ToC";
 
 const BASE_URL =
   process.env.NODE_ENV === "production"
@@ -138,6 +139,7 @@ function App() {
         <a href="https://github.com/TUMChronobiology/momenTUM-json-maker">Github</a>{" "}
       </Button>
       <br />
+      {form && <ToC form={form} />}
       <FormComponent
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
         //@ts-ignore
