@@ -18,7 +18,26 @@ server.get('/status', (req, res) => {
 // File upload
 // Upload json body to the server and store in directory /surveys as uuid.json where uuid is a property in the uploaded json
 server.post('/surveys', (req, res) => {
-    const { body } = req
+    const { body, headers } = req
+    if (!body) {
+        res.status(400).send({
+            message: 'No body found in request'
+        })
+        return
+    }
+    if (!headers || !headers['content-type'] || headers['content-type'] !== 'application/json') {
+        res.status(400).send({
+            message: 'No json content-type found in request'
+        })
+        return
+    }
+    if (!headers.authorization || headers.authorization !== process.env.MASTER_PASSWORD) {
+        res.status(401).send({
+            message: 'Unauthorized'
+        })
+        return
+    }
+
     console.log(body)
     const uuid = body.properties.study_id + '_' + new Date().getTime()
     const filePath = BASE_PATH + `/surveys/${uuid}.json`
@@ -58,5 +77,5 @@ server.get('/surveys/:uuid', (req, res) => {
 
 // Start server
 server.listen(PORT, () => {
-    console.log('Server started on port 3000')
+    console.log('Server started on port ' + PORT)
 })
