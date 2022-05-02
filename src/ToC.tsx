@@ -21,7 +21,7 @@ export default function ToC({ form }: { form: Form }) {
           {form.modules.map((module, m_index) => (
             <Fragment key={`form_modules_${m_index}_name-label`}>
               <a onClick={() => scroll(`form_modules_${m_index}_name-label`)}>
-                <b>{module.name}</b>
+                <p>{module.name}</p>
               </a>
               <Inset>
                 {module.sections.map((section, s_index) => (

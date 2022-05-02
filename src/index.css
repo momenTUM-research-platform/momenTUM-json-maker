@@ -9,3 +9,18 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+a:hover {
+  border-bottom: 1px solid black;
+  cursor: pointer;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  border-bottom: 1px solid white;
+}
+
+a.github {
+  color: white;
+}
