@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-/server/surveys
+/server/surveys/*
 /server/package-lock.json
 
 # Editor directories and files
