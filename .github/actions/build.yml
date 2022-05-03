@@ -1,0 +1,7 @@
+job:
+  build:
+    steps:
+      - name: Install dependencies
+        run: npm install
+      - name: Build for production
+        run: npm run build
