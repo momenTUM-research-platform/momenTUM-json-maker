@@ -1,12 +1,13 @@
-import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
-import Ajv, { DefinedError, ValidateFunction } from "ajv";
-import "./App.css";
-import { useEffect, useState } from "react";
+import { MuiForm5 as FormComponent, MuiComponentContext } from "@rjsf/material-ui";
+import Ajv, { DefinedError } from "ajv";
+import { useState } from "react";
+import styled from "styled-components";
 import schema from "../schema.json";
 import { Form } from "../types";
+
 import ToC from "./ToC";
-import styled from "styled-components";
-// @ts-ignore
+import "./App.css";
+
 const BASE_URL =
   process.env.NODE_ENV === "production"
     ? "https://tuspl22-momentum.srv.mwn.de"
@@ -28,30 +29,24 @@ const Button = styled.button`
   text-decoration: none;
 `;
 
-const P = styled.p`
-  margin-bottom: 10px;
-  font-size: 1rem;
-`;
-
-const Toolbar = styled.div`
-  display: flex;
-  postion: sticky;
-`;
-
 function App() {
   const [form, setForm] = useState<Form | null>(null);
-  const [valid, setValid] = useState(false);
-  const [validator, setValidator] = useState<ValidateFunction | null>(new Ajv().compile(schema));
 
   const uiSchema = {
     title: { "ui:widget": "date" },
   };
 
-  useEffect(() => {
-    // if( form?.properties.study_name && !form?.properties.study_id ) { auto-generate study_id
-    const valid = validator ? validator(form) : false;
-    setValid(valid);
-  }, [form]);
+  // Validation is computationally expensive, but only done on submit/uplaod
+  function isValidForm(form: Form): { valid: boolean; msg: string } {
+    const validator = new Ajv().compile(schema);
+    const valid = validator(form);
+    if (!valid) {
+      const errors = validator.errors as DefinedError[];
+      return { valid: false, msg: errors[0].message || "Unknown error" };
+    } else {
+      return { valid: true, msg: "Valid" };
+    }
+  }
 
   function save() {
     const data = JSON.stringify(form, null, 2);
@@ -78,16 +73,20 @@ function App() {
     input.click();
   }
 
-  async function upload() {
+  async function upload(form: Form) {
+    const { valid, msg } = isValidForm(form);
     if (valid) {
       const data = JSON.stringify(form, null, 2);
+      const password = prompt(
+        "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
+      );
       const postURL = BASE_URL + "/surveys";
       const response = await fetch(postURL, {
         method: "POST",
         body: data,
         headers: {
           "Content-Type": "application/json",
-          Authorization: "MomenTUM",
+          Authorization: password || "MomenTUM",
         },
       });
       const json = await response.json();
@@ -97,10 +96,10 @@ function App() {
         alert("Uploaded survey with id " + json.uuid + " to " + json.uri);
       } else {
         // @ts-ignore
-        alert("Error: " + json.error);
+        alert("Error: " + json.message);
       }
     } else {
-      alert("Form is not valid");
+      alert("Form is not valid. Error: " + msg);
     }
   }
 
@@ -122,11 +121,10 @@ function App() {
   return (
     <Container>
       <h1>Welcome to the MomenTUM Survey Generator!</h1>
-      <P>The survey is currently {valid ? <> valid </> : <>Invalid</>}</P>
 
       <Button onClick={save}>Save JSON file</Button>
       <Button onClick={load}>Load JSON file</Button>
-      <Button onClick={upload}>Upload JSON file</Button>
+      <Button onClick={() => form && upload(form)}>Upload JSON file</Button>
       <Button onClick={download}>Download JSON file</Button>
       <Button>
         <a className="github" href="https://github.com/TUMChronobiology/momenTUM-json-maker">
@@ -139,7 +137,7 @@ function App() {
  // @ts-ignore */}
       <FormComponent
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
-        onSubmit={(e) => upload()}
+        onSubmit={(e) => form && upload(form)}
         //@ts-ignore
         schema={schema}
         formData={form}
