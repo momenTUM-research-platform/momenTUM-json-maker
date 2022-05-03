@@ -1,6 +1,5 @@
 name: Test building for production
 on:
-  push:
   pull_request:
     branches:
       - main
