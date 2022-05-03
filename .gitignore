@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 
+.parcel-cache
+
 /server/surveys/*
 /server/package-lock.json
 
@@ -26,3 +28,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+yarn.lock 
+package-lock.json
