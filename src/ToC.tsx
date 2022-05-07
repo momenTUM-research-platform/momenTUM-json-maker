@@ -34,18 +34,20 @@ export default function ToC({ form }: { form: Form }) {
                       {" "}
                       <p>{section.name}</p>
                     </a>
-                    {section.questions.map((question, q_index) => {
-                      <a
-                        key={`form_modules_${m_index}_sections_${s_index}_questions_${q_index}_id-label`}
-                        onClick={() =>
-                          scroll(
-                            `form_modules_${m_index}_sections_${s_index}_questions_${q_index}_id-label`
-                          )
-                        }
-                      >
-                        <p>{question.text}</p>
-                      </a>;
-                    })}
+                    <Inset>
+                      {section.questions.map((question, q_index) => {
+                        <a
+                          key={`form_modules_${m_index}_sections_${s_index}_questions_${q_index}_id-label`}
+                          onClick={() =>
+                            scroll(
+                              `form_modules_${m_index}_sections_${s_index}_questions_${q_index}_id-label`
+                            )
+                          }
+                        >
+                          <p>{question.text}</p>
+                        </a>;
+                      })}
+                    </Inset>
                   </Fragment>
                 ))}
               </Inset>
