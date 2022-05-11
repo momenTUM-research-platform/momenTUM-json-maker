@@ -12,7 +12,9 @@ dist
 dist-ssr
 *.local
 
-/server/surveys
+.parcel-cache
+
+/server/surveys/*
 /server/package-lock.json
 
 # Editor directories and files
@@ -26,3 +28,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+yarn.lock 
+package-lock.json
