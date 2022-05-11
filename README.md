@@ -5,6 +5,7 @@
 To run, install dependencies and run:
 
 ```
+cd frontend
 yarn
 yarn dev
 ```

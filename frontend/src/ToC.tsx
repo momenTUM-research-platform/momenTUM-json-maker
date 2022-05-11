@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import styled from "styled-components";
-import { Form } from "../types";
+import { Form } from "../../types";
 
 const Inset = styled.div`
   margin-left: 10px;
