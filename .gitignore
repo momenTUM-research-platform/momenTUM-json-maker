@@ -14,7 +14,7 @@ dist-ssr
 
 .parcel-cache
 
-/server/surveys/*
+
 /server/package-lock.json
 
 # Editor directories and files
