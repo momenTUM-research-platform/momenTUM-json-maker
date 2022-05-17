@@ -25,3 +25,7 @@ services:
     container_name: "api"
     volumes:
       - surveys:/usr/src/app/surveys
+networks:
+  default:
+    external:
+      name: generator_network
