@@ -6,6 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Create network
+        run: docker network create generator_network
       - name: run docker-compose
         uses: sudo-bot/action-docker-compose@latest
         with:
