@@ -17,12 +17,10 @@ services:
     build: ./frontend
     ports:
       - "8080:3000"
-    container_name: "web"
   api:
     build: ./server
     ports:
       - "3000:3000"
-    container_name: "api"
     volumes:
       - surveys:/usr/src/app/surveys
 networks:

@@ -13,8 +13,8 @@ const PORT = process.env.PORT || 3000
 if (!fs.existsSync(BASE_PATH + DIR)) {
     fs.mkdirSync(BASE_PATH + DIR)
 }
-// Status route
-server.get('/status', (req, res) => {
+// Status route to check if server is running and responding to requests.
+server.get('/api/status', (req, res) => {
     res.send({
         status: 'ok'
     })
@@ -22,7 +22,7 @@ server.get('/status', (req, res) => {
 
 // File upload
 // Upload json body to the server and store in directory /surveys as uuid.json where uuid is a property in the uploaded json
-server.post('/surveys', (req, res) => {
+server.post('/api/surveys', (req, res) => {
     const { body, headers } = req
     if (!headers.authorization || headers.authorization !== process.env.MASTER_PASSWORD) {
         res.status(401).send({
@@ -74,7 +74,7 @@ server.post('/surveys', (req, res) => {
 
 // File download
 // Download the file from the server and return it as a json object
-server.get('/surveys/:uuid', (req, res) => {
+server.get('/api/surveys/:uuid', (req, res) => {
     const { uuid } = req.params
     const filePath = BASE_PATH + `/surveys/${uuid}.json`
     fs.readFile(filePath, (err, data) => {
