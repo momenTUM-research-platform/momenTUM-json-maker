@@ -64,7 +64,7 @@ server.post('/api/surveys', (req, res) => {
         } else {
             res.send({
                 status: 'ok',
-                uri: `https://tuspl22-momentum.srv.mwn.de/surveys/${uuid}.json`,
+                uri: `https://tuspl22-momentum.srv.mwn.de/api/surveys/${uuid}.json`,
                 uuid: uuid
 
             })
