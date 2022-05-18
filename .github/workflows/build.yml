@@ -1,19 +1,12 @@
 name: Test building for production
 on:
-  pull_request:
-    branches:
-      - main
+  push:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
+      - name: run docker-compose
+        uses: sudo-bot/action-docker-compose@latest
         with:
-          node-version: "16"
-      - name: Install dependencies
-        run: cd fontend
-        run: npm install
-      - name: Build for production
-        run: cd frontend
-        run: npm run build
+          cli-args: "up --build -d"
