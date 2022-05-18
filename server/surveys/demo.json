@@ -66,6 +66,53 @@
             "unlock_after": []
         },
         {
+            "type": "info",
+            "name": "Welcome",
+            "submit_text": "Submit",
+            "alerts": {
+                "title": "Welcome to the study",
+                "message": "Tap to open the app",
+                "duration": 1,
+                "times": [
+                    {
+                        "hours": 8,
+                        "minutes": 30
+                    }
+                ],
+                "random": true,
+                "random_interval": 30,
+                "sticky": true,
+                "sticky_label": "Start here",
+                "timeout": false,
+                "timeout_after": 0,
+                "start_offset": 0
+            },
+            "graph": {
+                "display": false
+            },
+            "sections": [
+                {
+                    "name": "Welcome",
+                    "questions": [
+                        {
+                            "id": "instruction-1wnjocfw",
+                            "type": "instruction",
+                            "text": "Hello! Welcome to the study! This module only shows for those enrolled in the treatment condition.",
+                            "required": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": true
+                        }
+                    ],
+                    "shuffle": false
+                }
+            ],
+            "shuffle": false,
+            "condition": "Treatment",
+            "uuid": "3fb09fcd-4fca-4074-a395-34d65ee5a521",
+            "unlock_after": []
+        },
+        {
             "type": "survey",
             "name": "Elements",
             "submit_text": "Submit",
