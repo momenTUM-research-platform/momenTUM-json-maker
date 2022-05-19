@@ -21,6 +21,7 @@ COPY . .
 USER user
 
 ENV FLASK_APP=server
+ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 
 ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
