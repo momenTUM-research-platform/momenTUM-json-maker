@@ -76,7 +76,7 @@ server.post('/api/surveys', (req, res) => {
 // Download the file from the server and return it as a json object
 server.get('/api/surveys/:uuid', (req, res) => {
     const { uuid } = req.params
-    const filePath = BASE_PATH + `/surveys/${uuid}.json`
+    const filePath = BASE_PATH + (uuid.endsWith(".json") ? `/surveys/${uuid}` : `/surveys/${uuid}.json`)
     fs.readFile(filePath, (err, data) => {
         if (err) {
             res.status(400).send({
