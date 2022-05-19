@@ -23,6 +23,10 @@ services:
       - "3000:3000"
     volumes:
       - surveys:/usr/src/app/surveys
+  redcap:
+    build: ./redcap
+    ports:
+      - "5000:5000"
 networks:
   default:
     external:
