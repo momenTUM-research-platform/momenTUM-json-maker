@@ -20,7 +20,7 @@ def status():
 
 @app.route("/redcap/import", methods=["POST"])
 def import_data():
+    print(request)
     to_import = request.get_json()
     response = project.import_records(to_import)
-    print(to_import, response)
     return response
