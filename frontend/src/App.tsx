@@ -8,10 +8,7 @@ import { Form } from "../types";
 import ToC from "./ToC";
 import "./App.css";
 
-const BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://tuspl22-momentum.srv.mwn.de"
-    : "http://localhost:3001";
+const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3001";
 
 const Container = styled.div`
   margin: 100px;

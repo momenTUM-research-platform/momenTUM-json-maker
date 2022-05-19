@@ -1,0 +1,29 @@
+version: "3"
+volumes:
+  surveys:
+    driver: local
+services:
+  nginxmanager:
+    image: "jc21/nginx-proxy-manager:latest"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  web:
+    build: ./frontend
+    ports:
+      - "8080:3000"
+  api:
+    build: ./server
+    ports:
+      - "3000:3000"
+    volumes:
+      - surveys:/usr/src/app/surveys
+networks:
+  default:
+    external:
+      name: generator_network
