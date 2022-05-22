@@ -72,9 +72,7 @@ server.post('/api/surveys', (req, res) => {
     })
 })
 
-// File download
-// Download the file from the server and return it as a json object
-server.get('/api/surveys/:uuid', (req, res) => {
+function sendSurvey(req, res) {
     const { uuid } = req.params
     const filePath = BASE_PATH + (uuid.endsWith(".json") ? `/surveys/${uuid}` : `/surveys/${uuid}.json`)
     fs.readFile(filePath, (err, data) => {
@@ -86,9 +84,21 @@ server.get('/api/surveys/:uuid', (req, res) => {
             res.send(JSON.parse(data))
         }
     })
+}
+
+// File download
+// Download the file from the server and return it as a json object
+server.get('/api/surveys/:uuid', (req, res) => {
+    sendSurvey(req, res)
+})
+server.post('/api/surveys/:uuid', (req, res) => {
+    sendSurvey(req, res)
 })
 
 // Start server
 server.listen(PORT, () => {
     console.log('Server started on port ' + PORT)
 })
+
+
+
