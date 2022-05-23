@@ -24,6 +24,13 @@ yarn
 yarn dev
 ```
 
+To run the unit tests, use jest (also available in watch mode)
+
+```
+yarn test
+yarn test --watch
+```
+
 Of course, you can also install dependencies with npm (then the start script is npm run dev). To install yarn, run `npm install -g yarn`, which you might need superuser-rights for.
 
 ## Production
