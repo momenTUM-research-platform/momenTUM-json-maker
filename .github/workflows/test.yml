@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd server
-      - run: npm install
-      - run: npm run test
+      - run: |
+          cd server
+          npm install
+          npm run test
