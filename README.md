@@ -24,6 +24,17 @@ yarn
 yarn dev
 ```
 
+To run the Redcap importe, you first need to create and activate a virtual environment because python runs into dependency conflicts quite easily.
+
+```
+cd redcap
+python3 -m venv venv
+. venv/bin/activate
+pip install -r requirements.txt
+export FLASK_APP=server
+flask run
+```
+
 Of course, you can also install dependencies with npm (then the start script is npm run dev). To install yarn, run `npm install -g yarn`, which you might need superuser-rights for.
 
 ## Production
