@@ -1,0 +1,12 @@
+name: Run tests in the project
+on:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          cd server
+          npm install
+          npm run test
