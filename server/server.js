@@ -117,6 +117,7 @@ server.get("/api/dictionary/:uuid", (req, res) => {
             for (const module of modules) {
                 for (const section of module.sections) {
                     for (const question of section.questions) {
+                        if (question.type === "instruction") continue
                         csvString += `${question.id},${module.uuid},,text,${question.text},,,,,,,,,,,,,\n`
                     }
                 }
