@@ -38,3 +38,4 @@ package-lock.json
 /redcap/venv
 /redcap/__pycache__
 /redcap/records.json
+/server/surveys

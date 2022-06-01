@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const fs = require('fs')
+const JSZip = require('jszip')
 require('dotenv').config()
 const server = express()
 server.use(cors())
@@ -8,7 +9,7 @@ server.use(express.json())
 
 const DIR = '/surveys'
 
-const BASE_PATH = process.env.BASE_PATH || '.'
+const BASE_PATH = process.env.BASE_PATH || "/home/constantin/momenTUM-json-maker/server"
 const PORT = process.env.PORT || 3000
 if (!fs.existsSync(BASE_PATH + DIR)) {
     fs.mkdirSync(BASE_PATH + DIR)
@@ -98,6 +99,50 @@ server.post('/api/surveys/:uuid', (req, res) => {
 // Start server
 server.listen(PORT, () => {
     console.log('Server started on port ' + PORT)
+})
+
+server.get("/api/dictionary/:uuid", (req, res) => {
+    try {
+        let { uuid } = req.params
+        const regenerate = req.query.regenerate
+        uuid = uuid.endsWith(".json") ? uuid.replace(".json", "") : uuid
+        console.log(regenerate)
+        if (!regenerate && fs.existsSync(BASE_PATH + `/surveys/${uuid}/module.zip`)) {
+            res.download(BASE_PATH + `/surveys/${uuid}/module.zip`)
+        } else {
+            const filePath = BASE_PATH + (uuid.endsWith(".json") ? `/surveys/${uuid}` : `/surveys/${uuid}.json`)
+            const file = fs.readFileSync(filePath, { encoding: "utf-8" })
+            const modules = JSON.parse(file).modules
+            let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`
+            for (const module of modules) {
+                for (const section of module.sections) {
+                    for (const question of section.questions) {
+                        csvString += `${question.id},${module.uuid},,text,${question.text},,,,,,,,,,,,,\n`
+                    }
+                }
+            }
+            console.log(csvString)
+
+            fs.existsSync(`${BASE_PATH}/surveys/${uuid}/`) || fs.mkdirSync(`${BASE_PATH}/surveys/${uuid}/`)
+            fs.writeFileSync(`${BASE_PATH}/surveys/${uuid}/instrument.csv`, csvString)
+            fs.writeFileSync(`${BASE_PATH}/surveys/${uuid}/Origin.txt`, "Created by MomenTUM")
+
+            const zip = new JSZip()
+            zip.file(`instrument.csv`, csvString)
+            zip.file("Origin.txt", "Created by MomenTUM")
+            zip.generateAsync({ type: "nodebuffer" }).then((content) => {
+                console.log(content)
+                fs.writeFileSync(`${BASE_PATH}/surveys/${uuid}/module.zip`, content)
+                res.download(BASE_PATH + `/surveys/${uuid}/module.zip`)
+
+            })
+        }
+
+    } catch (err) {
+        res.status(400).send({
+            error: 'Error when building document: ' + err
+        })
+    }
 })
 
 
