@@ -4,11 +4,13 @@ import { useState } from "react";
 import styled from "styled-components";
 import schema from "../schema.json";
 import { Form } from "../types";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 import ToC from "./ToC";
 import "./App.css";
 
-const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3001";
+const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3001/api";
 
 const Container = styled.div`
   margin: 100px;
@@ -114,7 +116,45 @@ function App() {
       alert("Download failed");
     }
   }
-
+  // async function downloadDictionary() {
+  //   try {
+  //     console.log(form);
+  //     const uuid = form?.uuid ? form.uuid : prompt("Enter the uuid of the survey");
+  //     if (!uuid) {
+  //       alert("No download uuid provided");
+  //       return;
+  //     }
+  //     const uri = BASE_URL + "/dictionary/" + uuid + "?regenerate=true";
+  //     await fetch(uri, { method: "GET", redirect: "follow" });
+  //   } catch (e) {
+  //     console.error(e);
+  //     alert("Download failed");
+  //   }
+  //
+  async function generateDictionary() {
+    try {
+      const modules = form.modules;
+      let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`;
+      for (const module of modules) {
+        for (const section of module.sections) {
+          for (const question of section.questions) {
+            if (question.type === "instruction") continue;
+            csvString += `${question.id},${module.uuid},,text,${question.text},,,,,,,,,,,,,\n`;
+          }
+        }
+      }
+      console.log(csvString);
+      const zip = new JSZip();
+      zip.file(`instrument.csv`, csvString);
+      zip.file("Origin.txt", "Created by MomenTUM");
+      zip.generateAsync({ type: "blob" }).then((content) => {
+        saveAs(content, "module.zip");
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Generation failed");
+    }
+  }
   return (
     <Container>
       <h1>Welcome to the MomenTUM Survey Generator!</h1>
@@ -123,6 +163,7 @@ function App() {
       <Button onClick={load}>Load JSON file</Button>
       <Button onClick={() => form && upload(form)}>Upload JSON file</Button>
       <Button onClick={download}>Download JSON file</Button>
+      <Button onClick={generateDictionary}>Generate RedCap Dictionary</Button>
       <Button>
         <a className="github" href="https://github.com/TUMChronobiology/momenTUM-json-maker">
           Github
