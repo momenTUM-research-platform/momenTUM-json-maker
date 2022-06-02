@@ -74,7 +74,9 @@ function App() {
 
   async function upload(form: Form) {
     const { valid, msg } = isValidForm(form);
-    if (valid) {
+    const proceed =
+      valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
+    if (proceed) {
       const data = JSON.stringify(form, null, 2);
       const password = prompt(
         "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
@@ -97,8 +99,6 @@ function App() {
         // @ts-ignore
         alert("Error: " + json.message);
       }
-    } else {
-      alert("Form is not valid. Error: " + msg);
     }
   }
 
