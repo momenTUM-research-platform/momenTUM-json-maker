@@ -5,8 +5,10 @@
   "title": "MomenTUM survey creator",
   "description": "This is the schema for the MomenTUM survey creator. For any questions/issues please see the repository: https://github.com/TUMChronobiology/momenTUM-json-maker",
   "default": {},
-
-  "required": ["properties", "modules"],
+  "required": [
+    "properties",
+    "modules"
+  ],
   "properties": {
     "properties": {
       "$id": "#/properties/properties",
@@ -25,7 +27,10 @@
           "banner_url": "https://getschema.app/img/schema_banner.png",
           "support_url": "https://getschema.app",
           "support_email": "hello@getschema.app",
-          "conditions": ["Control", "Treatment"],
+          "conditions": [
+            "Control",
+            "Treatment"
+          ],
           "cache": false,
           "ethics": "This study was approved by ethics body with approval #123456789",
           "pls": "https://getschema.app/pls-file-link.pdf"
@@ -53,7 +58,9 @@
           "title": "Name",
           "description": "The name of the current study.",
           "default": "",
-          "examples": ["Demo"]
+          "examples": [
+            "Demo"
+          ]
         },
         "study_id": {
           "$id": "#/properties/properties/properties/study_id",
@@ -61,7 +68,9 @@
           "title": "ID",
           "description": "An identifier for the study which is sent to the server with response data.",
           "default": "",
-          "examples": ["3ZDOGAH"]
+          "examples": [
+            "3ZDOGAH"
+          ]
         },
         "created_by": {
           "$id": "#/properties/properties/properties/created_by",
@@ -69,7 +78,9 @@
           "title": "Created by",
           "description": "An explanation about the purpose of this instance.",
           "default": "",
-          "examples": ["Adrian Shatte"]
+          "examples": [
+            "Adrian Shatte"
+          ]
         },
         "instructions": {
           "$id": "#/properties/properties/properties/instructions",
@@ -77,7 +88,9 @@
           "title": "Instructions",
           "description": "Brief description/instructions for the study that is displayed in the app. Basic HTML supported.",
           "default": "",
-          "examples": ["This is a demo study showing the features of schema"]
+          "examples": [
+            "This is a demo study showing the features of schema"
+          ]
         },
         "post_url": {
           "$id": "#/properties/properties/properties/post_url",
@@ -92,7 +105,9 @@
           "title": "Empty Message",
           "description": "A message displayed to the user when there are no tasks currently available to complete.",
           "default": "",
-          "examples": ["You're all up to date"]
+          "examples": [
+            "You're all up to date"
+          ]
         },
         "banner_url": {
           "$id": "#/properties/properties/properties/banner_url",
@@ -100,7 +115,9 @@
           "title": "Banner URL",
           "description": "The URL to an image that will be displayed on the home page of your study. It will be displayed at 100% width and maintain the aspect ratio of the original image.",
           "default": "",
-          "examples": ["https://getschema.app/img/schema_banner.png"]
+          "examples": [
+            "https://getschema.app/img/schema_banner.png"
+          ]
         },
         "support_url": {
           "$id": "#/properties/properties/properties/support_url",
@@ -108,7 +125,9 @@
           "title": "Support URL",
           "description": "A web link to the study's homepage or support information that is linked to in the app.",
           "default": "",
-          "examples": ["https://getschema.app"]
+          "examples": [
+            "https://getschema.app"
+          ]
         },
         "support_email": {
           "$id": "#/properties/properties/properties/support_email",
@@ -116,16 +135,19 @@
           "title": "Support Email",
           "description": "An email address that participants can contact for support with the study.",
           "default": "",
-          "examples": ["hello@getschema.app"]
+          "examples": [
+            "hello@getschema.app"
+          ]
         },
-
         "cache": {
           "$id": "#/properties/properties/properties/cache",
           "type": "boolean",
           "title": "Cache Media?",
           "description": "Indicates whether media elements will be cached for offline mode during study enrollment. Note: media should be optimised to reduce download times.",
           "default": false,
-          "examples": [false]
+          "examples": [
+            false
+          ]
         },
         "ethics": {
           "$id": "#/properties/properties/properties/ethics",
@@ -143,15 +165,25 @@
           "title": "Plain Language Statement",
           "description": "A web URL to a PDF file containing the study's Plain Language Statement.",
           "default": "",
-          "examples": ["https://getschema.app/pls-file-link.pdf"]
+          "examples": [
+            "https://getschema.app/pls-file-link.pdf"
+          ]
         },
         "conditions": {
           "$id": "#/properties/properties/properties/conditions",
           "type": "array",
           "title": "Conditions",
           "description": "A list of conditions that participants can be randomised into.",
-          "default": ["Control", "Treatment"],
-          "examples": [["Control", "Treatment"]],
+          "default": [
+            "Control",
+            "Treatment"
+          ],
+          "examples": [
+            [
+              "Control",
+              "Treatment"
+            ]
+          ],
           "items": {
             "$id": "#/properties/properties/properties/conditions/items",
             "type": "string"
@@ -165,10 +197,8 @@
       "title": "Modules",
       "description": "Modules store the individual survey/intervention tasks that will be delivered to the participants.",
       "default": [],
-
       "items": {
         "$id": "#/properties/modules/items",
-
         "type": "object",
         "required": [
           "type",
@@ -189,7 +219,12 @@
             "title": "Type",
             "description": "The type of the module. Accepted values are survey, info, video, and audio.",
             "default": "survey",
-            "enum": ["survey", "info", "video", "audio"]
+            "enum": [
+              "survey",
+              "info",
+              "video",
+              "audio"
+            ]
           },
           "name": {
             "$id": "#/properties/modules/items/properties/name",
@@ -197,7 +232,9 @@
             "title": "Name",
             "description": "The name of the module. Basic HTML supported.",
             "default": "",
-            "examples": ["Welcome"]
+            "examples": [
+              "Welcome"
+            ]
           },
           "submit_text": {
             "$id": "#/properties/modules/items/properties/submit_text",
@@ -205,7 +242,9 @@
             "title": "Submit Text",
             "description": "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
             "default": "Submit",
-            "examples": ["Submit"]
+            "examples": [
+              "Submit"
+            ]
           },
           "condition": {
             "$id": "#/properties/modules/items/properties/condition",
@@ -213,7 +252,10 @@
             "title": "Condition",
             "description": "The condition that this module belongs to. It must match one of the values from the conditions array from the study properties, or have the value * to be scheduled for all participants.",
             "default": "",
-            "examples": ["Control", "Treatment"]
+            "examples": [
+              "Control",
+              "Treatment"
+            ]
           },
           "uuid": {
             "$id": "#/properties/modules/items/properties/uuid",
@@ -221,7 +263,9 @@
             "title": "Unique identifier",
             "description": "A unique identifier for this module. Will be generated if not provided.",
             "default": "",
-            "examples": [""]
+            "examples": [
+              ""
+            ]
           },
           "alerts": {
             "$id": "#/properties/modules/items/properties/alerts",
@@ -269,7 +313,9 @@
                 "title": "Title",
                 "description": "The title that is displayed in the notification (main text).",
                 "default": "",
-                "examples": ["Welcome to the study"]
+                "examples": [
+                  "Welcome to the study"
+                ]
               },
               "message": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/message",
@@ -277,7 +323,9 @@
                 "title": "Message",
                 "description": "The message that is displayed in the notification (secondary text).",
                 "default": "",
-                "examples": ["Tap to open the app"]
+                "examples": [
+                  "Tap to open the app"
+                ]
               },
               "duration": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/duration",
@@ -285,7 +333,9 @@
                 "title": "Duration",
                 "description": "Indicates the number of consecutive days that the module should be scheduled to display.",
                 "default": 0,
-                "examples": [1]
+                "examples": [
+                  1
+                ]
               },
               "times": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/times",
@@ -303,14 +353,16 @@
                 ],
                 "items": {
                   "type": "object",
-
                   "examples": [
                     {
                       "hours": 8,
                       "minutes": 30
                     }
                   ],
-                  "required": ["hours", "minutes"],
+                  "required": [
+                    "hours",
+                    "minutes"
+                  ],
                   "properties": {
                     "hours": {
                       "$id": "#/properties/modules/items/properties/alerts/properties/times/items/anyOf/0/properties/hours",
@@ -318,7 +370,9 @@
                       "title": "Hour",
                       "description": "The hour the alert should be displayed.",
                       "default": 0,
-                      "examples": [8]
+                      "examples": [
+                        8
+                      ]
                     },
                     "minutes": {
                       "$id": "#/properties/modules/items/properties/alerts/properties/times/items/anyOf/0/properties/minutes",
@@ -326,7 +380,9 @@
                       "title": "Minute",
                       "description": "The minute the alert should be displayed.",
                       "default": 0,
-                      "examples": [30]
+                      "examples": [
+                        30
+                      ]
                     }
                   }
                 }
@@ -337,7 +393,9 @@
                 "title": "Randomised alerts?",
                 "description": "Indicates whether the alert times should be randomised. If true, each value from times will be set using the value of random_interval.",
                 "default": false,
-                "examples": [true]
+                "examples": [
+                  true
+                ]
               },
               "random_interval": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/random_interval",
@@ -345,7 +403,9 @@
                 "title": "Random interval",
                 "description": "The number of minutes before and after that an alert time should be randomised. For example, if the alert is scheduled for 8.30am and the random_interval is 30, the alert will be scheduled randomly between 8 and 9am.",
                 "default": 0,
-                "examples": [30]
+                "examples": [
+                  30
+                ]
               },
               "sticky": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/sticky",
@@ -353,7 +413,9 @@
                 "title": "Sticky?",
                 "description": "Indicates whether the module should remain available in the Tasks list upon response, allowing the user to access this module repeatedly.",
                 "default": false,
-                "examples": [true]
+                "examples": [
+                  true
+                ]
               },
               "sticky_label": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/sticky_label",
@@ -361,7 +423,9 @@
                 "title": "Sticky label",
                 "description": "A title that appears above a sticky module on the home screen. Multiple sticky modules that are set to appear in succession will be grouped under this title.",
                 "default": "",
-                "examples": ["Start here"]
+                "examples": [
+                  "Start here"
+                ]
               },
               "timeout": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/timeout",
@@ -369,7 +433,9 @@
                 "title": "Timeout?",
                 "description": "If timeout is true, the task will disappear from the list after the number of milliseconds specified in timeout_after have elapsed (if the module is not completed before this time).",
                 "default": false,
-                "examples": [false]
+                "examples": [
+                  false
+                ]
               },
               "timeout_after": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/timeout_after",
@@ -377,7 +443,9 @@
                 "title": "Timeout after",
                 "description": "The number of milliseconds after a task is displayed that it will disappear from the list. timeout must be true for this to have any effect.",
                 "default": 0,
-                "examples": [0]
+                "examples": [
+                  0
+                ]
               },
               "start_offset": {
                 "$id": "#/properties/modules/items/properties/alerts/properties/start_offset",
@@ -385,7 +453,9 @@
                 "title": "Start offset",
                 "description": "Indicates when the module should first be displayed to the user, where zero is the day that the participant enrolled.",
                 "default": 0,
-                "examples": [0]
+                "examples": [
+                  0
+                ]
               }
             }
           },
@@ -400,7 +470,9 @@
                 "display": false
               }
             ],
-            "required": ["display"],
+            "required": [
+              "display"
+            ],
             "properties": {
               "display": {
                 "$id": "#/properties/modules/items/properties/graph/properties/display",
@@ -408,34 +480,47 @@
                 "title": "Display graph?",
                 "description": "Indicates whether this module displays a feedback graph in the Feedback tab. If the value is false, the remaining variables are ignored.",
                 "default": false,
-                "enum": [true, false]
+                "enum": [
+                  true,
+                  false
+                ]
               }
             },
             "dependencies": {
               "display": {
                 "oneOf": [
                   {
-                   
                     "properties": {
                       "display": {
-                        "enum": [false]
+                        "enum": [
+                          false
+                        ]
                       }
                     }
                   },
                   {
-                    "required": ["variable",  "title",  "blurb", "type",  "max_points"],
+                    "required": [
+                      "variable",
+                      "title",
+                      "blurb",
+                      "type",
+                      "max_points"
+                    ],
                     "properties": {
                       "display": {
-                        "enum": [true]
+                        "enum": [
+                          true
+                        ]
                       },
                       "variable": {
-                       
                         "$id": "#/properties/modules/items/properties/graph/properties/variable",
                         "type": "string",
                         "title": "Variable",
                         "description": "The id of a question object to graph. It must match one of the module's question ids.",
                         "default": "",
-                        "examples": [""]
+                        "examples": [
+                          ""
+                        ]
                       },
                       "title": {
                         "$id": "#/properties/modules/items/properties/graph/properties/title",
@@ -443,7 +528,9 @@
                         "title": "Title",
                         "description": "The title of the graph to be displayed in the Feedback tab.",
                         "default": "",
-                        "examples": [""]
+                        "examples": [
+                          ""
+                        ]
                       },
                       "blurb": {
                         "$id": "#/properties/modules/items/properties/graph/properties/blurb",
@@ -451,7 +538,9 @@
                         "title": "Blurb",
                         "description": "A brief description of the graph to be displayed below it in the feedback tab. Basic HTML supported.",
                         "default": "",
-                        "examples": [""]
+                        "examples": [
+                          ""
+                        ]
                       },
                       "type": {
                         "$id": "#/properties/modules/items/properties/graph/properties/type",
@@ -459,7 +548,10 @@
                         "title": "Type",
                         "description": "The type of graph to display. One of: bar or line",
                         "default": "",
-                        "examples": ["bar", "line"]
+                        "examples": [
+                          "bar",
+                          "line"
+                        ]
                       },
                       "max_points": {
                         "$id": "#/properties/modules/items/properties/graph/properties/max_points",
@@ -467,7 +559,10 @@
                         "title": "Max points",
                         "description": "The maximum number of data points to display in the graph, e.g. 10 will only show the ten most recent responses.",
                         "default": 10,
-                        "examples": [0, 10]
+                        "examples": [
+                          0,
+                          10
+                        ]
                       }
                     }
                   }
@@ -475,7 +570,6 @@
               }
             }
           },
-
           "sections": {
             "$id": "#/properties/modules/items/properties/sections",
             "type": "array",
@@ -504,7 +598,11 @@
             "items": {
               "$id": "#/properties/modules/items/properties/sections/items",
               "type": "object",
-              "required": ["name", "questions", "shuffle"],
+              "required": [
+                "name",
+                "questions",
+                "shuffle"
+              ],
               "properties": {
                 "name": {
                   "$id": "#/properties/modules/items/properties/sections/items/properties/name",
@@ -512,7 +610,9 @@
                   "title": "Section name",
                   "description": "The title of this section, which is displayed at the top of the screen.",
                   "default": "",
-                  "examples": ["Welcome"]
+                  "examples": [
+                    "Welcome"
+                  ]
                 },
                 "shuffle": {
                   "$id": "#/properties/modules/items/properties/sections/items/properties/shuffle",
@@ -520,7 +620,9 @@
                   "title": "Shuffle Sections?",
                   "description": "Used for counterbalancing. If true, the order of the questions in this section will be randomised.",
                   "default": false,
-                  "examples": [false]
+                  "examples": [
+                    false
+                  ]
                 },
                 "questions": {
                   "$id": "#/properties/modules/items/properties/sections/items/properties/questions",
@@ -553,7 +655,6 @@
                       "hide_value",
                       "hide_if"
                     ],
-
                     "properties": {
                       "id": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/id",
@@ -561,9 +662,10 @@
                         "title": "Question ID",
                         "description": "A unique id to identify this question. This id is sent to the server along with any response value. Note: Every element in the entire study protocol must have a unique id for some features to function correctly.",
                         "default": "",
-                        "examples": ["instruction-1wnjocfw"]
+                        "examples": [
+                          "instruction-1wnjocfw"
+                        ]
                       },
-                    
                       "text": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/text",
                         "type": "string",
@@ -580,7 +682,10 @@
                         "title": "Required",
                         "description": "Denotes whether this question is required to be answered. The app will force the participant to answer all required questions that are not hidden by branching.",
                         "default": false,
-                        "examples": [false, true]
+                        "examples": [
+                          false,
+                          true
+                        ]
                       },
                       "hide_id": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_id",
@@ -588,7 +693,9 @@
                         "title": "Hide/Show for ID",
                         "description": "The id of the question that will trigger this question to dynamically show/hide. To use branching, you need to add two additional properties to the question object that is to be dynamically shown/hidden. Currently, branching is supported by the multi, yesno, and slider question types.",
                         "default": "",
-                        "examples": [""]
+                        "examples": [
+                          ""
+                        ]
                       },
                       "hide_value": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_value",
@@ -596,7 +703,9 @@
                         "title": "Hide/show value",
                         "description": "The value that needs to be selected in the question denoted by hide_id which will make this question appear. When using sliders, the value should be prefixed with a direction and is inclusive, e.g. >50 or <50.",
                         "default": "",
-                        "examples": [""]
+                        "examples": [
+                          ""
+                        ]
                       },
                       "hide_if": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_if",
@@ -604,7 +713,9 @@
                         "title": "Hide or show?",
                         "description": "Indicates the branching behaviour. If true, the element will disappear if the value of the question equals hide_value. If false, the element will appear appear instead.",
                         "default": false,
-                        "examples": [true]
+                        "examples": [
+                          true
+                        ]
                       },
                       "rand_group": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/rand_group",
@@ -639,10 +750,15 @@
                               }
                             }
                           },
-                          { "required": ["subtype"], 
+                          {
+                            "required": [
+                              "subtype"
+                            ],
                             "properties": {
                               "type": {
-                                "enum": ["text"]
+                                "enum": [
+                                  "text"
+                                ]
                               },
                               "subtype": {
                                 "type": "string",
@@ -652,23 +768,37 @@
                             }
                           },
                           {
-                            "required": ["subtype"], 
+                            "required": [
+                              "subtype"
+                            ],
                             "properties": {
                               "type": {
-                                "enum": ["datetime"]
+                                "enum": [
+                                  "datetime"
+                                ]
                               },
                               "subtype": {
                                 "type": "string",
                                 "title": "Subtype",
-                                "enum": ["date", "time", "datetime"],
+                                "enum": [
+                                  "date",
+                                  "time",
+                                  "datetime"
+                                ],
                                 "description": "The specific type of date/time input for this field. Accepted values are date (datepicker only), time (timepicker only), and datetime (both)."
                               }
                             }
                           },
-                          {"required": ["yesno_text", "no_text"], 
+                          {
+                            "required": [
+                              "yes_text",
+                              "no_text"
+                            ],
                             "properties": {
                               "type": {
-                                "enum": ["yesno"]
+                                "enum": [
+                                  "yesno"
+                                ]
                               },
                               "yes_text": {
                                 "type": "string",
@@ -683,10 +813,17 @@
                             }
                           },
                           {
-                            "required": ["min", "max", "hint_left", "hint_right"], 
+                            "required": [
+                              "min",
+                              "max",
+                              "hint_left",
+                              "hint_right"
+                            ],
                             "properties": {
                               "type": {
-                                "enum": ["slider"]
+                                "enum": [
+                                  "slider"
+                                ]
                               },
                               "min": {
                                 "type": "number",
@@ -711,10 +848,17 @@
                             }
                           },
                           {
-                            "required": ["radio", "modal", "shuffle", "options"], 
+                            "required": [
+                              "radio",
+                              "modal",
+                              "shuffle",
+                              "options"
+                            ],
                             "properties": {
                               "type": {
-                                "enum": ["multi"]
+                                "enum": [
+                                  "multi"
+                                ]
                               },
                               "radio": {
                                 "type": "boolean",
@@ -742,10 +886,16 @@
                             }
                           },
                           {
-                            "required": ["subtype", "src", "thumb"], 
+                            "required": [
+                              "subtype",
+                              "src",
+                              "thumb"
+                            ],
                             "properties": {
                               "type": {
-                                "enum": ["media"]
+                                "enum": [
+                                  "media"
+                                ]
                               },
                               "subtype": {
                                 "type": "string",
@@ -769,19 +919,18 @@
                     }
                   }
                 }
-              
               }
             }
           },
-       
-        
           "unlock_after": {
             "$id": "#/properties/modules/items/properties/unlock_after",
             "type": "array",
             "title": "Unlock after",
             "description": "A list of UUIDs of modules that must be completed before this module will appear on the task list.",
             "default": [],
-            "examples": [[]],
+            "examples": [
+              []
+            ],
             "items": {
               "$id": "#/properties/modules/items/properties/unlock_after/items"
             }
@@ -789,10 +938,13 @@
           "shuffle": {
             "$id": "#/properties/modules/items/properties/shuffle",
             "type": "boolean",
-            "title": "Shuffle modules?" ,
+            "title": "Shuffle modules?",
             "description": "Used for counterbalancing. If true, the order of the sections will be randomised every time the module is accessed.",
             "default": false,
-            "examples": [false, true]
+            "examples": [
+              false,
+              true
+            ]
           }
         }
       }
