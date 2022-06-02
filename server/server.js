@@ -2,7 +2,7 @@ import express, { json } from 'express'
 import cors from 'cors'
 import { existsSync, mkdirSync, writeFile, readFile } from 'fs'
 import { config } from 'dotenv'
-import { populateIds } from './utils'
+import { populateIds } from './utils.js'
 import JSZip from 'jszip'
 config()
 const server = express()
@@ -54,10 +54,10 @@ server.post('/api/surveys', (req, res) => {
             })
             return
         }
-        form = populateIds(body)
+        const form = populateIds(body)
         const uuid = body.properties.study_id + '_' + new Date().getTime()
         const filePath = BASE_PATH + DIR + `/${uuid}.json`
-        const file = JSON.stringify(body)
+        const file = JSON.stringify(form)
         writeFile(filePath, file, (err) => {
             if (err) {
                 console.log(err)
