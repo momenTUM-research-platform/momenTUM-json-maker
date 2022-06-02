@@ -24,7 +24,14 @@ yarn
 yarn dev
 ```
 
-To run the Redcap importe, you first need to create and activate a virtual environment because python runs into dependency conflicts quite easily.
+To run the unit tests, use jest (also available in watch mode)
+
+```
+yarn test
+yarn test --watch
+```
+
+To run the Redcap importer, you first need to create and activate a virtual environment because python runs into dependency conflicts quite easily.
 
 ```
 cd redcap
