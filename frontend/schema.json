@@ -3,7 +3,7 @@
   "$id": "https://momenTUM.de/schema/v1/schema.json",
   "type": "object",
   "title": "MomenTUM survey creator",
-  "description": "This is the schema for the MomenTUM survey creator. For any questions/issues please see the repository: https://github.com/TUMChronobiology/momenTUM-json-maker",
+  "description": "This is the schema for the MomenTUM survey creator. For any questions/issues please see the repository: https://github.com/TUMChronobiology/momenTUM-json-maker. IDs must consist of ONLY lower-case letters, numbers, and underscores.",
   "default": {},
   "required": [
     "properties",
@@ -65,6 +65,7 @@
         "study_id": {
           "$id": "#/properties/properties/properties/study_id",
           "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
           "title": "ID",
           "description": "An identifier for the study which is sent to the server with response data.",
           "default": "",
@@ -260,6 +261,7 @@
           "uuid": {
             "$id": "#/properties/modules/items/properties/uuid",
             "type": "string",
+            "pattern": "^[a-zA-Z0-9_]+$",
             "title": "Unique identifier",
             "description": "A unique identifier for this module. Will be generated if not provided.",
             "default": "",
@@ -659,6 +661,7 @@
                       "id": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/id",
                         "type": "string",
+                        "pattern": "^[a-zA-Z0-9_]+$",
                         "title": "Question ID",
                         "description": "A unique id to identify this question. This id is sent to the server along with any response value. Note: Every element in the entire study protocol must have a unique id for some features to function correctly.",
                         "default": "",
@@ -690,6 +693,7 @@
                       "hide_id": {
                         "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_id",
                         "type": "string",
+                        "pattern": "^[a-zA-Z0-9_]+$",
                         "title": "Hide/Show for ID",
                         "description": "The id of the question that will trigger this question to dynamically show/hide. To use branching, you need to add two additional properties to the question object that is to be dynamically shown/hidden. Currently, branching is supported by the multi, yesno, and slider question types.",
                         "default": "",
@@ -932,7 +936,9 @@
               []
             ],
             "items": {
-              "$id": "#/properties/modules/items/properties/unlock_after/items"
+              "$id": "#/properties/modules/items/properties/unlock_after/items",
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_]+$"
             }
           },
           "shuffle": {
