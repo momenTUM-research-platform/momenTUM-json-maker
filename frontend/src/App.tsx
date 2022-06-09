@@ -144,12 +144,7 @@ function App() {
         }
       }
       console.log(csvString);
-      const zip = new JSZip();
-      zip.file(`instrument.csv`, csvString);
-      zip.file("Origin.txt", "Created by MomenTUM");
-      zip.generateAsync({ type: "blob" }).then((content) => {
-        saveAs(content, "module.zip");
-      });
+      saveAs(new Blob([csvString]), "dictionary.csv");
     } catch (err) {
       console.error(err);
       alert("Generation failed");
