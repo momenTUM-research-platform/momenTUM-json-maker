@@ -13,17 +13,30 @@ services:
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - generator_network
   web:
     build: ./frontend
     ports:
       - "8080:3000"
+    networks:
+      - generator_network
   api:
     build: ./server
     ports:
       - "3000:3000"
     volumes:
       - surveys:/usr/src/app/surveys
+    networks:
+      - generator_network
+  redcap:
+    build: ./redcap
+    ports:
+      - "5000:5000"
+    networks:
+      - generator_network
+
 networks:
-  default:
-    external:
-      name: generator_network
+  generator_network:
+    driver: host
+    external: true

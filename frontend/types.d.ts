@@ -17,6 +17,7 @@ export interface Form {
     type: string;
     name: string;
     submit_text: string;
+
     condition: string;
     alerts: {
       title: string;
@@ -46,6 +47,7 @@ export interface Form {
       name: string;
       shuffle: boolean;
       questions:
+        | (Question & { type: "instruction" })[]
         | (Question & { type: "text"; subtype: string })[]
         | (Question & { type: "datetime"; subtype: string })[]
         | (Question & { type: "yesno"; yes_text: string; no_text: string })[]
@@ -70,10 +72,10 @@ export interface Form {
             thumb: string;
           })[];
     }[];
+    uuid: string;
+    unlock_after: string[];
+    shuffle: boolean;
   }[];
-  uuid: string;
-  unlock_after: string[];
-  shuffle: boolean;
 }
 
 interface Question {

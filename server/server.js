@@ -2,7 +2,8 @@ import express, { json } from 'express'
 import cors from 'cors'
 import { existsSync, mkdirSync, writeFile, readFile } from 'fs'
 import { config } from 'dotenv'
-import { populateIds } from './utils'
+import { populateIds } from './utils.js'
+import JSZip from 'jszip'
 config()
 const server = express()
 server.use(cors())
@@ -10,7 +11,7 @@ server.use(json())
 
 const DIR = '/surveys'
 
-const BASE_PATH = process.env.BASE_PATH || '.'
+const BASE_PATH = process.env.BASE_PATH || "/home/constantin/momenTUM-json-maker/server"
 const PORT = process.env.PORT || 3000
 if (!existsSync(BASE_PATH + DIR)) {
     mkdirSync(BASE_PATH + DIR)
@@ -53,10 +54,10 @@ server.post('/api/surveys', (req, res) => {
             })
             return
         }
-        form = populateIds(body)
+        const form = populateIds(body)
         const uuid = body.properties.study_id + '_' + new Date().getTime()
         const filePath = BASE_PATH + DIR + `/${uuid}.json`
-        const file = JSON.stringify(body)
+        const file = JSON.stringify(form)
         writeFile(filePath, file, (err) => {
             if (err) {
                 console.log(err)
@@ -77,9 +78,7 @@ server.post('/api/surveys', (req, res) => {
     }
 })
 
-// File download
-// Download the file from the server and return it as a json object
-server.get('/api/surveys/:uuid', (req, res) => {
+function sendSurvey(req, res) {
     const { uuid } = req.params
     const filePath = BASE_PATH + (uuid.endsWith(".json") ? `/surveys/${uuid}` : `/surveys/${uuid}.json`)
     readFile(filePath, (err, data) => {
@@ -91,9 +90,66 @@ server.get('/api/surveys/:uuid', (req, res) => {
             res.send(JSON.parse(data))
         }
     })
+}
+
+// File download
+// Download the file from the server and return it as a json object
+server.get('/api/surveys/:uuid', (req, res) => {
+    sendSurvey(req, res)
+})
+server.post('/api/surveys/:uuid', (req, res) => {
+    sendSurvey(req, res)
 })
 
 // Start server
 server.listen(PORT, () => {
     console.log('Server started on port ' + PORT)
 })
+
+server.get("/api/dictionary/:uuid", (req, res) => {
+    try {
+        let { uuid } = req.params
+        const regenerate = req.query.regenerate
+        uuid = uuid.endsWith(".json") ? uuid.replace(".json", "") : uuid
+        console.log(regenerate)
+        if (!regenerate && fs.existsSync(BASE_PATH + `/surveys/${uuid}/module.zip`)) {
+            res.download(BASE_PATH + `/surveys/${uuid}/module.zip`)
+        } else {
+            const filePath = BASE_PATH + (uuid.endsWith(".json") ? `/surveys/${uuid}` : `/surveys/${uuid}.json`)
+            const file = fs.readFileSync(filePath, { encoding: "utf-8" })
+            const modules = JSON.parse(file).modules
+            let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`
+            for (const module of modules) {
+                for (const section of module.sections) {
+                    for (const question of section.questions) {
+                        if (question.type === "instruction") continue
+                        csvString += `${question.id},${module.uuid},,text,${question.text},,,,,,,,,,,,,\n`
+                    }
+                }
+            }
+            console.log(csvString)
+
+            fs.existsSync(`${BASE_PATH}/surveys/${uuid}/`) || fs.mkdirSync(`${BASE_PATH}/surveys/${uuid}/`)
+            fs.writeFileSync(`${BASE_PATH}/surveys/${uuid}/instrument.csv`, csvString)
+            fs.writeFileSync(`${BASE_PATH}/surveys/${uuid}/Origin.txt`, "Created by MomenTUM")
+
+            const zip = new JSZip()
+            zip.file(`instrument.csv`, csvString)
+            zip.file("Origin.txt", "Created by MomenTUM")
+            zip.generateAsync({ type: "nodebuffer" }).then((content) => {
+                console.log(content)
+                fs.writeFileSync(`${BASE_PATH}/surveys/${uuid}/module.zip`, content)
+                res.download(BASE_PATH + `/surveys/${uuid}/module.zip`)
+
+            })
+        }
+
+    } catch (err) {
+        res.status(400).send({
+            error: 'Error when building document: ' + err
+        })
+    }
+})
+
+
+

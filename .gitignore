@@ -34,3 +34,8 @@ package-lock.json
 
 /data
 /letsencrypt
+
+/redcap/venv
+/redcap/__pycache__
+/redcap/records.json
+/server/surveys
