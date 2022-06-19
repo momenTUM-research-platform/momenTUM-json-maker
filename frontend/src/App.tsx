@@ -1,8 +1,8 @@
 import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
 import Ajv, { DefinedError } from "ajv";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import schema from "../schema.json";
+import Schema from "../schema.json";
 import { Form } from "../types";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -30,10 +30,24 @@ const Button = styled.button`
 
 function App() {
   const [form, setForm] = useState<Form | null>(null);
+  const [schema, setSchema] = useState(Schema);
+  const [liveValidate, setLiveValidate] = useState(false);
 
   const uiSchema = {
     title: { "ui:widget": "date" },
   };
+
+  useEffect(() => {
+    if (form?.properties.conditions) {
+      let schemaCopy = schema;
+      schemaCopy.properties.modules.items.properties.condition.enum = [
+        "Select one of the properties below",
+        "*",
+        ...form?.properties.conditions,
+      ];
+      setSchema(schemaCopy);
+    }
+  }, [form]);
 
   // Validation is computationally expensive, but only done on submit/uplaod
   function isValidForm(form: Form): { valid: boolean; msg: string } {
@@ -164,18 +178,21 @@ function App() {
           Github
         </a>{" "}
       </Button>
+      <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
+      <label htmlFor="validate"> Live Validation?</label>
+
       <br />
       {form && <ToC form={form} />}
-      {/*
- // @ts-ignore */}
+
       <FormComponent
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
         onSubmit={(e) => form && upload(form)}
         //@ts-ignore
+        noValidate={!liveValidate}
         schema={schema}
         formData={form}
         uiSchema={uiSchema}
-        liveValidate={true}
+        liveValidate={liveValidate}
         idPrefix="form"
       />
     </Container>
