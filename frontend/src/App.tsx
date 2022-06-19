@@ -38,16 +38,25 @@ function App() {
   };
 
   useEffect(() => {
-    if (form?.properties.conditions) {
-      let schemaCopy = schema;
-      schemaCopy.properties.modules.items.properties.condition.enum = [
-        "Select one of the properties below",
-        "*",
-        ...form?.properties.conditions,
-      ];
-      setSchema(schemaCopy);
-    }
+    if (!form) return;
+    console.log(schema.properties.modules.items.properties.unlock_after.items.enum);
+    let schemaCopy = schema;
+
+    schemaCopy.properties.modules.items.properties.condition.enum = [
+      "Select one of the properties below",
+      "*",
+      ...form?.properties.conditions,
+    ];
+
+    schemaCopy.properties.modules.items.properties.unlock_after.items.enum = form.modules.map(
+      (module) => module.uuid
+    );
+    setSchema({ ...schemaCopy });
   }, [form]);
+
+  useEffect(() => {
+    console.log("Schema changed");
+  }, [schema]);
 
   // Validation is computationally expensive, but only done on submit/uplaod
   function isValidForm(form: Form): { valid: boolean; msg: string } {
@@ -146,6 +155,7 @@ function App() {
   //   }
   //
   async function generateDictionary() {
+    if (!form) return;
     try {
       const modules = form.modules;
       let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`;
@@ -187,8 +197,8 @@ function App() {
       <FormComponent
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
         onSubmit={(e) => form && upload(form)}
-        //@ts-ignore
         noValidate={!liveValidate}
+        //@ts-ignore
         schema={schema}
         formData={form}
         uiSchema={uiSchema}

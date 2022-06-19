@@ -138,7 +138,7 @@
         "cache": {
           "$id": "#/properties/properties/properties/cache",
           "type": "boolean",
-          "title": "Cache Media?",
+          "title": "Cache Media? Indicates whether media elements will be cached for offline mode during study enrollment. Note: media should be optimised to reduce download times.",
           "description": "Indicates whether media elements will be cached for offline mode during study enrollment. Note: media should be optimised to reduce download times.",
           "default": false,
           "examples": [
@@ -661,6 +661,17 @@
           }
         },
         "properties": {
+          "uuid": {
+            "$id": "#/properties/modules/items/properties/uuid",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "title": "Unique identifier",
+            "description": "A unique identifier for this module. Will be generated if not provided.",
+            "default": "",
+            "examples": [
+              ""
+            ]
+          },
           "type": {
             "$id": "#/properties/modules/items/properties/type",
             "type": "string",
@@ -704,17 +715,6 @@
             "enum": [
               "Select one of the conditions below",
               "*"
-            ]
-          },
-          "uuid": {
-            "$id": "#/properties/modules/items/properties/uuid",
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9_]+$",
-            "title": "Unique identifier",
-            "description": "A unique identifier for this module. Will be generated if not provided.",
-            "default": "",
-            "examples": [
-              ""
             ]
           },
           "alerts": {
@@ -997,7 +997,11 @@
                         "type": "string",
                         "title": "Type",
                         "description": "The type of graph to display. One of: bar or line",
-                        "default": "",
+                        "default": "bar",
+                        "enum": [
+                          "bar",
+                          "line"
+                        ],
                         "examples": [
                           "bar",
                           "line"
@@ -1024,15 +1028,17 @@
             "$id": "#/properties/modules/items/properties/unlock_after",
             "type": "array",
             "title": "Unlock after",
-            "description": "A list of UUIDs of modules that must be completed before this module will appear on the task list.",
-            "default": [],
+            "description": "A list of UUIDs of modules that must be completed before this module will appear on the task list. If you cannot see any ids, please remove the field and add it again. Self-reference will exclude the module.",
             "examples": [
               []
             ],
             "items": {
               "$id": "#/properties/modules/items/properties/unlock_after/items",
               "type": "string",
-              "pattern": "^[a-zA-Z0-9_]+$"
+              "pattern": "^[a-zA-Z0-9_]+$",
+              "enum": [
+                ""
+              ]
             }
           }
         }
