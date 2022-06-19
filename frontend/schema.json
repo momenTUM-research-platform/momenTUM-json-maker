@@ -40,16 +40,11 @@
         "study_name",
         "study_id",
         "created_by",
-        "instructions",
         "post_url",
         "empty_msg",
         "banner_url",
-        "support_url",
-        "support_email",
         "conditions",
-        "cache",
-        "ethics",
-        "pls"
+        "cache"
       ],
       "properties": {
         "study_name": {
