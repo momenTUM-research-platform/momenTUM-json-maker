@@ -50,7 +50,7 @@ function App() {
 
     schemaCopy.properties.modules.items.properties.unlock_after.items.enum = form.modules.map(
       (module) => module.uuid
-    );
+    ) || [""];
     setSchema({ ...schemaCopy });
   }, [form]);
 
@@ -96,33 +96,35 @@ function App() {
   }
 
   async function upload(form: Form) {
-    const { valid, msg } = isValidForm(form);
-    const proceed =
-      valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
-    if (proceed) {
-      const data = JSON.stringify(form, null, 2);
-      const password = prompt(
-        "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
-      );
-      const postURL = BASE_URL + "/surveys";
-      const response = await fetch(postURL, {
-        method: "POST",
-        body: data,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: password || "MomenTUM",
-        },
-      });
-      const json = await response.json();
-      console.log(json);
-      if (json.status === "ok") {
-        // @ts-ignore
-        alert("Uploaded survey with id " + json.uuid + " to " + json.uri);
-      } else {
-        // @ts-ignore
-        alert("Error: " + json.message);
+    try {
+      const { valid, msg } = isValidForm(form);
+      const proceed =
+        valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
+      if (proceed) {
+        const data = JSON.stringify(form, null, 2);
+        const password = prompt(
+          "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
+        );
+        const postURL = BASE_URL + "/surveys";
+        const response = await fetch(postURL, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: password || "MomenTUM",
+          },
+        });
+        const json = await response.json();
+        console.log(json);
+        if (json.status === "ok") {
+          // @ts-ignore
+          alert("Uploaded survey with id " + json.uuid + " to " + json.uri);
+        } else {
+          // @ts-ignore
+          alert("Error: " + json.message);
+        }
       }
-    }
+    } catch (err) {}
   }
 
   async function download() {
