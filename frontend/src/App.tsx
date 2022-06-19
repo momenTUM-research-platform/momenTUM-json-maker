@@ -39,7 +39,6 @@ function App() {
 
   useEffect(() => {
     if (!form) return;
-    console.log(schema.properties.modules.items.properties.unlock_after.items.enum);
     let schemaCopy = schema;
 
     schemaCopy.properties.modules.items.properties.condition.enum = [
@@ -47,10 +46,9 @@ function App() {
       "*",
       ...form?.properties.conditions,
     ];
-
-    schemaCopy.properties.modules.items.properties.unlock_after.items.enum = form.modules.map(
-      (module) => module.uuid
-    ) || [""];
+    const moduleIds = form.modules.map((module) => module.uuid);
+    schemaCopy.properties.modules.items.properties.unlock_after.items.enum =
+      moduleIds.length > 0 ? moduleIds : [""];
     setSchema({ ...schemaCopy });
   }, [form]);
 
@@ -96,35 +94,35 @@ function App() {
   }
 
   async function upload(form: Form) {
-    try {
-      const { valid, msg } = isValidForm(form);
-      const proceed =
-        valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
-      if (proceed) {
-        const data = JSON.stringify(form, null, 2);
-        const password = prompt(
-          "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
-        );
-        const postURL = BASE_URL + "/surveys";
-        const response = await fetch(postURL, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: password || "MomenTUM",
-          },
-        });
-        const json = await response.json();
-        console.log(json);
-        if (json.status === "ok") {
-          // @ts-ignore
-          alert("Uploaded survey with id " + json.uuid + " to " + json.uri);
-        } else {
-          // @ts-ignore
-          alert("Error: " + json.message);
-        }
+    console.log(schema.properties.modules.items.properties.unlock_after.items.enum);
+
+    const { valid, msg } = isValidForm(form);
+    const proceed =
+      valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
+    if (proceed) {
+      const data = JSON.stringify(form, null, 2);
+      const password = prompt(
+        "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
+      );
+      const postURL = BASE_URL + "/surveys";
+      const response = await fetch(postURL, {
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: password || "MomenTUM",
+        },
+      });
+      const json = await response.json();
+      console.log(json);
+      if (json.status === "ok") {
+        // @ts-ignore
+        alert("Uploaded survey with id " + json.uuid + " to " + json.uri);
+      } else {
+        // @ts-ignore
+        alert("Error: " + json.message);
       }
-    } catch (err) {}
+    }
   }
 
   async function download() {

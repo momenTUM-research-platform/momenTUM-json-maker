@@ -205,8 +205,7 @@
           "sections",
           "shuffle",
           "condition",
-          "uuid",
-          "unlock_after"
+          "uuid"
         ],
         "dependencies": {
           "type": {
@@ -653,8 +652,7 @@
                   "sections",
                   "shuffle",
                   "condition",
-                  "uuid",
-                  "unlock_after"
+                  "uuid"
                 ]
               }
             ]
