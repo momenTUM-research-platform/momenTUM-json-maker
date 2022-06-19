@@ -230,7 +230,7 @@
                 "properties": {
                   "type": {
                     "enum": [
-                      "reaction"
+                      "pvt"
                     ]
                   },
                   "trials": {
@@ -260,6 +260,10 @@
                   "show": {
                     "type": "boolean",
                     "title": "Show results to the user?"
+                  },
+                  "exit": {
+                    "type": "boolean",
+                    "title": "Enable exit from pvt?"
                   }
                 },
                 "required": [
@@ -267,7 +271,8 @@
                   "min_waiting",
                   "max_waiting",
                   "show",
-                  "max_reaction"
+                  "max_reaction",
+                  "exit"
                 ]
               },
               {
@@ -681,7 +686,7 @@
               "info",
               "video",
               "audio",
-              "reaction"
+              "pvt"
             ]
           },
           "name": {
