@@ -1,8 +1,8 @@
 import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
 import Ajv, { DefinedError } from "ajv";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import schema from "../schema.json";
+import Schema from "../schema.json";
 import { Form } from "../types";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -30,10 +30,31 @@ const Button = styled.button`
 
 function App() {
   const [form, setForm] = useState<Form | null>(null);
+  const [schema, setSchema] = useState(Schema);
+  const [liveValidate, setLiveValidate] = useState(false);
 
   const uiSchema = {
     title: { "ui:widget": "date" },
   };
+
+  useEffect(() => {
+    if (!form) return;
+    let schemaCopy = schema;
+
+    schemaCopy.properties.modules.items.properties.condition.enum = [
+      "Select one of the properties below",
+      "*",
+      ...form?.properties.conditions,
+    ];
+    const moduleIds = form.modules.map((module) => module.uuid);
+    schemaCopy.properties.modules.items.properties.unlock_after.items.enum =
+      moduleIds.length > 0 ? moduleIds : [""];
+    setSchema({ ...schemaCopy });
+  }, [form]);
+
+  useEffect(() => {
+    console.log("Schema changed");
+  }, [schema]);
 
   // Validation is computationally expensive, but only done on submit/uplaod
   function isValidForm(form: Form): { valid: boolean; msg: string } {
@@ -73,6 +94,8 @@ function App() {
   }
 
   async function upload(form: Form) {
+    console.log(schema.properties.modules.items.properties.unlock_after.items.enum);
+
     const { valid, msg } = isValidForm(form);
     const proceed =
       valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
@@ -132,6 +155,7 @@ function App() {
   //   }
   //
   async function generateDictionary() {
+    if (!form) return;
     try {
       const modules = form.modules;
       let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`;
@@ -164,18 +188,21 @@ function App() {
           Github
         </a>{" "}
       </Button>
+      <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
+      <label htmlFor="validate"> Live Validation?</label>
+
       <br />
       {form && <ToC form={form} />}
-      {/*
- // @ts-ignore */}
+
       <FormComponent
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
         onSubmit={(e) => form && upload(form)}
+        noValidate={!liveValidate}
         //@ts-ignore
         schema={schema}
         formData={form}
         uiSchema={uiSchema}
-        liveValidate={true}
+        liveValidate={liveValidate}
         idPrefix="form"
       />
     </Container>

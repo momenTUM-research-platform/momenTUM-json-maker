@@ -4,8 +4,8 @@ volumes:
     driver: local
 services:
   nginxmanager:
+    restart: on-failure
     image: "jc21/nginx-proxy-manager:latest"
-    restart: unless-stopped
     ports:
       - "80:80"
       - "81:81"
@@ -16,12 +16,14 @@ services:
     networks:
       - generator_network
   web:
+    restart: on-failure
     build: ./frontend
     ports:
       - "8080:3000"
     networks:
       - generator_network
   api:
+    restart: on-failure
     build: ./server
     ports:
       - "3000:3000"
@@ -30,6 +32,7 @@ services:
     networks:
       - generator_network
   redcap:
+    restart: on-failure
     build: ./redcap
     ports:
       - "5000:5000"
