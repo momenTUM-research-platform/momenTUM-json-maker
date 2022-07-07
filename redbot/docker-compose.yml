@@ -17,5 +17,5 @@ services:
       - redbot:/data
 
 volumes:
-  external:
-    redbot:
+  redbot:
+    external: true
