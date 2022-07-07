@@ -11,9 +11,12 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
   redbot:
+    container_name: redbot
     build: .
     volumes:
       - redbot:/data
+    ports:
+      - 1880:1880
 
 volumes:
   redbot:
