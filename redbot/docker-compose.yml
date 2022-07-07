@@ -13,4 +13,4 @@ services:
   redbot:
     build: .
     volumes:
-      - ./data:/data
+      - redbot:/data
