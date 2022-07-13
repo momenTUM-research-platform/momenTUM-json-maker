@@ -30,12 +30,13 @@ def import_data():
     if to_import["data_type"] == "survey_response":
         cache[time.time_ns()] = to_import
         user_id = to_import["user_id"]
-        start_time = threading.Timer(1, lambda: collect_and_upload(user_id))
+        start_time = threading.Timer(1, lambda: collect_and_upload(cache, user_id))
         start_time.start()
+
     return "OK"
 
 
-def collect_and_upload(user_id):
+def collect_and_upload(cache, user_id, mock=False):
     user_responses = []
     for key, response in cache.copy().items():
         if response["user_id"] == user_id:
@@ -43,17 +44,27 @@ def collect_and_upload(user_id):
             cache.pop(key)
     if len(user_responses) > 0:
         record = {
-            "redcap_repeat_instrument": "module_one",
+            "redcap_repeat_instrument": user_responses[0]["module_name"],
             "redcap_repeat_instance": "3",
             "record_id": "1",
             "user_id": user_responses[0]["user_id"],
             "study_id": user_responses[0]["study_id"],
-            "response_time": user_responses[0]["response_time_in_ms"],
+            "response_time_in_ms": user_responses[0]["response_time_in_ms"],
+            "response_time": user_responses[0]["response_time"],
             "raw_data": user_responses,
         }
-        questions = json.loads(user_responses[0]["responses"])
-        record.update(questions)
-        with open("records.json", "a", encoding="utf-8") as file:
-            json.dump(record, file)
-        response = project.import_records([record])
-        print(response)
+        for res in user_responses:
+            if "responses" in res and json.loads((res["responses"])):
+                record.update(json.loads(res["responses"]))
+                break
+            elif "entries" in res:
+                record["entries"] = res["entries"]
+                break
+
+        if mock:
+            return record
+        else:
+            with open("records.json", "a", encoding="utf-8") as file:
+                json.dump(record, file)
+                response = project.import_records([record])
+                print(response)
