@@ -9,7 +9,9 @@ import time
 
 load_dotenv()
 
-api_url = os.environ.get("API_URL", default="https://tuspl22-redcap.srv.mwn.de/redcap/")
+api_url = os.environ.get(
+    "API_URL", default="https://tuspl22-redcap.srv.mwn.de/redcap/api/"
+)
 api_key = os.environ.get(
     "API_KEY", default="not_the_real_api_key_but_needed_for_github_actions"
 )
