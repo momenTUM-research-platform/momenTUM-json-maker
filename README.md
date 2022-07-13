@@ -37,9 +37,15 @@ To run the Redcap importer, you first need to create and activate a virtual envi
 cd redcap
 python3 -m venv venv
 . venv/bin/activate
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 export FLASK_APP=server
 flask run
+```
+
+To run the Python tests, use pytest
+
+```
+pytest server_test.py
 ```
 
 Of course, you can also install dependencies with npm (then the start script is npm run dev). To install yarn, run `npm install -g yarn`, which you might need superuser-rights for.
