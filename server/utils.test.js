@@ -1,4 +1,4 @@
-import { populateIds } from "./utils"
+import { getLatestStudies, populateIds } from "./utils"
 
 describe('The JSON-Generator API', () => {
     it("populates the schema with ids", () => {
@@ -59,5 +59,12 @@ describe('The JSON-Generator API', () => {
                 }
             }]
         })).toThrow()
+    })
+})
+
+describe("get latest studies", () => {
+    it("gets the latest studies", () => {
+        const studies = getLatestStudies()
+        expect(studies).toHaveLength(5)
     })
 })

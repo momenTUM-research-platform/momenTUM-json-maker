@@ -2,7 +2,7 @@ import express, { json } from 'express'
 import cors from 'cors'
 import { existsSync, mkdirSync, writeFile, readFile } from 'fs'
 import { config } from 'dotenv'
-import { populateIds } from './utils.js'
+import { getLatestStudies, populateIds } from './utils.js'
 import JSZip from 'jszip'
 config()
 const server = express()
@@ -151,5 +151,10 @@ server.get("/api/dictionary/:uuid", (req, res) => {
     }
 })
 
+
+server.get("/api/latest", (_, res) => {
+    const studies = getLatestStudies()
+    res.json({ studies })
+})
 
 
