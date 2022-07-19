@@ -362,10 +362,7 @@
                               "id",
                               "type",
                               "text",
-                              "required",
-                              "hide_id",
-                              "hide_value",
-                              "hide_if"
+                              "required"
                             ],
                             "properties": {
                               "id": {
@@ -424,7 +421,7 @@
                               "hide_if": {
                                 "$id": "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_if",
                                 "type": "boolean",
-                                "title": "Hide or show?",
+                                "title": "Hide or show if answer equals hide value? Indicates the branching behaviour. If true, the element will disappear if the value of the question equals hide_value. If false, the element will appear appear instead.",
                                 "description": "Indicates the branching behaviour. If true, the element will disappear if the value of the question equals hide_value. If false, the element will appear appear instead.",
                                 "default": false,
                                 "examples": [
@@ -667,9 +664,9 @@
           "uuid": {
             "$id": "#/properties/modules/items/properties/uuid",
             "type": "string",
-            "pattern": "^[a-zA-Z0-9_]+$",
+            "pattern": "^[a-z][a-z0-9_]+$",
             "title": "Unique identifier",
-            "description": "A unique identifier for this module. Will be generated if not provided.",
+            "description": "A unique identifier for this module. Will be generated if not provided. Must be lowercase and only letters, numbers and underscores. Cannot begin with a number",
             "default": "",
             "examples": [
               ""
@@ -754,7 +751,6 @@
               "random",
               "random_interval",
               "sticky",
-              "sticky_label",
               "timeout",
               "timeout_after",
               "start_offset"
