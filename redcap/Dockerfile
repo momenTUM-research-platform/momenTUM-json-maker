@@ -13,11 +13,11 @@ WORKDIR /project
 RUN useradd -m -r user && \
     chown user /project
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+COPY redcap/requirements.txt ./redcap
+RUN pip install -r ./redcap/requirements.txt
 
-COPY /redcap /redcap
-COPY frontend/schema /frontend/schema 
+COPY redcap redcap
+COPY frontend/schema.json ./frontend/schema.json
 
 USER user
 
