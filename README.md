@@ -39,6 +39,7 @@ python3 -m venv venv
 . venv/bin/activate
 python3 -m pip install -r requirements.txt
 export FLASK_APP=server
+export FLASK_ENV=development
 flask run
 ```
 
