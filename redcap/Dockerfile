@@ -13,14 +13,14 @@ WORKDIR /project
 RUN useradd -m -r user && \
     chown user /project
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+COPY redcap/requirements.txt ./redcap
+RUN pip install -r ./redcap/requirements.txt
 
 COPY . .
 
 USER user
 
-ENV FLASK_APP=server
+ENV FLASK_APP=redcap/server
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 
