@@ -51,7 +51,7 @@ const Latest = styled.button`
 function App() {
   const [form, setForm] = useState<Form | null>(null);
   const [schema, setSchema] = useState(Schema);
-  const [liveValidate, setLiveValidate] = useState(true);
+  const [liveValidate, setLiveValidate] = useState(false);
   const [latest, setLatest] = useState<Form[] | null>(null);
 
   const uiSchema = {
@@ -61,19 +61,19 @@ function App() {
   useEffect(() => {
     if (!form) return;
     let schemaCopy = schema;
-
     schemaCopy.properties.modules.items.properties.condition.enum = [
       "Select one of the properties below",
       "*",
       ...form?.properties.conditions,
     ];
-    const moduleIds = new Set(form.modules.map((module) => module.uuid));
+    // const moduleIds = form.modules.map((module) => module.uuid);
+    const moduleIds = Array.from(new Set(form.modules.map((module) => module.uuid)));
+
     schemaCopy.properties.modules.items.properties.unlock_after.items.enum =
-      moduleIds.size > 0 ? Array.from(moduleIds) : [""];
+      //    moduleIds.size > 0 ? Array.from(moduleIds) : [""];
+      moduleIds.length > 0 ? moduleIds : [""];
     setSchema({ ...schemaCopy });
   }, [form]);
-
-  useEffect(() => {}, [schema]);
 
   useEffect(() => {
     fetch(BASE_URL + "/latest")
@@ -280,12 +280,7 @@ function App() {
         ))}
       <br />
       <br />
-      <input
-        id="validate"
-        onClick={() => setLiveValidate((s) => !s)}
-        defaultChecked
-        type="checkbox"
-      />
+      <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
       <label htmlFor="validate"> Live Validation?</label>
 
       <br />
