@@ -39,6 +39,7 @@ package-lock.json
 /redcap/__pycache__
 /redcap/records.json
 /server/surveys
+/redcap/keys.json
 
 /redbot/data
 /redbot/letsencrypt
