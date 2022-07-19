@@ -46,7 +46,10 @@ flask run
 To run the Python tests, use pytest
 
 ```
-pytest server_test.py
+python3 -m venv venv
+. venv/bin/activate
+pip install -U pytest
+python3 -m pytest server_test.py
 ```
 
 Of course, you can also install dependencies with npm (then the start script is npm run dev). To install yarn, run `npm install -g yarn`, which you might need superuser-rights for.
