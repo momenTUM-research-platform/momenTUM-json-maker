@@ -16,12 +16,12 @@ RUN useradd -m -r user && \
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
-COPY . .
-COPY ../frontend/schema ../frontend/schema 
+COPY /redcap /redcap
+COPY frontend/schema /frontend/schema 
 
 USER user
 
-ENV FLASK_APP=server
+ENV FLASK_APP=redcap/server
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 

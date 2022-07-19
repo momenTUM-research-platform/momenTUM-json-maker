@@ -33,7 +33,9 @@ services:
       - generator_network
   redcap:
     restart: on-failure
-    build: ./redcap
+    build:
+      context: .
+      dockerfile: redcap/Dockerfile
     ports:
       - "5000:5000"
     networks:
