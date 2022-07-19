@@ -34,6 +34,8 @@ services:
   redcap:
     restart: on-failure
     build: ./redcap
+    volumes:
+      - ./frontend:/frontend
     ports:
       - "5000:5000"
     networks:
