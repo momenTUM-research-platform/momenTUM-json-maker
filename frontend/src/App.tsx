@@ -4,13 +4,16 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Schema from "../schema.json";
 import { Form } from "../types";
-import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import toast, { Toaster } from "react-hot-toast";
 
 import ToC from "./ToC";
 import "./App.css";
+import React from "react";
 
 const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3001/api";
+const REDCAP_IMPORTER_URL =
+  process.env.NODE_ENV === "production" ? "/redcap" : "http://localhost:5000/redcap";
 
 const Container = styled.div`
   margin: 100px;
@@ -28,10 +31,28 @@ const Button = styled.button`
   text-decoration: none;
 `;
 
+const Latest = styled.button`
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  background: #1c426b;
+  color: white;
+  border-radius: 5px;
+  margin-right: 7px;
+  margin-top: 3px;
+  box-shadow: none;
+  font-size: 1.2rem;
+  border: none;
+  text-decoration: none;
+  margin-top: 10px;
+`;
+
 function App() {
   const [form, setForm] = useState<Form | null>(null);
   const [schema, setSchema] = useState(Schema);
-  const [liveValidate, setLiveValidate] = useState(false);
+  const [liveValidate, setLiveValidate] = useState(true);
+  const [latest, setLatest] = useState<Form[] | null>(null);
 
   const uiSchema = {
     title: { "ui:widget": "date" },
@@ -46,15 +67,20 @@ function App() {
       "*",
       ...form?.properties.conditions,
     ];
-    const moduleIds = form.modules.map((module) => module.uuid);
+    const moduleIds = new Set(form.modules.map((module) => module.uuid));
     schemaCopy.properties.modules.items.properties.unlock_after.items.enum =
-      moduleIds.length > 0 ? moduleIds : [""];
+      moduleIds.size > 0 ? Array.from(moduleIds) : [""];
     setSchema({ ...schemaCopy });
   }, [form]);
 
+  useEffect(() => {}, [schema]);
+
   useEffect(() => {
-    console.log("Schema changed");
-  }, [schema]);
+    fetch(BASE_URL + "/latest")
+      .then((res) => res.json())
+      .then((data) => setLatest(data.studies))
+      .catch((err) => toast.error("Download latest studies failed: " + String(err)));
+  }, []);
 
   // Validation is computationally expensive, but only done on submit/uplaod
   function isValidForm(form: Form): { valid: boolean; msg: string } {
@@ -62,10 +88,27 @@ function App() {
     const valid = validator(form);
     if (!valid) {
       const errors = validator.errors as DefinedError[];
-      return { valid: false, msg: errors[0].message || "Unknown error" };
+      return {
+        valid: false,
+        msg:
+          errors.reduce(
+            (acc, e) => acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
+            ""
+          ) || "Unknown error",
+      };
     } else {
       return { valid: true, msg: "Valid" };
     }
+  }
+
+  function validate() {
+    if (!form) {
+      console.log("No form to validate");
+      toast.error("Please fill the form first!");
+      return;
+    }
+    const valid = isValidForm(form);
+    valid.valid ? toast.success("Form is valid!") : toast.error(valid.msg);
   }
 
   function save() {
@@ -117,10 +160,12 @@ function App() {
       console.log(json);
       if (json.status === "ok") {
         // @ts-ignore
-        alert("Uploaded survey with id " + json.uuid + " to " + json.uri);
+        toast.success("Uploaded survey with id " + json.uuid + " to \n " + json.uri, {
+          duration: 20000,
+        });
       } else {
         // @ts-ignore
-        alert("Error: " + json.message);
+        toast.error("Error: " + json.message);
       }
     }
   }
@@ -128,7 +173,7 @@ function App() {
   async function download() {
     const uri = BASE_URL + "/surveys/" + prompt("Enter the uuid of the survey");
     if (!uri) {
-      alert("No download link provided");
+      toast.error("No download link provided");
       return;
     }
     const response = await fetch(uri);
@@ -136,7 +181,7 @@ function App() {
       const data = await response.json();
       setForm(data);
     } else {
-      alert("Download failed");
+      toast.error("Download failed");
     }
   }
   // async function downloadDictionary() {
@@ -144,16 +189,48 @@ function App() {
   //     console.log(form);
   //     const uuid = form?.uuid ? form.uuid : prompt("Enter the uuid of the survey");
   //     if (!uuid) {
-  //       alert("No download uuid provided");
+  //       toast.error("No download uuid provided");
   //       return;
   //     }
   //     const uri = BASE_URL + "/dictionary/" + uuid + "?regenerate=true";
   //     await fetch(uri, { method: "GET", redirect: "follow" });
   //   } catch (e) {
   //     console.error(e);
-  //     alert("Download failed");
+  //     toast.error("Download failed");
   //   }
   //
+
+  async function createProject() {
+    try {
+      const response = await fetch(REDCAP_IMPORTER_URL + "/create", {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
+      const json = await response.json();
+      console.log(json);
+      toast.success(json.message);
+    } catch (err) {
+      toast.error(err);
+    }
+  }
+
+  async function addApiKey() {
+    try {
+      const study_id = prompt("Enter the study id");
+      const api_key = prompt("Enter the API key");
+
+      const response = await fetch(REDCAP_IMPORTER_URL + "/add", {
+        method: "POST",
+        body: JSON.stringify({ study_id, api_key }),
+      });
+      const json = await response.json();
+      console.log(json);
+      toast(json.message);
+    } catch (err) {
+      toast.error(String(err));
+    }
+  }
+
   async function generateDictionary() {
     if (!form) return;
     try {
@@ -171,7 +248,7 @@ function App() {
       saveAs(new Blob([csvString]), "dictionary.csv");
     } catch (err) {
       console.error(err);
-      alert("Generation failed");
+      toast.error("Generation failed");
     }
   }
   return (
@@ -183,12 +260,32 @@ function App() {
       <Button onClick={() => form && upload(form)}>Upload JSON file</Button>
       <Button onClick={download}>Download JSON file</Button>
       <Button onClick={generateDictionary}>Generate RedCap Dictionary</Button>
+      <Button onClick={createProject}>Create project in RedCap</Button>
+      <Button onClick={addApiKey}>Add API key</Button>
+      <Button onClick={validate}>Validate</Button>
       <Button>
         <a className="github" href="https://github.com/TUMChronobiology/momenTUM-json-maker">
           Github
         </a>{" "}
       </Button>
-      <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
+      <br />
+      {latest &&
+        latest.map((study) => (
+          <Latest onClick={() => setForm(study)}>
+            <p style={{ margin: "5px 10px 0px 10px" }}>{study.properties.study_name}</p>
+            <p style={{ fontSize: "0.7rem", margin: "0px 10px 5px 10px" }}>
+              {study.properties.study_id}
+            </p>
+          </Latest>
+        ))}
+      <br />
+      <br />
+      <input
+        id="validate"
+        onClick={() => setLiveValidate((s) => !s)}
+        defaultChecked
+        type="checkbox"
+      />
       <label htmlFor="validate"> Live Validation?</label>
 
       <br />
@@ -205,6 +302,7 @@ function App() {
         liveValidate={liveValidate}
         idPrefix="form"
       />
+      <Toaster />
     </Container>
   );
 }
