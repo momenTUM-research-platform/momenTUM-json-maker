@@ -24,10 +24,15 @@ super_api_key = os.environ.get(
 
 
 def init_api_keys():
+
     api_keys = {}
     api_keys["test"] = os.environ.get(
         "API_KEY", default="EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
     )
+    if not os.path.exists("keys.json"):
+        with open("keys.json", "w", encoding="utf-8") as file:
+            json.dump([], file)
+
     with open("keys.json", "r", encoding="utf-8") as file:
         keys = json.load(file)
 
@@ -103,7 +108,7 @@ def add_api_key():
     study_id = data["study_id"]
     api_key = data["api_key"]
     if study_id is None or api_key is None:
-        return jsonify({"message": "Can't be empty"}) 
+        return jsonify({"message": "Can't be empty"})
     if study_id in api_keys:
         return jsonify({"message": "Study ID already exists"})
     else:
@@ -166,16 +171,16 @@ def verify_survey(survey):
     return True, message
 
 
-def generate_dictionary(study):  
+def generate_dictionary(study):
     try:
-        
+
         csvString = '"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n'
-        for  module in study["modules"]:
-            for section in  module["sections"]:
-              for question in section["questions"]:
-                  if question.type == "instruction":
-                     continue
-                  csvString += f'{question["d"]},{module["uuid"]},,text,{question["text"]},,,,,,,,,,,,,\n'
-        print(csvString) 
+        for module in study["modules"]:
+            for section in module["sections"]:
+                for question in section["questions"]:
+                    if question.type == "instruction":
+                        continue
+                    csvString += f'{question["d"]},{module["uuid"]},,text,{question["text"]},,,,,,,,,,,,,\n'
+        print(csvString)
     except err:
         print(err)
