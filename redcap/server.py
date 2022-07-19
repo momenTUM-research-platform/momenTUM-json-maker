@@ -54,7 +54,6 @@ cache = {}
 
 @app.route("/redcap")
 def status():
-    print(project.export_repeating_instruments_events())
     return "<p>Connected to the RedCap Import API!</p>"
 
 
