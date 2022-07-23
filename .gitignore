@@ -43,3 +43,9 @@ package-lock.json
 
 /redbot/data
 /redbot/letsencrypt
+
+# Added by cargo
+
+/target
+/backend/studies
+/backend/target
