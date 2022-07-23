@@ -5,109 +5,107 @@ pub mod structs {
         ResponseError,
     };
     use serde::{Deserialize, Serialize};
-    use std::{collections::HashMap, fmt::Display, iter::Map};
-    use thiserror;
+    use std::{fmt::Display, iter::Map};
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Study {
         pub properties: Properties,
         pub modules: Vec<Module>,
     }
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Properties {
         pub study_id: String,
-        study_name: String,
-        instructions: String,
-        banner_url: String,
-        support_email: String,
-        support_url: String,
-        ethics: String,
-        pls: String,
-        empty_msg: String,
-        post_url: String,
-        conditions: Vec<String>,
-        cache: bool,
-        created_by: String,
+        pub study_name: String,
+        pub instructions: String,
+        pub banner_url: String,
+        pub support_email: String,
+        pub support_url: String,
+        pub ethics: String,
+        pub pls: String,
+        pub empty_msg: String,
+        pub post_url: String,
+        pub conditions: Vec<String>,
+        pub cache: bool,
+        pub created_by: String,
     }
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
 
     pub struct Module {
-        r#type: String,
-        name: String,
-        submit_text: String,
-
-        condition: String,
-        alerts: Alert,
-        graph: Graph,
+        pub r#type: String,
+        pub name: String,
+        pub submit_text: String,
+        pub condition: String,
+        pub alerts: Alert,
+        pub graph: Graph,
         pub sections: Vec<Section>,
-
-        uuid: String,
-        unlock_after: Vec<String>,
-        shuffle: bool,
+        pub uuid: String,
+        pub unlock_after: Vec<String>,
+        pub shuffle: bool,
     }
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
 
     pub struct Alert {
-        title: String,
-        message: String,
-        start_offset: i32,
-        duration: i32,
-        times: Vec<Time>,
-        random: bool,
-        random_interval: i32,
-        sticky: bool,
-        sticky_label: String,
-        timeout: bool,
-        timeout_after: i32,
+        pub title: String,
+        pub message: String,
+        pub start_offset: i32,
+        pub duration: i32,
+        pub times: Vec<Time>,
+        pub random: bool,
+        pub random_interval: i32,
+        pub sticky: bool,
+        pub sticky_label: String,
+        pub timeout: bool,
+        pub timeout_after: i32,
     }
-    #[derive(Serialize, Deserialize, Debug)]
-
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Time {
-        hours: i8,
-        minutes: i8,
+        pub hours: i8,
+        pub minutes: i8,
     }
-    #[derive(Serialize, Deserialize, Debug)]
-
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Graph {
-        display: bool,
-        variable: Option<String>,
-        title: Option<String>,
-        blurb: Option<String>,
-        r#type: Option<String>,
-        max_points: Option<i32>,
+        pub display: bool,
+        pub variable: Option<String>,
+        pub title: Option<String>,
+        pub blurb: Option<String>,
+        pub r#type: Option<String>,
+        pub max_points: Option<i32>,
     }
-    #[derive(Serialize, Deserialize, Debug)]
-
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Section {
-        name: String,
-        shuffle: bool,
+        pub name: String,
+        pub shuffle: bool,
         pub questions: Vec<Question>,
     }
 
     #[derive(Serialize, Deserialize, Debug, PartialEq)]
     #[serde(tag = "type")]
     pub enum Question {
-        instruction {
+        #[serde(rename = "instruction")]
+        Instruction {
             id: String,
             text: String,
             required: bool,
             rand_group: Option<String>,
         },
-        text {
-            id: String,
-            text: String,
-            required: bool,
-            rand_group: Option<String>,
-            subtype: String,
-        },
-        datetime {
+        #[serde(rename = "text")]
+        Text {
             id: String,
             text: String,
             required: bool,
             rand_group: Option<String>,
             subtype: String,
         },
-        yesno {
+        #[serde(rename = "datetime")]
+        Datetime {
+            id: String,
+            text: String,
+            required: bool,
+            rand_group: Option<String>,
+            subtype: String,
+        },
+        #[serde(rename = "yesno")]
+        YesNo {
             id: String,
             text: String,
             required: bool,
@@ -115,10 +113,11 @@ pub mod structs {
             yes_text: String,
             no_text: String,
             hide_id: Option<String>,
-            hide_value: Option<bool>,
+            hide_value: Option<StringOrBool>,
             hide_if: Option<bool>,
         },
-        slider {
+        #[serde(rename = "slider")]
+        Slider {
             id: String,
             text: String,
             required: bool,
@@ -131,7 +130,8 @@ pub mod structs {
             hide_value: Option<String>,
             hide_if: Option<bool>,
         },
-        multi {
+        #[serde(rename = "multi")]
+        Multi {
             id: String,
             text: String,
             required: bool,
@@ -144,7 +144,8 @@ pub mod structs {
             hide_value: Option<String>,
             hide_if: Option<bool>,
         },
-        media {
+        #[serde(rename = "media")]
+        Media {
             id: String,
             text: String,
             required: bool,
@@ -154,92 +155,12 @@ pub mod structs {
             thumb: String,
         },
     }
-    // #[derive(Serialize, Deserialize, Debug, PartialEq)]
-    // pub struct Instruction {
-    //     id: String,
-    //     text: String,
-    //    // r#type: String, // always "instruction"
-    //     required: bool,
-    //     rand_group: Option<String>,
-    // }
-    // #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
-    // pub struct DateTime {
-    //     id: String,
-    //     text: String,
-    //   //  r#type: String, // always "datetime"
-    //     required: bool,
-    //     rand_group: Option<String>,
-    //     subtype: String,
-    // }
-    // #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
-    // pub struct Text {
-    //     id: String,
-    //     text: String,
-    //   //  r#type: String, // always "text"
-    //     required: bool,
-    //     rand_group: Option<String>,
-    //     subtype: String,
-    // }
-    // #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
-    // pub struct YesNo {
-    //     id: String,
-    //     text: String,
-    //   //  r#type: String, // always "yesno"
-    //     required: bool,
-    //     rand_group: Option<String>,
-    //     yes_text: String,
-    //     no_text: String,
-    //     hide_id: Option<String>,
-    //     hide_value: Option<bool>,
-    //     hide_if: Option<bool>,
-    // }
-    // #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
-    // pub struct Slider {
-    //     id: String,
-    //     text: String,
-    //     r#type: String, // always "slider"
-    //     required: bool,
-    //     rand_group: Option<String>,
-    //     min: i32,
-    //     max: i32,
-    //     hint_left: String,
-    //     hint_right: String,
-    //     hide_id: Option<String>,
-    //     hide_value: Option<String>, //  prefix with < or > => <50
-    //     hide_if: Option<bool>,
-    // }
-    // #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
-    // pub struct Multi {
-    //     id: String,
-    //     text: String,
-    //     r#type: String, // always "multi"
-    //     required: bool,
-    //     rand_group: Option<String>,
-    //     radio: bool,
-    //     modal: bool,
-    //     options: Vec<String>,
-    //     shuffle: bool,
-    //     hide_id: Option<String>,
-    //     hide_value: Option<String>,
-    //     hide_if: Option<bool>,
-    // }
-    // #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
-    // pub struct Media {
-    //     id: String,
-    //     text: String,
-    //     r#type: String, // always "media"
-    //     required: bool,
-    //     rand_group: Option<String>,
-    //     subtype: String,
-    //     src: String,
-    //     thumb: String,
-    // }
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum StringOrBool {
+        String(String),
+        Bool(bool),
+    }
 
     #[derive(Serialize, Deserialize, Debug)]
     pub enum Submission {
@@ -257,7 +178,6 @@ pub mod structs {
         alert_time: String,
     }
     #[derive(Serialize, Deserialize, Debug)]
-
     pub struct PVT {
         module_index: i32,
         module_name: String,
@@ -266,7 +186,7 @@ pub mod structs {
         response_time_in_ms: i32,
         alert_time: String,
     }
-    #[derive(Debug)]
+    #[derive(Debug, PartialEq)]
     pub enum ApplicationError {
         CommitError,
         CloneError,
@@ -285,7 +205,7 @@ pub mod structs {
         i32,
         String,
     }
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct Key {
         study_id: String,
         adi_key: String,
@@ -305,12 +225,14 @@ pub mod structs {
     }
     impl ResponseError for ApplicationError {
         fn error_response(&self) -> HttpResponse {
-            match self {
-                ApplicationError::StudyNotFound => HttpResponse::NotFound().body("Study not found"),
-                ApplicationError::StudyInvalid => HttpResponse::BadRequest().finish(),
-                ApplicationError::StudyNotConvertible => HttpResponse::BadRequest().finish(),
-                _ => HttpResponse::InternalServerError().finish(),
-            }
+            HttpResponse::BadRequest().body(format!("Error while handling the request: {}", self))
+            // match self {
+            //     ApplicationError::StudyNotFound => HttpResponse::NotFound()
+            //         .body(format!("Error while handling the request: {}", self)),
+            //     ApplicationError::StudyInvalid => HttpResponse::BadRequest().finish(),
+            //     ApplicationError::StudyNotConvertible => HttpResponse::BadRequest().finish(),
+            //     _ => HttpResponse::InternalServerError().finish(),
+            // }
         }
     }
 
