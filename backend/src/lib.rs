@@ -1,11 +1,17 @@
+mod git;
 mod redcap;
 mod structs;
 mod studies;
-use std::io::Read;
+use std::{collections::HashMap, io::Read};
 
-pub use crate::studies::studies::*;
-pub use crate::{redcap::redcap::import_response, structs::structs::*};
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+pub use crate::{
+    git::git::init_study_repository,
+    redcap::redcap::{import_response, Submission},
+    structs::structs::*,
+    studies::studies::*,
+};
+use actix_web::{get, post, web, HttpResponse, Responder};
+use std::fs;
 
 #[get("/api/v1/status")]
 async fn greet() -> impl Responder {
@@ -27,33 +33,50 @@ async fn fetch_study(study_id: web::Path<String>) -> impl Responder {
 #[get("/api/v1/studies")]
 async fn all_studies() -> Result<HttpResponse, ApplicationError> {
     let studies = get_studies()?;
-    let result = studies
-        .iter()
-        .filter_map(|study| to_string(study).ok())
-        .collect::<String>();
-    Ok(HttpResponse::Ok().body(result))
+    Ok(HttpResponse::Ok().json(studies))
 }
 
 #[post("/api/v1/study")]
 async fn create_study(study: web::Json<Study>) -> Result<HttpResponse, ApplicationError> {
     upload_study(study.0)?;
-    Ok(HttpResponse::Ok().body("Study uploaded"))
+    Ok(HttpResponse::Ok().body("study uploaded"))
 }
 
 #[post("/api/v1/response")]
-async fn save_response(data: web::Form<Submission>) -> impl Responder {
-    import_response(data.into_inner());
-    "OK"
+async fn save_response(data: web::Form<Submission>, keys: web::Data<AppState>) -> impl Responder {
+    match import_response(data.0, keys.keys.lock().unwrap().clone()).await {
+        Ok(_) => HttpResponse::Ok().body("Response saved"),
+        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+    }
 }
 
 #[post("/api/v1/key")]
-async fn save_key(data: web::Json<Key>) -> impl Responder {
-    import_key(data.into_inner());
-    "Success"
+async fn save_key(
+    key: web::Json<Key>,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, ApplicationError> {
+    let api_key = key.0.api_key.clone();
+    let study_id = key.0.study_id.clone();
+    data.keys.lock().unwrap().push(key.0);
+    println!("{:#?}", data.keys.lock().unwrap());
+    let file = fs::read_to_string("keys.json")?;
+    let mut json: Vec<Key> = serde_json::from_str(&file)?;
+    json.push(Key { study_id, api_key });
+    fs::write("keys.json", serde_json::to_string_pretty(&json)?)?;
+    Ok(HttpResponse::Ok().body("Key saved"))
 }
+pub async fn missing_route() -> impl Responder {
+    HttpResponse::NotFound().body(
+        "There is nothing here.
 
-fn import_key(key: Key) {
-    println!("{:?}", key);
+Available Routes: 
+    /api/v1/status
+    /api/v1/study/{study_id}
+    /api/v1/studies
+    /api/v1/response
+    /api/v1/key
+    ",
+    )
 }
 
 pub fn init_api_keys() -> Vec<Key> {
