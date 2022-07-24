@@ -11,9 +11,7 @@ import ToC from "./ToC";
 import "./App.css";
 import React from "react";
 
-const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3001/api";
-const REDCAP_IMPORTER_URL =
-  process.env.NODE_ENV === "production" ? "/redcap" : "http://localhost:5000/redcap";
+const API_URL = process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
 
 const Container = styled.div`
   margin: 100px;
@@ -76,9 +74,9 @@ function App() {
   }, [form]);
 
   useEffect(() => {
-    fetch(BASE_URL + "/latest")
+    fetch(API_URL + "/studies")
       .then((res) => res.json())
-      .then((data) => setLatest(data.studies))
+      .then((data) => setLatest(data))
       .catch((err) => toast.error("Download latest studies failed: " + String(err)));
   }, []);
 
@@ -147,7 +145,7 @@ function App() {
       const password = prompt(
         "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
       );
-      const postURL = BASE_URL + "/surveys";
+      const postURL = API_URL + "/study";
       const response = await fetch(postURL, {
         method: "POST",
         body: data,
@@ -156,22 +154,24 @@ function App() {
           Authorization: password || "MomenTUM",
         },
       });
-      const json = await response.json();
-      console.log(json);
-      if (json.status === "ok") {
+      if (response.status === 200) {
         // @ts-ignore
-        toast.success("Uploaded survey with id " + json.uuid + " to \n " + json.uri, {
-          duration: 20000,
-        });
+        toast.success(
+          "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
+            form.properties.study_id,
+          {
+            duration: 20000,
+          }
+        );
       } else {
         // @ts-ignore
-        toast.error("Error: " + json.message);
+        toast.error("Error: " + response.statusText);
       }
     }
   }
 
   async function download() {
-    const uri = BASE_URL + "/surveys/" + prompt("Enter the uuid of the survey");
+    const uri = API_URL + "/study/" + prompt("Enter the uuid of the survey");
     if (!uri) {
       toast.error("No download link provided");
       return;
@@ -202,7 +202,7 @@ function App() {
 
   async function createProject() {
     try {
-      const response = await fetch(REDCAP_IMPORTER_URL + "/create", {
+      const response = await fetch(API_URL + "/create", {
         method: "POST",
         body: JSON.stringify(form),
       });
@@ -219,13 +219,15 @@ function App() {
       const study_id = prompt("Enter the study id");
       const api_key = prompt("Enter the API key");
 
-      const response = await fetch(REDCAP_IMPORTER_URL + "/add", {
+      const response = await fetch(API_URL + "/key", {
         method: "POST",
         body: JSON.stringify({ study_id, api_key }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      const json = await response.json();
-      console.log(json);
-      toast(json.message);
+      const text = await response.text();
+      toast(text);
     } catch (err) {
       toast.error(String(err));
     }
@@ -254,17 +256,16 @@ function App() {
   return (
     <Container>
       <h1>Welcome to the MomenTUM Survey Generator!</h1>
-
       <Button onClick={save}>Save JSON file</Button>
       <Button onClick={load}>Load JSON file</Button>
       <Button onClick={() => form && upload(form)}>Upload JSON file</Button>
       <Button onClick={download}>Download JSON file</Button>
       <Button onClick={generateDictionary}>Generate RedCap Dictionary</Button>
-      <Button onClick={createProject}>Create project in RedCap</Button>
+      {/* <Button onClick={createProject}>Create project in RedCap</Button> */}
       <Button onClick={addApiKey}>Add API key</Button>
       <Button onClick={validate}>Validate</Button>
       <Button>
-        <a className="github" href="https://github.com/TUMChronobiology/momenTUM-json-maker">
+        <a className="github" href="https://github.com/TUMChronobiology/studies">
           Github
         </a>{" "}
       </Button>
@@ -282,10 +283,8 @@ function App() {
       <br />
       <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
       <label htmlFor="validate"> Live Validation?</label>
-
       <br />
       {form && <ToC form={form} />}
-
       <FormComponent
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
         onSubmit={(e) => form && upload(form)}
