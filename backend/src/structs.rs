@@ -5,7 +5,7 @@ pub mod structs {
         ResponseError,
     };
     use serde::{Deserialize, Serialize};
-    use std::{fmt::Display, iter::Map};
+    use std::{fmt::Display, sync::Mutex};
 
     #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Study {
@@ -162,30 +162,6 @@ pub mod structs {
         Bool(bool),
     }
 
-    #[derive(Serialize, Deserialize, Debug)]
-    pub enum Submission {
-        Regular,
-        PVT,
-    }
-    // #[derive(Serialize, Deserialize)]
-
-    pub struct Regular {
-        module_index: i32,
-        module_name: String,
-        responses: Map<String, Response>, // TODO: make this a map of question_id to response
-        response_time: String,
-        response_time_in_ms: i32,
-        alert_time: String,
-    }
-    #[derive(Serialize, Deserialize, Debug)]
-    pub struct PVT {
-        module_index: i32,
-        module_name: String,
-        entries: Vec<i8>,
-        response_time: String,
-        response_time_in_ms: i32,
-        alert_time: String,
-    }
     #[derive(Debug, PartialEq)]
     pub enum ApplicationError {
         CommitError,
@@ -194,21 +170,25 @@ pub mod structs {
         PushError,
         AddError,
         StudyNotFound,
-        StudyInvalid,
+        StudyInvalid(String),
         StudyNotSaved,
         StudiesNotFound,
         StudyNotConvertible,
-        // RedcapError,
+
+        NoCorrespondingAPIKey,
+        NoEntriesOrResponses,
+        RedcapAuthenicationError,
+        RedcapError(String), // RedcapError,
     }
 
-    pub enum Response {
-        i32,
-        String,
-    }
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct Key {
-        study_id: String,
-        adi_key: String,
+        pub study_id: String,
+        pub api_key: String,
+    }
+
+    pub struct AppState {
+        pub keys: Mutex<Vec<Key>>,
     }
 
     impl Responder for Study {
@@ -226,13 +206,6 @@ pub mod structs {
     impl ResponseError for ApplicationError {
         fn error_response(&self) -> HttpResponse {
             HttpResponse::BadRequest().body(format!("Error while handling the request: {}", self))
-            // match self {
-            //     ApplicationError::StudyNotFound => HttpResponse::NotFound()
-            //         .body(format!("Error while handling the request: {}", self)),
-            //     ApplicationError::StudyInvalid => HttpResponse::BadRequest().finish(),
-            //     ApplicationError::StudyNotConvertible => HttpResponse::BadRequest().finish(),
-            //     _ => HttpResponse::InternalServerError().finish(),
-            // }
         }
     }
 
@@ -257,8 +230,8 @@ pub mod structs {
                 ApplicationError::StudyNotFound => {
                     write!(f, "Study not found")
                 }
-                ApplicationError::StudyInvalid => {
-                    write!(f, "Study invalid")
+                ApplicationError::StudyInvalid(e) => {
+                    write!(f, "Study invalid: {}", e)
                 }
                 ApplicationError::StudyNotSaved => {
                     write!(f, "Study not saved")
@@ -268,6 +241,22 @@ pub mod structs {
                 }
                 ApplicationError::StudyNotConvertible => {
                     write!(f, "Study not convertible to json")
+                }
+                ApplicationError::NoCorrespondingAPIKey => {
+                    write!(f, "No corresponding API key found")
+                }
+
+                ApplicationError::NoEntriesOrResponses => {
+                    write!(
+                        f,
+                        "No entries or responses found. Must contain any of the two."
+                    )
+                }
+                ApplicationError::RedcapAuthenicationError => {
+                    write!(f, "Redcap authentication error. Is the API key correct?")
+                }
+                ApplicationError::RedcapError(e) => {
+                    write!(f, "Redcap error: {}", e)
                 }
             }
         }
@@ -288,7 +277,7 @@ pub mod structs {
         fn from(e: serde_json::Error) -> Self {
             match e {
                 // Add more
-                _ => ApplicationError::StudyInvalid,
+                _ => ApplicationError::StudyInvalid(e.to_string()),
             }
         }
     }
