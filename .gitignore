@@ -46,6 +46,6 @@ package-lock.json
 
 # Added by cargo
 
-/target
 /backend/studies
 /backend/target
+/backend/keys.json
