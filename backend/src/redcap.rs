@@ -10,7 +10,7 @@ pub mod redcap {
     #[derive(Debug, Serialize, Deserialize, Clone)]
     #[serde(untagged)]
     enum Response {
-        Integer(i32),
+        Integer(i64),
         Text(String),
         Entries(Vec<i8>),
     }
@@ -26,7 +26,7 @@ pub mod redcap {
         pub responses: Option<String>, // JSON of type HashMap<String, Response>
         pub entries: Option<Vec<i8>>,
         pub response_time: String,
-        pub response_time_in_ms: i32,
+        pub response_time_in_ms: i64,
         pub alert_time: String,
         pub platform: String,
     }
