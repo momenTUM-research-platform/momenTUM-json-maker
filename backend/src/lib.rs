@@ -11,7 +11,7 @@ pub use crate::{
     studies::studies::*,
 };
 use actix_multipart_extract::Multipart;
-use actix_web::{get, post, web, HttpResponse, Responder};
+use actix_web::{get, post, route, web, HttpResponse, Responder};
 use std::fs;
 
 #[get("/api/v1/status")]
@@ -19,7 +19,7 @@ async fn greet() -> impl Responder {
     format!("The V1 API is live!")
 }
 
-#[get("/api/v1/study/{study_id}")]
+#[route("/api/v1/study/{study_id}", method = "GET", method = "POST")]
 async fn fetch_study(study_id: web::Path<String>) -> impl Responder {
     let mut study_id = study_id.into_inner();
     if study_id.ends_with(".json") {
