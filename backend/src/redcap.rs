@@ -2,7 +2,7 @@ pub mod redcap {
     use std::collections::HashMap;
 
     use serde::{Deserialize, Serialize};
-    use serde_json::json;
+    use std::fs;
 
     use crate::{structs::structs::ApplicationError, Key};
 
@@ -28,7 +28,7 @@ pub mod redcap {
         alert_time: String,
         platform: String,
     }
-    #[derive(Serialize, Debug)]
+    #[derive(Serialize, Debug, Deserialize, Clone)]
     struct Payload {
         token: String,
         content: String,
@@ -109,6 +109,11 @@ pub mod redcap {
             data: serde_json::to_string(&vec![record]).unwrap(),
         };
         println!("{:#?}", payload);
+
+        let file = fs::read_to_string("payload.json")?;
+        let mut json: Vec<Payload> = serde_json::from_str(&file)?;
+        json.push(payload.clone());
+        fs::write("payload.json", serde_json::to_string_pretty(&json)?)?;
 
         let response = reqwest::Client::new()
             .post(REDCAP_API_URL)
