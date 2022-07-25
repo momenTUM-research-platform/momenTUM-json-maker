@@ -49,3 +49,4 @@ package-lock.json
 /backend/studies
 /backend/target
 /backend/keys.json
+/backend/payload.json

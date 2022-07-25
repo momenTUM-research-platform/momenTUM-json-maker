@@ -19,7 +19,7 @@ services:
     restart: on-failure
     build: ./frontend
     ports:
-      - "8080:3000"
+      - "8008:3000"
     networks:
       - generator_network
   api:
@@ -46,6 +46,9 @@ services:
       - "8000:8000"
     networks:
       - generator_network
+    volumes:
+      - ./backend:/usr/src/backend
+      - ./ssh:/root/.ssh
 
 networks:
   generator_network:
