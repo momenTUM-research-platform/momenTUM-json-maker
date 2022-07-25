@@ -136,14 +136,18 @@ pub mod redcap {
                     );
                     Ok(())
                 } else if response.status() == reqwest::StatusCode::FORBIDDEN {
+                    println!("Forbidden: {:#?}", response.text().await.unwrap());
                     Err(ApplicationError::RedcapAuthenicationError)
                 } else {
-                    Err(ApplicationError::RedcapError(
-                        response.text().await.unwrap(),
-                    ))
+                    let content = response.text().await.unwrap();
+                    println!("Error: {:#?}", content);
+                    Err(ApplicationError::RedcapError(content))
                 }
             }
-            Err(e) => Err(ApplicationError::RedcapError(e.to_string())),
+            Err(e) => {
+                println!("Error: {:#?}", e);
+                Err(ApplicationError::RedcapError(e.to_string()))
+            }
         }
     }
 }

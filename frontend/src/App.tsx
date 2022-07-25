@@ -157,7 +157,7 @@ function App() {
       if (response.status === 200) {
         // @ts-ignore
         toast.success(
-          "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
+          "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/study/" +
             form.properties.study_id,
           {
             duration: 20000,

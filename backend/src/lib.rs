@@ -2,7 +2,7 @@ mod git;
 mod redcap;
 mod structs;
 mod studies;
-use std::{collections::HashMap, io::Read};
+use std::io::Read;
 
 pub use crate::{
     git::git::init_study_repository,
