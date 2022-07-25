@@ -22,13 +22,21 @@ pub mod redcap {
         pub user_id: String,
         pub study_id: String,
         pub module_index: i32,
-        pub module_name: String,
+        pub platform: String,
+
+        // Survey Response
+        pub module_name: Option<String>,
         pub responses: Option<String>, // JSON of type HashMap<String, Response>
         pub entries: Option<Vec<i8>>,
-        pub response_time: String,
-        pub response_time_in_ms: i64,
-        pub alert_time: String,
-        pub platform: String,
+        pub response_time: Option<String>,
+        pub response_time_in_ms: Option<i64>,
+        pub alert_time: Option<String>,
+
+        // Log
+        pub page: Option<String>,
+        pub event: Option<String>,
+        pub timestamp: Option<String>,
+        pub timestamp_in_ms: Option<i64>,
     }
     #[derive(Serialize, Debug, Deserialize, Clone)]
     struct Payload {
@@ -59,6 +67,10 @@ pub mod redcap {
         data: Multipart<Submission>,
         keys: Vec<Key>,
     ) -> Result<(), ApplicationError> {
+        if data.event.is_some() {
+            // Log handling
+            return Ok(());
+        }
         let key = keys.iter().find(|k| k.study_id == data.study_id);
         if key.is_none() {
             return Err(ApplicationError::NoCorrespondingAPIKey);
@@ -70,7 +82,7 @@ pub mod redcap {
         let mut record: HashMap<String, Response> = HashMap::from([
             (
                 "redcap_repeat_instrument".to_string(),
-                Response::Text(data.module_name.clone()),
+                Response::Text(data.module_name.as_ref().unwrap().clone()),
             ),
             (
                 "redcap_repeat_instance".to_string(),
@@ -84,11 +96,11 @@ pub mod redcap {
             // ("study_id", Response::Text(data.study_id)),
             (
                 format!("response_time_in_ms_{}", &data.module_index),
-                Response::Integer(data.response_time_in_ms),
+                Response::Integer(data.response_time_in_ms.unwrap()),
             ),
             (
                 format!("response_time_{}", &data.module_index),
-                Response::Text(data.response_time.clone()),
+                Response::Text(data.response_time.as_ref().unwrap().clone()),
             ),
         ]);
 
