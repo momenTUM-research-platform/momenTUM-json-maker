@@ -1,6 +1,7 @@
 pub mod redcap {
     use std::collections::HashMap;
 
+    use actix_multipart_extract::{Multipart, MultipartForm};
     use serde::{Deserialize, Serialize};
     use std::fs;
 
@@ -14,19 +15,20 @@ pub mod redcap {
         Entries(Vec<i8>),
     }
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, MultipartForm)]
     pub struct Submission {
-        data_type: String,
-        user_id: String,
-        study_id: String,
-        module_index: i32,
-        module_name: String,
-        responses: Option<String>, // JSON of type HashMap<String, Response>
-        entries: Option<Vec<i8>>,
-        response_time: String,
-        response_time_in_ms: i32,
-        alert_time: String,
-        platform: String,
+        #[multipart(max_size = 5MB)]
+        pub data_type: String,
+        pub user_id: String,
+        pub study_id: String,
+        pub module_index: i32,
+        pub module_name: String,
+        pub responses: Option<String>, // JSON of type HashMap<String, Response>
+        pub entries: Option<Vec<i8>>,
+        pub response_time: String,
+        pub response_time_in_ms: i32,
+        pub alert_time: String,
+        pub platform: String,
     }
     #[derive(Serialize, Debug, Deserialize, Clone)]
     struct Payload {
@@ -53,7 +55,10 @@ pub mod redcap {
 
     const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
 
-    pub async fn import_response(data: Submission, keys: Vec<Key>) -> Result<(), ApplicationError> {
+    pub async fn import_response(
+        data: Multipart<Submission>,
+        keys: Vec<Key>,
+    ) -> Result<(), ApplicationError> {
         let key = keys.iter().find(|k| k.study_id == data.study_id);
         if key.is_none() {
             return Err(ApplicationError::NoCorrespondingAPIKey);
@@ -65,7 +70,7 @@ pub mod redcap {
         let mut record: HashMap<String, Response> = HashMap::from([
             (
                 "redcap_repeat_instrument".to_string(),
-                Response::Text(data.module_name),
+                Response::Text(data.module_name.clone()),
             ),
             (
                 "redcap_repeat_instance".to_string(),
@@ -83,7 +88,7 @@ pub mod redcap {
             ),
             (
                 format!("response_time_{}", &data.module_index),
-                Response::Text(data.response_time),
+                Response::Text(data.response_time.clone()),
             ),
         ]);
 
@@ -96,7 +101,7 @@ pub mod redcap {
             println!("{:#?}", record);
         };
 
-        if let Some(entries) = data.entries {
+        if let Some(entries) = data.entries.clone() {
             record.insert("entries".to_string(), Response::Entries(entries));
         };
 

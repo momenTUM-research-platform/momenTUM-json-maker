@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "token": "8E8234997AD5F7376C848F272BB45589",
+    "content": "record",
+    "format": "json",
+    "type": "flat",
+    "data": "[{\"record_id\":\"user\",\"redcap_repeat_instance\":\"new\",\"sleep_quality_2_1\":\"even later\",\"response_time_in_ms_1\":1658737489,\"sleep_quality_1\":\"3pm\",\"redcap_repeat_instrument\":\"alternative\",\"response_time_1\":\"2022-07-25T08:24:48.611Z\"}]"
+  }
+]

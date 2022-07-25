@@ -10,6 +10,7 @@ pub use crate::{
     structs::structs::*,
     studies::studies::*,
 };
+use actix_multipart_extract::Multipart;
 use actix_web::{get, post, web, HttpResponse, Responder};
 use std::fs;
 
@@ -42,9 +43,18 @@ async fn create_study(study: web::Json<Study>) -> Result<HttpResponse, Applicati
     Ok(HttpResponse::Ok().body("study uploaded"))
 }
 
+// #[post("/api/v1/response")]
+// async fn save_response(data: web::Form<Submission>, keys: web::Data<AppState>) -> impl Responder {
+//     match import_response(data.0, keys.keys.lock().unwrap().clone()).await {
+//         Ok(_) => HttpResponse::Ok().body("Response saved"),
+//         Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+//     }
+// }
+
 #[post("/api/v1/response")]
-async fn save_response(data: web::Form<Submission>, keys: web::Data<AppState>) -> impl Responder {
-    match import_response(data.0, keys.keys.lock().unwrap().clone()).await {
+async fn save_response(data: Multipart<Submission>, keys: web::Data<AppState>) -> impl Responder {
+    println!("{:#?}", data.study_id);
+    match import_response(data, keys.keys.lock().unwrap().clone()).await {
         Ok(_) => HttpResponse::Ok().body("Response saved"),
         Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
     }
