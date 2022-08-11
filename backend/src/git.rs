@@ -1,7 +1,9 @@
 pub mod git {
 
     use crate::structs::structs::*;
+    use fancy_regex::Regex;
     use std::fs;
+    use std::iter::zip;
     use std::process::Command;
 
     pub fn init_study_repository() -> () {
@@ -96,6 +98,79 @@ pub mod git {
                 }
             }
             Err(_) => Err(ApplicationError::PushError),
+        }
+    }
+
+    pub fn checkout(commit: &String) -> Result<(), ApplicationError> {
+        let result = Command::new("git")
+            .args(["-C", "studies", "checkout", commit.as_str()])
+            .output();
+        match result {
+            Ok(result) => {
+                if result.status.success() {
+                    println!("{}", String::from_utf8_lossy(&result.stdout));
+                    Ok(())
+                } else {
+                    println!("{}", String::from_utf8_lossy(&result.stderr));
+                    Err(ApplicationError::CheckoutError(
+                        commit.to_string(),
+                        String::from_utf8_lossy(&result.stderr).to_string(),
+                    ))
+                }
+            }
+            Err(_) => Err(ApplicationError::CheckoutError(
+                commit.to_string(),
+                "Unknown error".to_string(),
+            )),
+        }
+    }
+    // if git ever changes its log syntax, this will break
+    pub fn generate_metadata(study_id: &str) -> Result<Metadata, ApplicationError> {
+        let result = Command::new("git")
+            .args(["-C", "studies", "log", &(study_id.to_string() + ".json")])
+            .output();
+
+        match result {
+            Ok(result) => {
+                if result.status.success() {
+                    let output = String::from_utf8_lossy(&result.stdout);
+                    let hash_regex = Regex::new(r"(?<=commit )(.*)(?=\n)").unwrap();
+                    let date_regex = Regex::new(r"(?<=Date:   )(.*)(?=\n)").unwrap();
+                    let hashes = hash_regex.captures_iter(&output);
+                    let dates = date_regex.captures_iter(&output);
+                    // println!(
+                    //     "{:#?}",
+                    //     hashes.next().unwrap().unwrap().get(1).unwrap().as_str()
+                    // );
+                    // println!(
+                    //     "{:#?}",
+                    //     dates.next().unwrap().unwrap().get(1).unwrap().as_str()
+                    // );
+
+                    let metadata = Metadata {
+                        url: String::from(
+                            "https://tuspl22-momentum.srv.mwn.de/api/v1/study/".to_string()
+                                + study_id,
+                        ),
+                        commits: zip(hashes, dates)
+                            .map(|(hash, date)| Commit {
+                                id: hash.unwrap().get(0).unwrap().as_str().to_string(),
+                                timestamp: chrono::prelude::DateTime::parse_from_str(
+                                    date.unwrap().get(0).unwrap().as_str(),
+                                    "%a %b %e %T %Y %z",
+                                )
+                                .unwrap()
+                                .timestamp(),
+                            })
+                            .collect(),
+                    };
+                    Ok(metadata)
+                } else {
+                    println!("{}", String::from_utf8_lossy(&result.stderr));
+                    Err(ApplicationError::GenerateMetadataError)
+                }
+            }
+            Err(_) => Err(ApplicationError::GenerateMetadataError),
         }
     }
 }

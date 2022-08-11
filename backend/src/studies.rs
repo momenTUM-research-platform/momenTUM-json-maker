@@ -15,12 +15,26 @@ pub mod studies {
         Ok(study)
     }
 
-    pub fn get_study(study_id: String) -> Result<Study, ApplicationError> {
+    pub fn get_study(study_id: &String) -> Result<Study, ApplicationError> {
         println!("Retrieving study {}", study_id);
         let study_path = format!("studies/{}.json", study_id);
         let study_file = fs::read_to_string(study_path)?;
-        let study = to_study(study_file)?;
+        let mut study = to_study(study_file)?;
+        study.metadata = Some(generate_metadata(&study_id)?);
+        Ok(study)
+    }
 
+    pub fn get_study_by_commit(
+        study_id: &String,
+        commit: &String,
+    ) -> Result<Study, ApplicationError> {
+        checkout(commit)?;
+        println!("Retrieving study {}", study_id);
+        let study_path = format!("studies/{}.json", study_id);
+        let study_file = fs::read_to_string(study_path)?;
+        let mut study = to_study(study_file)?;
+        study.metadata = Some(generate_metadata(&study_id)?);
+        checkout(&"main".to_string())?;
         Ok(study)
     }
 
@@ -64,7 +78,7 @@ pub mod studies {
     //     Ok(result)
     // }
 
-    pub fn upload_study(study: Study) -> Result<(), ApplicationError> {
+    pub fn upload_study(study: Study) -> Result<Metadata, ApplicationError> {
         println!("Uploading study {}", &study.properties.study_id);
         let study_id = &study.properties.study_id;
         let contents = to_string(&study)?;
@@ -75,7 +89,8 @@ pub mod studies {
                 add_study(study_id)?;
                 commit_study(study_id)?;
                 push_study()?;
-                Ok(())
+                let metadata = generate_metadata(study_id)?;
+                Ok(metadata)
             }
             _ => Err(ApplicationError::StudyNotSaved),
         }

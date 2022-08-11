@@ -781,8 +781,8 @@
                 "$id": "#/properties/modules/items/properties/alerts/properties/duration",
                 "type": "integer",
                 "title": "Duration",
-                "description": "Indicates the number of consecutive days that the module should be scheduled to display.",
-                "default": 0,
+                "description": "Indicates the number of consecutive days that the module should be scheduled to display. If 0, the module will not be shown.",
+                "default": 1,
                 "examples": [
                   1
                 ]

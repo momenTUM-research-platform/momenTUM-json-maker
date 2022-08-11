@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
 use actix_cors::Cors;
-use actix_web::{web, App, HttpServer};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use api::*;
 
 #[actix_web::main]
@@ -16,8 +16,10 @@ async fn main() -> std::io::Result<()> {
         let cors = Cors::permissive();
         App::new()
             .wrap(cors)
+            .wrap(Logger::default())
             .app_data(app_data.clone())
             .service(greet)
+            .service(fetch_study_by_commit)
             .service(fetch_study)
             .service(all_studies)
             .service(create_study)

@@ -5,7 +5,7 @@ mod studies;
 use std::io::Read;
 
 pub use crate::{
-    git::git::init_study_repository,
+    git::git::{generate_metadata, init_study_repository},
     redcap::redcap::{import_response, Submission},
     structs::structs::*,
     studies::studies::*,
@@ -19,6 +19,17 @@ async fn greet() -> impl Responder {
     format!("The V1 API is live!")
 }
 
+#[get("/api/v1/study/{study_id}/{commit}")]
+async fn fetch_study_by_commit(params: web::Path<(String, String)>) -> impl Responder {
+    let (mut study_id, commit) = params.into_inner();
+    if study_id.ends_with(".json") {
+        study_id = study_id.replace(".json", "");
+    }
+    let result = get_study_by_commit(&study_id, &commit);
+    println!("Retrieved study: {study_id} at commit {commit}");
+    result
+}
+
 #[route("/api/v1/study/{study_id}", method = "GET", method = "POST")]
 async fn fetch_study(study_id: web::Path<String>) -> impl Responder {
     let mut study_id = study_id.into_inner();
@@ -26,8 +37,8 @@ async fn fetch_study(study_id: web::Path<String>) -> impl Responder {
         study_id = study_id.replace(".json", "");
     }
 
-    let result = get_study(study_id);
-    println!("Result: {:#?} ", result);
+    let result = get_study(&study_id);
+    println!("Retrieved study: {}", study_id);
     result
 }
 
@@ -38,28 +49,19 @@ async fn all_studies() -> Result<HttpResponse, ApplicationError> {
 }
 
 #[post("/api/v1/study")]
-async fn create_study(study: web::Json<Study>) -> Result<HttpResponse, ApplicationError> {
-    upload_study(study.0)?;
-    Ok(HttpResponse::Ok().body("study uploaded"))
+async fn create_study(study: web::Json<Study>) -> impl Responder {
+    upload_study(study.0)
 }
-
-// #[post("/api/v1/response")]
-// async fn save_response(data: web::Form<Submission>, keys: web::Data<AppState>) -> impl Responder {
-//     match import_response(data.0, keys.keys.lock().unwrap().clone()).await {
-//         Ok(_) => HttpResponse::Ok().body("Response saved"),
-//         Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
-//     }
-// }
 
 #[post("/api/v1/response")]
 async fn save_response(data: Multipart<Submission>, keys: web::Data<AppState>) -> impl Responder {
     println!("{:#?}", data.study_id);
     match import_response(data, keys.keys.lock().unwrap().clone()).await {
         Ok(_) => HttpResponse::Ok().body("Response saved"),
-        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+        Err(e) => HttpResponse::Unauthorized().body(e.to_string()),
     }
 }
-
+// TODO rewrite to hashmap
 #[post("/api/v1/key")]
 async fn save_key(
     key: web::Json<Key>,
@@ -68,7 +70,6 @@ async fn save_key(
     let api_key = key.0.api_key.clone();
     let study_id = key.0.study_id.clone();
     data.keys.lock().unwrap().push(key.0);
-    println!("{:#?}", data.keys.lock().unwrap());
     let file = fs::read_to_string("keys.json")?;
     let mut json: Vec<Key> = serde_json::from_str(&file)?;
     json.push(Key { study_id, api_key });
@@ -99,19 +100,3 @@ pub fn init_api_keys() -> Vec<Key> {
         .expect("Unable to parse keys.json. Is the file in the right format?");
     keys
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use actix_web::{
-//         http::{self},
-//         test,
-//     };
-
-//     #[actix_web::test]
-//     async fn test_greet() {
-//         let req = test::TestRequest::default().to_http_request();
-//         let res = index().await();
-//         assert_eq!(res.status(), http::StatusCode::OK);
-//     }
-// }

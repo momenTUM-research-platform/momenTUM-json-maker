@@ -11,6 +11,19 @@ pub mod structs {
     pub struct Study {
         pub properties: Properties,
         pub modules: Vec<Module>,
+        pub metadata: Option<Metadata>,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    pub struct Metadata {
+        pub commits: Vec<Commit>,
+        pub url: String,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    pub struct Commit {
+        pub id: String,
+        pub timestamp: i64,
     }
     #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Properties {
@@ -169,8 +182,10 @@ pub mod structs {
         PullError,
         PushError,
         AddError,
+        CheckoutError(String, String),
         StudyNotFound,
         StudyInvalid(String),
+        GenerateMetadataError,
         StudyNotSaved,
         StudiesNotFound,
         StudyNotConvertible,
@@ -203,6 +218,20 @@ pub mod structs {
                 .body(body)
         }
     }
+
+    impl Responder for Metadata {
+        type Body = BoxBody;
+
+        fn respond_to(self, _req: &HttpRequest) -> HttpResponse<Self::Body> {
+            let body = serde_json::to_string(&self).unwrap();
+
+            // Create response and set content type
+            HttpResponse::Ok()
+                .content_type(ContentType::json())
+                .body(body)
+        }
+    }
+
     impl ResponseError for ApplicationError {
         fn error_response(&self) -> HttpResponse {
             HttpResponse::BadRequest().body(format!("Error while handling the request: {}", self))
@@ -226,6 +255,15 @@ pub mod structs {
                 }
                 ApplicationError::AddError => {
                     write!(f, "Could not add study to repository")
+                }
+                ApplicationError::CheckoutError(commit, error) => {
+                    write!(
+                        f,
+                        "Could not checkout commit {commit}. \n \nDetails: {error}",
+                    )
+                }
+                ApplicationError::GenerateMetadataError => {
+                    write!(f, "Could not generate metadata")
                 }
                 ApplicationError::StudyNotFound => {
                     write!(f, "Study not found")

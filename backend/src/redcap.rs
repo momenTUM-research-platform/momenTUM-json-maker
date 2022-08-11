@@ -68,6 +68,15 @@ pub mod redcap {
         keys: Vec<Key>,
     ) -> Result<(), ApplicationError> {
         if data.event.is_some() {
+            println!(
+                "Received log entry at {} from {} on page {} with event {}",
+                data.timestamp
+                    .as_ref()
+                    .unwrap_or(&"unknown time".to_string()),
+                data.user_id,
+                data.page.as_ref().unwrap_or(&"unknown page".to_string()),
+                data.event.as_ref().unwrap_or(&"unknown event".to_string()),
+            );
             // Log handling
             return Ok(());
         }
@@ -82,7 +91,12 @@ pub mod redcap {
         let mut record: HashMap<String, Response> = HashMap::from([
             (
                 "redcap_repeat_instrument".to_string(),
-                Response::Text(data.module_name.as_ref().unwrap().clone()),
+                Response::Text(
+                    data.module_name
+                        .as_ref()
+                        .unwrap_or(&"unknown_module".to_string())
+                        .clone(),
+                ),
             ),
             (
                 "redcap_repeat_instance".to_string(),
@@ -96,11 +110,16 @@ pub mod redcap {
             // ("study_id", Response::Text(data.study_id)),
             (
                 format!("response_time_in_ms_{}", &data.module_index),
-                Response::Integer(data.response_time_in_ms.unwrap()),
+                Response::Integer(data.response_time_in_ms.unwrap_or(0)),
             ),
             (
                 format!("response_time_{}", &data.module_index),
-                Response::Text(data.response_time.as_ref().unwrap().clone()),
+                Response::Text(
+                    data.response_time
+                        .as_ref()
+                        .unwrap_or(&"unknown time".to_string())
+                        .clone(),
+                ),
             ),
         ]);
 

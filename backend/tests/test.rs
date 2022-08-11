@@ -2,6 +2,59 @@ use std::fs;
 
 use api::*;
 use api::Question::{Instruction, Datetime, Media, Multi, Text,YesNo, Slider};
+use api::generate_metadata;
+
+#[test] 
+fn create_metadata() {
+    let result = generate_metadata(&"demo".to_string());
+    assert!(result.is_ok());
+    let result = result.unwrap();
+    assert_eq!(result.url , "https://tuspl22-momentum.srv.mwn.de/api/v1/study/demo".to_string());
+    assert_eq!(result.commits , vec![Commit {
+        id: "386ba053953914f9ea66961c21ffa12b5f346429".to_string(), timestamp: 1658490810 
+    }]);
+}
+
+#[test] 
+fn create_metadata_for_multiple_commits() {
+    let result = generate_metadata(&"mpi_melatonin_validation_2022".to_string());
+    assert!(result.is_ok());
+    let result = result.unwrap();
+    assert_eq!(result.url , "https://tuspl22-momentum.srv.mwn.de/api/v1/study/mpi_melatonin_validation_2022".to_string());
+    assert_eq!(result.commits , vec![
+        Commit {
+            id: "1c079564401db3040e7b99f39d68c4f3443988af".to_string(),
+            timestamp: 1658754032,
+        },
+        Commit {
+            id: "7635e5cb10129a2893fd91b8f703247ec38eaaa1".to_string(),
+            timestamp: 1658753643,
+        },
+        Commit {
+            id: "77aac52a90b35ea376d97784e1d0f06c03f55f67".to_string(),
+            timestamp: 1658749876,
+        },
+        Commit {
+            id: "d4749bbe428ff560c3c65339d74df615ddbd24bf".to_string(),
+            timestamp: 1658749413,
+        },
+        Commit {
+            id: "fee6eb4863f7944128a6d121e33fb987ad564e47".to_string(),
+            timestamp: 1658749291,
+        },
+        Commit {
+            id: "447503a37759146274ea0c10d786e892ad4a7d6e".to_string(),
+            timestamp: 1658749021,
+        },
+        Commit {
+            id: "3805c40c7749571ff08e54137feec9d6bfdbe323".to_string(),
+            timestamp: 1658745638,
+        },
+        Commit {
+            id: "91ce65cf82695e5926cd9b59b818867442487c08".to_string(),
+            timestamp: 1658738422,
+        },
+    ],);}
 
 #[test]
 fn it_works() {
@@ -16,6 +69,12 @@ fn test_testing() {
 #[test]
 fn test_get_study() {
     let study = Study {
+        metadata : Some(Metadata {
+            commits:vec![Commit {
+                id: "386ba053953914f9ea66961c21ffa12b5f346429".to_string(), timestamp: 1658490810 
+            }],
+            url: "https://tuspl22-momentum.srv.mwn.de/api/v1/study/demo.json".to_string(),
+        }),
         properties: Properties {
             study_id: "3ZDOGAH".to_string(),
             study_name: "Demo".to_string(),
@@ -253,28 +312,23 @@ fn test_get_study() {
             },
         ],
     };
-    let result = get_study("demo".to_string()).unwrap();
+    let result = get_study(&"demo".to_string()).unwrap();
     assert_eq!(result, study)
 }
 
 #[test]
 fn test_get_study_nonexistent() {
-    let result = get_study("fail".to_string());
+    let result = get_study(&"fail".to_string());
     assert_eq!(result, Err(ApplicationError::StudyNotFound))
-}
-#[test]
-fn test_get_study_invalid() {
-    let result = get_study("deliberately_invalid_study".to_string());
-    assert_eq!(result, Err(ApplicationError::StudyInvalid))
 }
 #[test]
 fn test_get_studies() -> Result<(), ApplicationError> {
     let result = get_studies()?;
     let num_of_studies = fs::read_dir("studies")?.count();
-    println!("{:?}", result);
-    if result.len() == num_of_studies -1 { // there is one invalid study
+    if result.len() == num_of_studies -4 { // some are invalid
         Ok(())
     } else {
+        println!("Expected {} studies, got {}", num_of_studies, result.len());
         Err(ApplicationError::StudiesNotFound)
     }
 
