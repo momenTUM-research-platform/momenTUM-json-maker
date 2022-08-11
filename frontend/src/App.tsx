@@ -9,6 +9,7 @@ import ToC from "./ToC";
 import "./App.css";
 import React from "react";
 import Commit from "./Commit";
+import QR from "qrcode";
 
 export const API_URL =
   process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
@@ -131,9 +132,23 @@ function App() {
               timestamp={commit.timestamp}
             />
           ))}
-          <p>
-            <a href={`${form.metadata.url}/${form.metadata.commits[0].id}`}>Permanent Link</a>
-          </p>
+          <ul>
+            <li>
+              <a href={`${form.metadata.url}/${form.metadata.commits[0].id}`}>Permanent Link</a>{" "}
+            </li>
+            <li>
+              <a
+                onClick={async () => {
+                  let code = await QR.toDataURL(
+                    `${form.metadata.url}/${form.metadata.commits[0].id}`
+                  );
+                  window.open(code);
+                }}
+              >
+                QR-Code
+              </a>
+            </li>
+          </ul>
         </>
       )}
       <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />

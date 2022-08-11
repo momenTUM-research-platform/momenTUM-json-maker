@@ -1,7 +1,7 @@
 pub mod git {
 
     use crate::structs::structs::*;
-    use fancy_regex::{Captures, Regex};
+    use fancy_regex::Regex;
     use std::fs;
     use std::iter::zip;
     use std::process::Command;
