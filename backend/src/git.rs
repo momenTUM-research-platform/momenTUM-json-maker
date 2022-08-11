@@ -1,7 +1,7 @@
 pub mod git {
 
     use crate::structs::structs::*;
-    use fancy_regex::Regex;
+    use fancy_regex::{Captures, Regex};
     use std::fs;
     use std::iter::zip;
     use std::process::Command;
@@ -138,14 +138,6 @@ pub mod git {
                     let date_regex = Regex::new(r"(?<=Date:   )(.*)(?=\n)").unwrap();
                     let hashes = hash_regex.captures_iter(&output);
                     let dates = date_regex.captures_iter(&output);
-                    // println!(
-                    //     "{:#?}",
-                    //     hashes.next().unwrap().unwrap().get(1).unwrap().as_str()
-                    // );
-                    // println!(
-                    //     "{:#?}",
-                    //     dates.next().unwrap().unwrap().get(1).unwrap().as_str()
-                    // );
 
                     let metadata = Metadata {
                         url: String::from(
@@ -155,12 +147,7 @@ pub mod git {
                         commits: zip(hashes, dates)
                             .map(|(hash, date)| Commit {
                                 id: hash.unwrap().get(0).unwrap().as_str().to_string(),
-                                timestamp: chrono::prelude::DateTime::parse_from_str(
-                                    date.unwrap().get(0).unwrap().as_str(),
-                                    "%a %b %e %T %Y %z",
-                                )
-                                .unwrap()
-                                .timestamp(),
+                                timestamp: timestamp(date.unwrap().get(0).unwrap().as_str()),
                             })
                             .collect(),
                     };
@@ -172,5 +159,11 @@ pub mod git {
             }
             Err(_) => Err(ApplicationError::GenerateMetadataError),
         }
+    }
+
+    pub fn timestamp(date: &str) -> i64 {
+        chrono::prelude::DateTime::parse_from_str(date, "%a %b %e %T %Y %z")
+            .unwrap()
+            .timestamp_millis()
     }
 }

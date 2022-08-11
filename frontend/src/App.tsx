@@ -1,17 +1,17 @@
 import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
-import Ajv, { DefinedError } from "ajv";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Schema from "../schema.json";
 import { Form } from "../types";
-import { saveAs } from "file-saver";
 import toast, { Toaster } from "react-hot-toast";
-
+import { addApiKey, download, generateDictionary, load, save, upload, validate } from "./tools";
 import ToC from "./ToC";
 import "./App.css";
 import React from "react";
+import Commit from "./Commit";
 
-const API_URL = process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
+export const API_URL =
+  process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
 
 const Container = styled.div`
   margin: 100px;
@@ -81,189 +81,18 @@ function App() {
   }, []);
 
   // Validation is computationally expensive, but only done on submit/uplaod
-  function isValidForm(form: Form): { valid: boolean; msg: string } {
-    const validator = new Ajv().compile(schema);
-    const valid = validator(form);
-    if (!valid) {
-      const errors = validator.errors as DefinedError[];
-      return {
-        valid: false,
-        msg:
-          errors.reduce(
-            (acc, e) => acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
-            ""
-          ) || "Unknown error",
-      };
-    } else {
-      return { valid: true, msg: "Valid" };
-    }
-  }
 
-  function validate() {
-    if (!form) {
-      console.log("No form to validate");
-      toast.error("Please fill the form first!");
-      return;
-    }
-    const valid = isValidForm(form);
-    valid.valid ? toast.success("Form is valid!") : toast.error(valid.msg);
-  }
-
-  function save() {
-    const data = JSON.stringify(form, null, 2);
-    const uri = "data:application/json;charset=utf-8," + encodeURIComponent(data);
-    const link = document.createElement("a");
-    link.href = uri;
-    link.download = "form.json";
-    link.click();
-  }
-
-  function load() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.onchange = (e) => {
-      // @ts-ignore
-      const file = e.target.files![0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = JSON.parse(reader.result as string);
-        setForm(data);
-      };
-      reader.readAsText(file);
-    };
-    input.click();
-  }
-
-  async function upload(form: Form) {
-    console.log(schema.properties.modules.items.properties.unlock_after.items.enum);
-
-    const { valid, msg } = isValidForm(form);
-    const proceed =
-      valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
-    if (proceed) {
-      const data = JSON.stringify(form, null, 2);
-      const password = prompt(
-        "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
-      );
-      const postURL = API_URL + "/study";
-      const response = await fetch(postURL, {
-        method: "POST",
-        body: data,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: password || "MomenTUM",
-        },
-      });
-      if (response.status === 200) {
-        // @ts-ignore
-        toast.success(
-          "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/study/" +
-            form.properties.study_id,
-          {
-            duration: 20000,
-          }
-        );
-      } else {
-        // @ts-ignore
-        toast.error("Error: " + response.statusText);
-      }
-    }
-  }
-
-  async function download() {
-    const uri = API_URL + "/study/" + prompt("Enter the uuid of the survey");
-    if (!uri) {
-      toast.error("No download link provided");
-      return;
-    }
-    const response = await fetch(uri);
-    if (response.ok) {
-      const data = await response.json();
-      setForm(data);
-    } else {
-      toast.error("Download failed");
-    }
-  }
-  // async function downloadDictionary() {
-  //   try {
-  //     console.log(form);
-  //     const uuid = form?.uuid ? form.uuid : prompt("Enter the uuid of the survey");
-  //     if (!uuid) {
-  //       toast.error("No download uuid provided");
-  //       return;
-  //     }
-  //     const uri = BASE_URL + "/dictionary/" + uuid + "?regenerate=true";
-  //     await fetch(uri, { method: "GET", redirect: "follow" });
-  //   } catch (e) {
-  //     console.error(e);
-  //     toast.error("Download failed");
-  //   }
-  //
-
-  async function createProject() {
-    try {
-      const response = await fetch(API_URL + "/create", {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
-      const json = await response.json();
-      console.log(json);
-      toast.success(json.message);
-    } catch (err) {
-      toast.error(err);
-    }
-  }
-
-  async function addApiKey() {
-    try {
-      const study_id = prompt("Enter the study id");
-      const api_key = prompt("Enter the API key");
-
-      const response = await fetch(API_URL + "/key", {
-        method: "POST",
-        body: JSON.stringify({ study_id, api_key }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const text = await response.text();
-      toast(text);
-    } catch (err) {
-      toast.error(String(err));
-    }
-  }
-
-  async function generateDictionary() {
-    if (!form) return;
-    try {
-      const modules = form.modules;
-      let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`;
-      for (const module of modules) {
-        for (const section of module.sections) {
-          for (const question of section.questions) {
-            if (question.type === "instruction") continue;
-            csvString += `${question.id},${module.uuid},,text,${question.text},,,,,,,,,,,,,\n`;
-          }
-        }
-      }
-      console.log(csvString);
-      saveAs(new Blob([csvString]), "dictionary.csv");
-    } catch (err) {
-      console.error(err);
-      toast.error("Generation failed");
-    }
-  }
   return (
     <Container>
       <h1>Welcome to the MomenTUM Survey Generator!</h1>
-      <Button onClick={save}>Save JSON file</Button>
-      <Button onClick={load}>Load JSON file</Button>
-      <Button onClick={() => form && upload(form)}>Upload JSON file</Button>
-      <Button onClick={download}>Download JSON file</Button>
+      <Button onClick={() => save(form)}>Save JSON file</Button>
+      <Button onClick={() => load(setForm)}>Load JSON file</Button>
+      <Button onClick={() => form && upload(form, schema)}>Upload JSON file</Button>
+      <Button onClick={() => download(setForm)}>Download JSON file</Button>
       <Button onClick={generateDictionary}>Generate RedCap Dictionary</Button>
       {/* <Button onClick={createProject}>Create project in RedCap</Button> */}
       <Button onClick={addApiKey}>Add API key</Button>
-      <Button onClick={validate}>Validate</Button>
+      <Button onClick={() => form && validate(form, schema)}>Validate</Button>
       <Button>
         <a className="github" href="https://github.com/TUMChronobiology/studies">
           Github
@@ -272,22 +101,48 @@ function App() {
       <br />
       {latest &&
         latest.map((study) => (
-          <Latest onClick={() => setForm(study)}>
+          <Latest
+            key={study.properties.study_id + study.metadata.commits[0].id}
+            onClick={() => setForm(study)}
+          >
             <p style={{ margin: "5px 10px 0px 10px" }}>{study.properties.study_name}</p>
             <p style={{ fontSize: "0.7rem", margin: "0px 10px 5px 10px" }}>
               {study.properties.study_id}
             </p>
           </Latest>
         ))}
+
       <br />
       <br />
+
+      {form && form.metadata && (
+        <>
+          <p>
+            This protocol has been saved {form.metadata.commits.length} times. Select a specific
+            commit by clicking on the button below.
+          </p>
+
+          {form.metadata.commits.map((commit) => (
+            <Commit
+              key={commit.id}
+              setForm={setForm}
+              id={form.properties.study_id}
+              hash={commit.id}
+              timestamp={commit.timestamp}
+            />
+          ))}
+          <p>
+            <a href={`${form.metadata.url}/${form.metadata.commits[0].id}`}>Permanent Link</a>
+          </p>
+        </>
+      )}
       <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
       <label htmlFor="validate"> Live Validation?</label>
       <br />
       {form && <ToC form={form} />}
       <FormComponent
         onChange={({ formData }: { formData: Form }) => setForm(formData)}
-        onSubmit={(e) => form && upload(form)}
+        onSubmit={(e) => form && upload(form, schema)}
         noValidate={!liveValidate}
         //@ts-ignore
         schema={schema}

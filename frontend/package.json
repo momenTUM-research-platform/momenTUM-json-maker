@@ -19,6 +19,7 @@
     "@rjsf/material-ui": "^4.1.1",
     "ajv": "^8.11.0",
     "cypress": "^9.5.4",
+    "dayjs": "^1.11.4",
     "file-saver": "^2.0.5",
     "framer-motion": "^6.2.9",
     "jszip": "^3.10.0",

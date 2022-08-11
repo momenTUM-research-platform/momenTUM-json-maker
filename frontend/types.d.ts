@@ -1,4 +1,11 @@
 export interface Form {
+  metadata: {
+    url: string;
+    commits: {
+      id: string;
+      timestamp: number;
+    }[];
+  };
   properties: {
     study_id: string;
     study_name: string;

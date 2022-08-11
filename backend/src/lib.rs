@@ -5,7 +5,7 @@ mod studies;
 use std::io::Read;
 
 pub use crate::{
-    git::git::{generate_metadata, init_study_repository},
+    git::git::{generate_metadata, init_study_repository, timestamp},
     redcap::redcap::{import_response, Submission},
     structs::structs::*,
     studies::studies::*,

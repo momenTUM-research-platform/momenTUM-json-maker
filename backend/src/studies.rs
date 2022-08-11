@@ -45,9 +45,16 @@ pub mod studies {
         let studies = study_files
             .into_iter()
             .filter_map(|study_file| study_file.ok())
-            .map(|study_file| fs::read_to_string(study_file.path()))
-            .filter_map(|study| study.ok())
-            .map(|study| to_study(study))
+            .map(|study_file| {
+                get_study(
+                    &(study_file
+                        .file_name()
+                        .to_str()
+                        .unwrap_or("demo")
+                        .replace(".json", "")
+                        .to_string()),
+                )
+            })
             .filter_map(|study| study.ok())
             .collect::<Vec<Study>>();
 
