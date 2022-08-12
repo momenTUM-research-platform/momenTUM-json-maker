@@ -8,11 +8,12 @@ use api::*;
 async fn main() -> std::io::Result<()> {
     let keys = init_api_keys();
     let payloads = init_payloads();
+    let studies = init_study_repository();
     let app_data = web::Data::new(State {
         payloads: Mutex::new(payloads),
         keys: Mutex::new(keys),
+        studies: Mutex::new(studies),
     });
-    init_study_repository();
 
     HttpServer::new(move || {
         let cors = Cors::permissive();

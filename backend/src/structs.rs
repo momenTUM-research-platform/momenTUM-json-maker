@@ -9,25 +9,25 @@ pub mod structs {
 
     use crate::Payload;
 
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Study {
         pub properties: Properties,
         pub modules: Vec<Module>,
         pub metadata: Option<Metadata>,
     }
 
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Metadata {
         pub commits: Vec<Commit>,
         pub url: String,
     }
 
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Commit {
         pub id: String,
         pub timestamp: i64,
     }
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Properties {
         pub study_id: String,
         pub study_name: String,
@@ -43,8 +43,7 @@ pub mod structs {
         pub cache: bool,
         pub created_by: String,
     }
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Module {
         pub r#type: String,
         pub name: String,
@@ -57,8 +56,7 @@ pub mod structs {
         pub unlock_after: Vec<String>,
         pub shuffle: bool,
     }
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
-
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Alert {
         pub title: String,
         pub message: String,
@@ -72,12 +70,12 @@ pub mod structs {
         pub timeout: bool,
         pub timeout_after: i32,
     }
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Time {
         pub hours: i8,
         pub minutes: i8,
     }
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Graph {
         pub display: bool,
         pub variable: Option<String>,
@@ -86,14 +84,14 @@ pub mod structs {
         pub r#type: Option<String>,
         pub max_points: Option<i32>,
     }
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct Section {
         pub name: String,
         pub shuffle: bool,
         pub questions: Vec<Question>,
     }
 
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     #[serde(tag = "type")]
     pub enum Question {
         #[serde(rename = "instruction")]
@@ -170,14 +168,14 @@ pub mod structs {
             thumb: String,
         },
     }
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     #[serde(untagged)]
     pub enum StringOrBool {
         String(String),
         Bool(bool),
     }
 
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Clone)]
     pub enum ApplicationError {
         CommitError,
         CloneError,
@@ -208,6 +206,7 @@ pub mod structs {
     pub struct State {
         pub keys: Mutex<HashMap<String, String>>,
         pub payloads: Mutex<HashMap<i64, Payload>>,
+        pub studies: Mutex<HashMap<String, Study>>,
     }
 
     impl Responder for Study {

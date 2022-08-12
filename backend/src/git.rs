@@ -1,12 +1,14 @@
 pub mod git {
 
+    use crate::get_study_from_file;
     use crate::structs::structs::*;
     use fancy_regex::Regex;
+    use std::collections::HashMap;
     use std::fs;
     use std::iter::zip;
     use std::process::Command;
 
-    pub fn init_study_repository() -> () {
+    pub fn init_study_repository() -> HashMap<String, Study> {
         if fs::metadata("studies").is_ok() {
             // git fetch
             Command::new("git")
@@ -21,6 +23,42 @@ pub mod git {
                 .expect("Something went wrong when cloning the studies repo");
             println!("Cloned studies from GitHub")
         }
+
+        let studies_path = "studies";
+        let study_files = fs::read_dir(studies_path).expect("Could not read studies directory");
+        let studies = study_files
+            .into_iter()
+            .filter_map(|study_file| study_file.ok())
+            .map(|study_file| {
+                get_study_from_file(
+                    &(study_file
+                        .file_name()
+                        .to_str()
+                        .unwrap_or("demo")
+                        .replace(".json", "")
+                        .to_string()),
+                    None,
+                )
+            })
+            .filter_map(|study| study.ok())
+            .collect::<Vec<Study>>();
+        let mut map = HashMap::new();
+        studies.iter().for_each(|study| {
+            let study_id = study.properties.study_id.clone();
+            let metadata =
+                generate_metadata(&study_id).expect("Could not generate metadata for study");
+            metadata.commits.iter().for_each(|commit| {
+                let study_at_commit = get_study_from_file(&study_id, Some(&commit.id))
+                    .expect("Could not retrieve study");
+                map.insert(
+                    study_id.to_string() + ":" + &commit.id[..6],
+                    study_at_commit,
+                );
+            });
+            map.insert(study_id + ":", study.clone());
+        });
+        println!("Loaded {:#?} into memory", map.len());
+        map
     }
 
     pub fn add_study(study_id: &str) -> Result<(), ApplicationError> {
@@ -101,27 +139,30 @@ pub mod git {
         }
     }
 
-    pub fn checkout(commit: &String) -> Result<(), ApplicationError> {
-        let result = Command::new("git")
-            .args(["-C", "studies", "checkout", commit.as_str()])
-            .output();
-        match result {
-            Ok(result) => {
-                if result.status.success() {
-                    println!("{}", String::from_utf8_lossy(&result.stdout));
-                    Ok(())
-                } else {
-                    println!("{}", String::from_utf8_lossy(&result.stderr));
-                    Err(ApplicationError::CheckoutError(
-                        commit.to_string(),
-                        String::from_utf8_lossy(&result.stderr).to_string(),
-                    ))
+    pub fn checkout(commit: Option<&String>) -> Result<(), ApplicationError> {
+        if let Some(commit) = commit {
+            let result = Command::new("git")
+                .args(["-C", "studies", "checkout", commit.as_str()])
+                .output();
+            match result {
+                Ok(result) => {
+                    if result.status.success() {
+                        Ok(())
+                    } else {
+                        println!("{}", String::from_utf8_lossy(&result.stderr));
+                        Err(ApplicationError::CheckoutError(
+                            commit.to_string(),
+                            String::from_utf8_lossy(&result.stderr).to_string(),
+                        ))
+                    }
                 }
+                Err(_) => Err(ApplicationError::CheckoutError(
+                    commit.to_string(),
+                    "Unknown error".to_string(),
+                )),
             }
-            Err(_) => Err(ApplicationError::CheckoutError(
-                commit.to_string(),
-                "Unknown error".to_string(),
-            )),
+        } else {
+            Ok(())
         }
     }
     // if git ever changes its log syntax, this will break

@@ -20,31 +20,43 @@ async fn greet() -> impl Responder {
 }
 
 #[get("/api/v1/study/{study_id}/{commit}")]
-async fn fetch_study_by_commit(params: web::Path<(String, String)>) -> impl Responder {
+async fn fetch_study_by_commit(
+    params: web::Path<(String, String)>,
+    state: web::Data<State>,
+) -> impl Responder {
     let (mut study_id, commit) = params.into_inner();
     if study_id.ends_with(".json") {
         study_id = study_id.replace(".json", "");
     }
-    let result = get_study_by_commit(&study_id, &commit);
-    println!("Retrieved study: {study_id} at commit {commit}");
+    let result = get_study(
+        state.studies.lock().unwrap().clone(),
+        study_id,
+        Some(commit),
+    );
+
     result
 }
 
 #[route("/api/v1/study/{study_id}", method = "GET", method = "POST")]
-async fn fetch_study(study_id: web::Path<String>) -> impl Responder {
+async fn fetch_study(study_id: web::Path<String>, state: web::Data<State>) -> impl Responder {
     let mut study_id = study_id.into_inner();
     if study_id.ends_with(".json") {
         study_id = study_id.replace(".json", "");
     }
 
-    let result = get_study(&study_id);
-    println!("Retrieved study: {}", study_id);
+    let result = get_study(state.studies.lock().unwrap().clone(), study_id, None);
     result
 }
 
 #[get("/api/v1/studies")]
-async fn all_studies() -> Result<HttpResponse, ApplicationError> {
-    let studies = get_studies()?;
+async fn all_studies(state: web::Data<State>) -> Result<HttpResponse, ApplicationError> {
+    let studies: Vec<Study> = state
+        .studies
+        .lock()
+        .unwrap()
+        .clone()
+        .into_values()
+        .collect();
     Ok(HttpResponse::Ok().json(studies))
 }
 

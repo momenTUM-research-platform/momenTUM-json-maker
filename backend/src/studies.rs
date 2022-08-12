@@ -1,6 +1,7 @@
 pub mod studies {
     use crate::git::git::*;
     use crate::structs::structs::*;
+    use std::collections::HashMap;
     use std::fs;
 
     pub fn to_string(study: &Study) -> Result<String, ApplicationError> {
@@ -15,51 +16,61 @@ pub mod studies {
         Ok(study)
     }
 
-    pub fn get_study(study_id: &String) -> Result<Study, ApplicationError> {
-        println!("Retrieving study {}", study_id);
-        let study_path = format!("studies/{}.json", study_id);
-        let study_file = fs::read_to_string(study_path)?;
-        let mut study = to_study(study_file)?;
-        study.metadata = Some(generate_metadata(&study_id)?);
-        Ok(study)
+    pub fn get_study(
+        studies: HashMap<String, Study>,
+        study_id: String,
+        commit: Option<String>,
+    ) -> Result<Study, ApplicationError> {
+        println!("{:?}", commit);
+        let mut commit = commit.unwrap_or("".to_string());
+        if commit.len() > 6 {
+            commit = commit[..6].to_string();
+        }
+        let key = study_id + ":" + &commit;
+        println!("{}", key);
+        let study = studies.get(&key);
+
+        match study {
+            Some(study) => Ok(study.clone()),
+            _ => Err(ApplicationError::StudyNotFound),
+        }
     }
 
-    pub fn get_study_by_commit(
+    pub fn get_study_from_file(
         study_id: &String,
-        commit: &String,
+        commit: Option<&String>,
     ) -> Result<Study, ApplicationError> {
         checkout(commit)?;
-        println!("Retrieving study {}", study_id);
         let study_path = format!("studies/{}.json", study_id);
         let study_file = fs::read_to_string(study_path)?;
         let mut study = to_study(study_file)?;
         study.metadata = Some(generate_metadata(&study_id)?);
-        checkout(&"main".to_string())?;
+        checkout(Some(&"main".to_string()))?;
         Ok(study)
     }
 
-    pub fn get_studies() -> Result<Vec<Study>, ApplicationError> {
-        println!("Retrieving studies");
-        let studies_path = "studies";
-        let study_files = fs::read_dir(studies_path)?;
-        let studies = study_files
-            .into_iter()
-            .filter_map(|study_file| study_file.ok())
-            .map(|study_file| {
-                get_study(
-                    &(study_file
-                        .file_name()
-                        .to_str()
-                        .unwrap_or("demo")
-                        .replace(".json", "")
-                        .to_string()),
-                )
-            })
-            .filter_map(|study| study.ok())
-            .collect::<Vec<Study>>();
+    // pub fn get_studies(studies: ) -> Result<Vec<Study>, ApplicationError> {
+    //     // println!("Retrieving studies");
+    //     // let studies_path = "studies";
+    //     // let study_files = fs::read_dir(studies_path)?;
+    //     // let studies = study_files
+    //     //     .into_iter()
+    //     //     .filter_map(|study_file| study_file.ok())
+    //     //     .map(|study_file| {
+    //     //         get_study(
+    //     //             &(study_file
+    //     //                 .file_name()
+    //     //                 .to_str()
+    //     //                 .unwrap_or("demo")
+    //     //                 .replace(".json", "")
+    //     //                 .to_string()),
+    //     //         )
+    //     //     })
+    //     //     .filter_map(|study| study.ok())
+    //     //     .collect::<Vec<Study>>();
 
-        Ok(studies)
-    }
+    //     // Ok(studies)
+    // }
 
     // pub fn generate_dictionary(study_id: String) -> Result<String, ApplicationError> {
     //     println!("Generation dictionary for {}", study_id);
