@@ -1,11 +1,13 @@
 pub mod redcap {
+    use actix_web::web;
+    use chrono::prelude::*;
     use std::collections::HashMap;
 
     use actix_multipart_extract::{Multipart, MultipartForm};
     use serde::{Deserialize, Serialize};
     use std::fs;
 
-    use crate::{structs::structs::ApplicationError, Key};
+    use crate::{structs::structs::ApplicationError, State};
 
     #[derive(Debug, Serialize, Deserialize, Clone)]
     #[serde(untagged)]
@@ -39,7 +41,7 @@ pub mod redcap {
         pub timestamp_in_ms: Option<i64>,
     }
     #[derive(Serialize, Debug, Deserialize, Clone)]
-    struct Payload {
+    pub struct Payload {
         token: String,
         content: String,
         format: String,
@@ -65,8 +67,13 @@ pub mod redcap {
 
     pub async fn import_response(
         data: Multipart<Submission>,
-        keys: Vec<Key>,
+        state: web::Data<State>,
+        // keys: HashMap<String, String>,
+        // mut payloads: MutexGuard<HashMap<i64, Payload>>,
     ) -> Result<(), ApplicationError> {
+        let keys = state.keys.lock().unwrap().clone();
+        let mut payloads = state.payloads.lock().unwrap();
+
         if data.event.is_some() {
             println!(
                 "Received log entry at {} from {} on page {} with event {}",
@@ -80,7 +87,7 @@ pub mod redcap {
             // Log handling
             return Ok(());
         }
-        let key = keys.iter().find(|k| k.study_id == data.study_id);
+        let key = keys.get(&data.study_id);
         if key.is_none() {
             return Err(ApplicationError::NoCorrespondingAPIKey);
         }
@@ -137,7 +144,7 @@ pub mod redcap {
         };
 
         let payload = Payload {
-            token: key.unwrap().api_key.to_string(),
+            token: key.unwrap().to_string(),
             content: "record".to_string(),
             format: "json".to_string(),
             r#type: "flat".to_string(),
@@ -145,10 +152,11 @@ pub mod redcap {
         };
         println!("{:#?}", payload);
 
-        let file = fs::read_to_string("payload.json")?;
-        let mut json: Vec<Payload> = serde_json::from_str(&file)?;
-        json.push(payload.clone());
-        fs::write("payload.json", serde_json::to_string_pretty(&json)?)?;
+        payloads.insert(Utc::now().timestamp_millis(), payload.clone());
+        fs::write(
+            "payloads.json",
+            serde_json::to_string_pretty(&payloads.clone())?,
+        )?;
 
         let response = reqwest::Client::new()
             .post(REDCAP_API_URL)

@@ -5,7 +5,9 @@ pub mod structs {
         ResponseError,
     };
     use serde::{Deserialize, Serialize};
-    use std::{fmt::Display, sync::Mutex};
+    use std::{collections::HashMap, fmt::Display, sync::Mutex};
+
+    use crate::Payload;
 
     #[derive(Serialize, Deserialize, Debug, PartialEq)]
     pub struct Study {
@@ -196,14 +198,16 @@ pub mod structs {
         RedcapError(String), // RedcapError,
     }
 
-    #[derive(Serialize, Deserialize, Debug, Clone)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct Key {
         pub study_id: String,
         pub api_key: String,
     }
 
-    pub struct AppState {
-        pub keys: Mutex<Vec<Key>>,
+    #[derive(Serialize, Deserialize, Debug)]
+    pub struct State {
+        pub keys: Mutex<HashMap<String, String>>,
+        pub payloads: Mutex<HashMap<i64, Payload>>,
     }
 
     impl Responder for Study {

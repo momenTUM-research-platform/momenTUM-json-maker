@@ -7,7 +7,9 @@ use api::*;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let keys = init_api_keys();
-    let app_data = web::Data::new(AppState {
+    let payloads = init_payloads();
+    let app_data = web::Data::new(State {
+        payloads: Mutex::new(payloads),
         keys: Mutex::new(keys),
     });
     init_study_repository();
