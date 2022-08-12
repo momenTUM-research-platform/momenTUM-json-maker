@@ -319,4 +319,13 @@ pub mod structs {
             }
         }
     }
+
+    impl From<reqwest::Error> for ApplicationError {
+        fn from(e: reqwest::Error) -> Self {
+            match e {
+                // Add more
+                _ => ApplicationError::RedcapError(e.to_string()),
+            }
+        }
+    }
 }

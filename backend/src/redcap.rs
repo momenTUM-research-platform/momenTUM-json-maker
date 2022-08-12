@@ -103,7 +103,7 @@ pub mod redcap {
                 Response::Text("new".to_string()),
             ),
             (
-                format!("record_id"),
+                "record_id".to_string(),
                 Response::Text(data.user_id.to_string()),
             ),
             // ("user_id", Response::Text(data.user_id)),
@@ -122,8 +122,8 @@ pub mod redcap {
                 ),
             ),
         ]);
-
         if let Some(ref response) = data.responses {
+            println!("{:#?}", response);
             let response: HashMap<String, Response> = serde_json::from_str(response.as_str())?;
             println!("Importing response for study {:#?}", response);
             response.iter().for_each(|(k, v)| {
@@ -141,7 +141,6 @@ pub mod redcap {
             content: "record".to_string(),
             format: "json".to_string(),
             r#type: "flat".to_string(),
-            // record_id: "1".to_string(),
             data: serde_json::to_string(&vec![record]).unwrap(),
         };
         println!("{:#?}", payload);
@@ -155,29 +154,25 @@ pub mod redcap {
             .post(REDCAP_API_URL)
             .form(&payload)
             .send()
-            .await;
-        // println!("{:#?}", response);
+            .await?;
+        println!("{:#?}", response);
 
-        match response {
-            Ok(response) => {
-                if response.status().is_success() {
-                    println!(
-                        "Successfully imported response: {:#?}",
-                        response.text().await.unwrap()
-                    );
-                    Ok(())
-                } else if response.status() == reqwest::StatusCode::FORBIDDEN {
-                    println!("Forbidden: {:#?}", response.text().await.unwrap());
-                    Err(ApplicationError::RedcapAuthenicationError)
-                } else {
-                    let content = response.text().await.unwrap();
-                    println!("Error: {:#?}", content);
-                    Err(ApplicationError::RedcapError(content))
-                }
+        match response.status() {
+            reqwest::StatusCode::OK => {
+                println!(
+                    "Successfully imported response: {:#?}",
+                    response.text().await.unwrap()
+                );
+                Ok(())
             }
-            Err(e) => {
-                println!("Error: {:#?}", e);
-                Err(ApplicationError::RedcapError(e.to_string()))
+            reqwest::StatusCode::FORBIDDEN => {
+                println!("Forbidden: {:#?}", response.text().await.unwrap());
+                Err(ApplicationError::RedcapAuthenicationError)
+            }
+            _ => {
+                let content = response.text().await.unwrap();
+                println!("Error: {:#?}", content);
+                Err(ApplicationError::RedcapError(content))
             }
         }
     }

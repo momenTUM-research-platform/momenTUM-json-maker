@@ -55,10 +55,10 @@ async fn create_study(study: web::Json<Study>) -> impl Responder {
 
 #[post("/api/v1/response")]
 async fn save_response(data: Multipart<Submission>, keys: web::Data<AppState>) -> impl Responder {
-    println!("{:#?}", data.study_id);
+    println!("Saving response for {}", data.study_id);
     match import_response(data, keys.keys.lock().unwrap().clone()).await {
         Ok(_) => HttpResponse::Ok().body("Response saved"),
-        Err(e) => HttpResponse::Unauthorized().body(e.to_string()),
+        Err(e) => HttpResponse::BadRequest().body(e.to_string()),
     }
 }
 // TODO rewrite to hashmap
