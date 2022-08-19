@@ -222,19 +222,6 @@ pub mod structs {
         }
     }
 
-    impl Responder for Metadata {
-        type Body = BoxBody;
-
-        fn respond_to(self, _req: &HttpRequest) -> HttpResponse<Self::Body> {
-            let body = serde_json::to_string(&self).unwrap();
-
-            // Create response and set content type
-            HttpResponse::Ok()
-                .content_type(ContentType::json())
-                .body(body)
-        }
-    }
-
     impl ResponseError for ApplicationError {
         fn error_response(&self) -> HttpResponse {
             HttpResponse::BadRequest().body(format!("Error while handling the request: {}", self))

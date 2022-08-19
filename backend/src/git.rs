@@ -57,7 +57,7 @@ pub mod git {
             });
             map.insert(study_id + ":", study.clone());
         });
-        println!("Loaded {:#?} into memory", map.len());
+        println!("Loaded {} into memory", map.len());
         map
     }
 
@@ -182,7 +182,7 @@ pub mod git {
 
                     let metadata = Metadata {
                         url: String::from(
-                            "https://tuspl22-momentum.srv.mwn.de/api/v1/study/".to_string()
+                            "https://tuspl22-momentum.srv.mwn.de/api/v1/studies/".to_string()
                                 + study_id,
                         ),
                         commits: zip(hashes, dates)

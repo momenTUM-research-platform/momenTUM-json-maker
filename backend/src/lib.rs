@@ -19,7 +19,7 @@ async fn greet() -> impl Responder {
     format!("The V1 API is live!")
 }
 
-#[get("/api/v1/study/{study_id}/{commit}")]
+#[get("/api/v1/studies/{study_id}/{commit}")]
 async fn fetch_study_by_commit(
     params: web::Path<(String, String)>,
     state: web::Data<State>,
@@ -37,7 +37,7 @@ async fn fetch_study_by_commit(
     result
 }
 
-#[route("/api/v1/study/{study_id}", method = "GET", method = "POST")]
+#[route("/api/v1/studies/{study_id}", method = "GET", method = "POST")]
 async fn fetch_study(study_id: web::Path<String>, state: web::Data<State>) -> impl Responder {
     let mut study_id = study_id.into_inner();
     if study_id.ends_with(".json") {
@@ -61,20 +61,17 @@ async fn all_studies(state: web::Data<State>) -> Result<HttpResponse, Applicatio
 }
 
 #[post("/api/v1/study")]
-async fn create_study(study: web::Json<Study>) -> impl Responder {
-    upload_study(study.0)
+async fn create_study(study: web::Json<Study>, state: web::Data<State>) -> impl Responder {
+    match upload_study(state.studies.lock().unwrap(), study.0) {
+        Ok(_) => HttpResponse::Ok().body("Study created"),
+        Err(e) => HttpResponse::BadRequest().body(e.to_string()),
+    }
 }
 
 #[post("/api/v1/response")]
 async fn save_response(data: Multipart<Submission>, state: web::Data<State>) -> impl Responder {
     println!("Saving response for {}", data.study_id);
-    match import_response(
-        data,
-        state, // state.keys.lock().unwrap().clone(),
-              // state.payloads.lock().unwrap(),
-    )
-    .await
-    {
+    match import_response(data, state).await {
         Ok(_) => HttpResponse::Ok().body("Response saved"),
         Err(e) => HttpResponse::BadRequest().body(e.to_string()),
     }
@@ -97,8 +94,9 @@ pub async fn missing_route() -> impl Responder {
         "There is nothing here.
 
 Available Routes: 
-    /api/v1/status
-    /api/v1/study/{study_id}
+/api/v1/status
+    /api/v1/studies/{study_id}/{commit_id}
+    /api/v1/studies/{study_id}
     /api/v1/studies
     /api/v1/response
     /api/v1/key

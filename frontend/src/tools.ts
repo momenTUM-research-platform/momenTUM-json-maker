@@ -80,7 +80,7 @@ export async function upload(form: Form, schema: typeof Schema) {
     if (response.status === 200) {
       // @ts-ignore
       toast.success(
-        "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/study/" +
+        "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
           form.properties.study_id,
         {
           duration: 20000,

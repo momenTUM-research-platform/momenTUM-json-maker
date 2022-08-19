@@ -16,7 +16,7 @@ fn create_metadata() {
     let result = generate_metadata(&"demo".to_string());
     assert!(result.is_ok());
     let result = result.unwrap();
-    assert_eq!(result.url , "https://tuspl22-momentum.srv.mwn.de/api/v1/study/demo".to_string());
+    assert_eq!(result.url , "https://tuspl22-momentum.srv.mwn.de/api/v1/studies/demo".to_string());
     assert_eq!(result.commits , vec![Commit {
         id: "386ba053953914f9ea66961c21ffa12b5f346429".to_string(), timestamp: 1658490810000
     }]);
@@ -27,7 +27,7 @@ fn create_metadata_for_multiple_commits() {
     let result = generate_metadata(&"mpi_melatonin_validation_2022".to_string());
     assert!(result.is_ok());
     let result = result.unwrap();
-    assert_eq!(result.url , "https://tuspl22-momentum.srv.mwn.de/api/v1/study/mpi_melatonin_validation_2022".to_string());
+    assert_eq!(result.url , "https://tuspl22-momentum.srv.mwn.de/api/v1/studies/mpi_melatonin_validation_2022".to_string());
     assert_eq!(result.commits , vec![
         Commit {
             id: "549302cd9e8a7fd460a171bbf73e81f61e10299a".to_string(),
@@ -84,7 +84,7 @@ fn test_get_study() {
             commits:vec![Commit {
                 id: "386ba053953914f9ea66961c21ffa12b5f346429".to_string(), timestamp: 1658490810000 
             }],
-            url: "https://tuspl22-momentum.srv.mwn.de/api/v1/study/demo".to_string(),
+            url: "https://tuspl22-momentum.srv.mwn.de/api/v1/studies/demo".to_string(),
         }),
         properties: Properties {
             study_id: "3ZDOGAH".to_string(),
