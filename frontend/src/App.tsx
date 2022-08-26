@@ -2,7 +2,7 @@ import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Schema from "../schema.json";
-import { Form } from "../types";
+import { Study } from "../types";
 import toast, { Toaster } from "react-hot-toast";
 import { addApiKey, download, generateDictionary, load, save, upload, validate } from "./tools";
 import ToC from "./ToC";
@@ -48,99 +48,101 @@ const Latest = styled.button`
 `;
 
 function App() {
-  const [form, setForm] = useState<Form | null>(null);
+  const [study, setStudy] = useState<Study | null>(null);
   const [schema, setSchema] = useState(Schema);
   const [liveValidate, setLiveValidate] = useState(false);
-  const [latest, setLatest] = useState<Form[] | null>(null);
+  const [studies, setStudies] = useState<{ [key: string]: Study } | null>(null);
 
   const uiSchema = {
     title: { "ui:widget": "date" },
   };
 
   useEffect(() => {
-    if (!form) return;
+    if (!study || !studies) return;
     let schemaCopy = schema;
     schemaCopy.properties.modules.items.properties.condition.enum = [
       "Select one of the properties below",
       "*",
-      ...form?.properties.conditions,
+      ...study?.properties.conditions,
     ];
     // const moduleIds = form.modules.map((module) => module.uuid);
-    const moduleIds = Array.from(new Set(form.modules.map((module) => module.uuid)));
+    const moduleIds = Array.from(new Set(study?.modules.map((module) => module.uuid)));
 
     schemaCopy.properties.modules.items.properties.unlock_after.items.enum =
       //    moduleIds.size > 0 ? Array.from(moduleIds) : [""];
       moduleIds.length > 0 ? moduleIds : [""];
     setSchema({ ...schemaCopy });
-  }, [form]);
+  }, [study]);
 
   useEffect(() => {
     fetch(API_URL + "/studies")
       .then((res) => res.json())
-      .then((data) => setLatest(data))
+      .then((data) => setStudies(data))
       .catch((err) => toast.error("Download latest studies failed: " + String(err)));
   }, []);
-
-  // Validation is computationally expensive, but only done on submit/uplaod
 
   return (
     <Container>
       <h1>Welcome to the MomenTUM Survey Generator!</h1>
-      <Button onClick={() => save(form)}>Save JSON file</Button>
-      <Button onClick={() => load(setForm)}>Load JSON file</Button>
-      <Button onClick={() => form && upload(form, schema)}>Upload JSON file</Button>
-      <Button onClick={() => download(setForm)}>Download JSON file</Button>
+      <Button onClick={() => save(study)}>Save JSON file</Button>
+      <Button onClick={() => load(setStudy)}>Load JSON file</Button>
+      <Button onClick={() => study && upload(study, schema)}>Upload JSON file</Button>
+      <Button onClick={() => download(setStudy)}>Download JSON file</Button>
       <Button onClick={generateDictionary}>Generate RedCap Dictionary</Button>
       {/* <Button onClick={createProject}>Create project in RedCap</Button> */}
       <Button onClick={addApiKey}>Add API key</Button>
-      <Button onClick={() => form && validate(form, schema)}>Validate</Button>
+      <Button onClick={() => study && validate(study, schema)}>Validate</Button>
       <Button>
         <a className="github" href="https://github.com/TUMChronobiology/studies">
           Github
         </a>{" "}
       </Button>
       <br />
-      {latest &&
-        latest.map((study) => (
-          <Latest
-            key={study.properties.study_id + study.metadata.commits[0].id}
-            onClick={() => setForm(study)}
-          >
-            <p style={{ margin: "5px 10px 0px 10px" }}>{study.properties.study_name}</p>
-            <p style={{ fontSize: "0.7rem", margin: "0px 10px 5px 10px" }}>
-              {study.properties.study_id}
-            </p>
-          </Latest>
-        ))}
+      {studies &&
+        Object.entries(studies)
+          .filter(([key]) => key.includes("LATEST"))
+          .map(([key, study]) => (
+            <Latest key={key} onClick={() => setStudy(study)}>
+              <p style={{ margin: "5px 10px 0px 10px" }}>{study.properties.study_name}</p>
+              <p style={{ fontSize: "0.7rem", margin: "0px 10px 5px 10px" }}>
+                {study.properties.study_id}
+              </p>
+            </Latest>
+          ))}
 
       <br />
       <br />
 
-      {form && form.metadata && (
+      {study && studies && study.metadata && (
         <>
           <p>
-            This protocol has been saved {form.metadata.commits.length} times. Select a specific
+            This protocol has been saved {study.metadata.commits.length} times. Select a specific
             commit by clicking on the button below.
           </p>
 
-          {form.metadata.commits.map((commit) => (
+          {study.metadata.commits.map((commit) => (
             <Commit
+              onClick={() =>
+                setStudy(
+                  Object.entries(studies).find(
+                    ([k, s]) => (k = study.properties.study_id + ":" + commit.id)
+                  )?.[1] || null
+                )
+              }
               key={commit.id}
-              setForm={setForm}
-              id={form.properties.study_id}
               hash={commit.id}
               timestamp={commit.timestamp}
             />
           ))}
           <ul>
             <li>
-              <a href={`${form.metadata.url}/${form.metadata.commits[0].id}`}>Permanent Link</a>{" "}
+              <a href={`${study.metadata.url}/${study.metadata.commits[0].id}`}>Permanent Link</a>{" "}
             </li>
             <li>
               <a
                 onClick={async () => {
                   let code = await QR.toDataURL(
-                    `${form.metadata.url}/${form.metadata.commits[0].id}`
+                    `${study.metadata.url}/${study.metadata.commits[0].id}`
                   );
                   window.open(code);
                 }}
@@ -154,14 +156,14 @@ function App() {
       <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
       <label htmlFor="validate"> Live Validation?</label>
       <br />
-      {form && <ToC form={form} />}
+      {study && <ToC form={study} />}
       <FormComponent
-        onChange={({ formData }: { formData: Form }) => setForm(formData)}
-        onSubmit={(e) => form && upload(form, schema)}
+        onChange={({ formData }: { formData: Study }) => setStudy(formData)}
+        onSubmit={(e) => study && upload(study, schema)}
         noValidate={!liveValidate}
         //@ts-ignore
         schema={schema}
-        formData={form}
+        formData={study}
         uiSchema={uiSchema}
         liveValidate={liveValidate}
         idPrefix="form"

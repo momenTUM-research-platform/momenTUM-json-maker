@@ -31,6 +31,7 @@ async fn main() -> std::io::Result<()> {
             .default_service(web::get().to(missing_route))
     })
     .bind("0.0.0.0:8000")?
+    .worker_max_blocking_threads(2048)
     .run()
     .await
 }

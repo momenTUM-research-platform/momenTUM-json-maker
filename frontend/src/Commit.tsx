@@ -1,25 +1,21 @@
 import React from "react";
 import styled from "styled-components";
-import { Form } from "../types";
-import { download } from "./tools";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
 export default function Commit({
-  setForm,
-  id,
+  onClick,
   hash,
   timestamp,
 }: {
-  setForm: (form: Form) => void;
-  id: string;
+  onClick: () => void;
   hash: string;
   timestamp: number;
 }) {
   return (
-    <Button onClick={() => download(setForm, id, hash)}>
+    <Button onClick={onClick}>
       <p style={{ margin: 4 }}>{dayjs(timestamp).fromNow()}</p>
       <p style={{ fontSize: 14, margin: 2 }}>{hash.slice(0, 7)}</p>
     </Button>

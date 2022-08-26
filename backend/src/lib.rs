@@ -50,13 +50,7 @@ async fn fetch_study(study_id: web::Path<String>, state: web::Data<State>) -> im
 
 #[get("/api/v1/studies")]
 async fn all_studies(state: web::Data<State>) -> Result<HttpResponse, ApplicationError> {
-    let studies: Vec<Study> = state
-        .studies
-        .lock()
-        .unwrap()
-        .clone()
-        .into_values()
-        .collect();
+    let studies = state.studies.lock().unwrap().clone();
     Ok(HttpResponse::Ok().json(studies))
 }
 

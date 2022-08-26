@@ -55,7 +55,7 @@ pub mod git {
                     study_at_commit,
                 );
             });
-            map.insert(study_id + ":", study.clone());
+            map.insert(study_id + ":" + "LATEST", study.clone());
         });
         println!("Loaded {} into memory", map.len());
         map

@@ -1,11 +1,11 @@
-import { Form } from "../types";
+import { Study } from "../types";
 import toast from "react-hot-toast";
 import Ajv, { DefinedError } from "ajv";
 import { API_URL } from "./App";
 import Schema from "../schema.json";
 import saveAs from "file-saver";
 
-export async function validate(form: Form, schema: typeof Schema) {
+export async function validate(form: Study, schema: typeof Schema) {
   if (!form) {
     console.log("No form to validate");
     toast.error("Please fill the form first!");
@@ -14,7 +14,7 @@ export async function validate(form: Form, schema: typeof Schema) {
   const valid = isValidForm(form, schema);
   valid.valid ? toast.success("Form is valid!") : toast.error(valid.msg);
 }
-function isValidForm(form: Form, schema): { valid: boolean; msg: string } {
+function isValidForm(form: Study, schema): { valid: boolean; msg: string } {
   const validator = new Ajv().compile(schema);
   const valid = validator(form);
   if (!valid) {
@@ -41,7 +41,7 @@ export function save(form) {
   link.click();
 }
 
-export function load(setForm: (form: Form) => void) {
+export function load(setStudy: (study: Study) => void) {
   const input = document.createElement("input");
   input.type = "file";
   input.onchange = (e) => {
@@ -50,14 +50,14 @@ export function load(setForm: (form: Form) => void) {
     const reader = new FileReader();
     reader.onload = (e) => {
       const data = JSON.parse(reader.result as string);
-      setForm(data);
+      setStudy(data);
     };
     reader.readAsText(file);
   };
   input.click();
 }
 
-export async function upload(form: Form, schema: typeof Schema) {
+export async function upload(form: Study, schema: typeof Schema) {
   console.log(schema.properties.modules.items.properties.unlock_after.items.enum);
 
   const { valid, msg } = isValidForm(form, schema);
@@ -93,7 +93,7 @@ export async function upload(form: Form, schema: typeof Schema) {
   }
 }
 
-export async function download(setForm: (form: Form) => void, id?: string, commit?: string) {
+export async function download(setForm: (form: Study) => void, id?: string, commit?: string) {
   const uri =
     API_URL +
     "/study/" +
@@ -114,7 +114,7 @@ export async function download(setForm: (form: Form) => void, id?: string, commi
   }
 }
 
-export async function createProject(form: Form) {
+export async function createProject(form: Study) {
   try {
     const response = await fetch(API_URL + "/create", {
       method: "POST",

@@ -1,4 +1,4 @@
-export interface Form {
+export interface Study {
   metadata: {
     url: string;
     commits: {

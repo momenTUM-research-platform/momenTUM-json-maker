@@ -70,7 +70,10 @@ pub mod studies {
                         + &study.metadata.as_ref().unwrap().commits[0].id[..6],
                     study.clone(),
                 );
-                studies.insert(study.properties.study_id.to_string() + ":", study);
+                studies.insert(
+                    study.properties.study_id.to_string() + ":" + "LATEST",
+                    study,
+                );
                 push_study()?;
 
                 Ok(())
