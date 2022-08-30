@@ -334,17 +334,17 @@ fn test_get_study_nonexistent() {
     let studies = init_study_repository();
 
     let result = get_study(studies, "fail".to_string(), None);
-    assert_eq!(result, Err(ApplicationError::StudyNotFound))
+    assert_eq!(result, Err(Error::StudyNotFound))
 }
 // #[test]
-// fn test_get_studies() -> Result<(), ApplicationError> {
+// fn test_get_studies() -> Result<(), Error> {
 //     let result = get_studies()?;
 //     let num_of_studies = fs::read_dir("studies")?.count();
 //     if result.len() == num_of_studies -4 { // some are invalid
 //         Ok(())
 //     } else {
 //         println!("Expected {} studies, got {}", num_of_studies, result.len());
-//         Err(ApplicationError::StudiesNotFound)
+//         Err(Error::StudiesNotFound)
 //     }
 
 // }

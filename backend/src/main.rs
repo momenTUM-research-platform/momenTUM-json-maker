@@ -9,10 +9,12 @@ async fn main() -> std::io::Result<()> {
     let keys = init_api_keys();
     let payloads = init_payloads();
     let studies = init_study_repository();
+    let db = DB::init().unwrap();
     let app_data = web::Data::new(State {
         payloads: Mutex::new(payloads),
         keys: Mutex::new(keys),
         studies: Mutex::new(studies),
+        db,
     });
 
     HttpServer::new(move || {

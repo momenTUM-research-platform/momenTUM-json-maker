@@ -1,18 +1,36 @@
+mod db;
+mod error;
 mod git;
 mod redcap;
-mod structs;
-mod studies;
-use std::{collections::HashMap, io::Read};
-
+mod study;
 pub use crate::{
+    db::DB,
+    error::Error,
     git::git::{generate_metadata, init_study_repository, timestamp},
     redcap::redcap::{import_response, Payload, Submission},
-    structs::structs::*,
-    studies::studies::*,
 };
 use actix_multipart_extract::Multipart;
 use actix_web::{get, post, route, web, HttpResponse, Responder};
+use serde::{Deserialize, Serialize};
 use std::fs;
+use std::{collections::HashMap, io::Read, sync::Mutex};
+use study::Study;
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Key {
+    pub study_id: String,
+    pub api_key: String,
+}
+
+#[derive(Debug)]
+pub struct State {
+    pub db: DB,
+    pub keys: Mutex<HashMap<String, String>>,
+    pub payloads: Mutex<HashMap<i64, Payload>>,
+    pub studies: Mutex<HashMap<String, Study>>,
+}
 
 #[get("/api/v1/status")]
 async fn greet() -> impl Responder {
@@ -49,7 +67,7 @@ async fn fetch_study(study_id: web::Path<String>, state: web::Data<State>) -> im
 }
 
 #[get("/api/v1/studies")]
-async fn all_studies(state: web::Data<State>) -> Result<HttpResponse, ApplicationError> {
+async fn all_studies(state: web::Data<State>) -> Result<HttpResponse> {
     let studies = state.studies.lock().unwrap().clone();
     Ok(HttpResponse::Ok().json(studies))
 }
@@ -71,10 +89,7 @@ async fn save_response(data: Multipart<Submission>, state: web::Data<State>) -> 
     }
 }
 #[post("/api/v1/key")]
-async fn save_key(
-    key: web::Json<Key>,
-    data: web::Data<State>,
-) -> Result<HttpResponse, ApplicationError> {
+async fn save_key(key: web::Json<Key>, data: web::Data<State>) -> Result<HttpResponse> {
     let api_key = key.0.api_key.clone();
     let study_id = key.0.study_id.clone();
     let mut keys = data.keys.lock().unwrap();

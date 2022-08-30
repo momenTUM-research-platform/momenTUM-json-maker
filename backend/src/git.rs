@@ -1,14 +1,13 @@
 pub mod git {
-
-    use crate::get_study_from_file;
-    use crate::structs::structs::*;
     use fancy_regex::Regex;
-    use std::collections::HashMap;
-    use std::fs;
     use std::iter::zip;
     use std::process::Command;
+    use std::{fs, process::Output};
 
-    pub fn init_study_repository() -> HashMap<String, Study> {
+    use crate::study::Metadata;
+    use crate::{Error, Result};
+
+    pub fn init_study_repository() {
         if fs::metadata("studies").is_ok() {
             // git fetch
             Command::new("git")
@@ -23,45 +22,34 @@ pub mod git {
                 .expect("Something went wrong when cloning the studies repo");
             println!("Cloned studies from GitHub")
         }
-
-        let studies_path = "studies";
-        let study_files = fs::read_dir(studies_path).expect("Could not read studies directory");
-        let studies = study_files
-            .into_iter()
-            .filter_map(|study_file| study_file.ok())
-            .map(|study_file| {
-                get_study_from_file(
-                    &(study_file
-                        .file_name()
-                        .to_str()
-                        .unwrap_or("demo")
-                        .replace(".json", "")
-                        .to_string()),
-                    None,
-                )
-            })
-            .filter_map(|study| study.ok())
-            .collect::<Vec<Study>>();
-        let mut map = HashMap::new();
-        studies.iter().for_each(|study| {
-            let study_id = study.properties.study_id.clone();
-            let metadata =
-                generate_metadata(&study_id).expect("Could not generate metadata for study");
-            metadata.commits.iter().for_each(|commit| {
-                let study_at_commit = get_study_from_file(&study_id, Some(&commit.id))
-                    .expect("Could not retrieve study");
-                map.insert(
-                    study_id.to_string() + ":" + &commit.id[..6],
-                    study_at_commit,
-                );
-            });
-            map.insert(study_id + ":" + "LATEST", study.clone());
-        });
-        println!("Loaded {} into memory", map.len());
-        map
     }
 
-    pub fn add_study(study_id: &str) -> Result<(), ApplicationError> {
+    fn handle_result(result: std::io::Result<Output>) -> Result<()> {
+        // Turn into trait
+        match result {
+            Ok(result) => {
+                if result.status.success() {
+                    println!("{}", String::from_utf8_lossy(&result.stdout));
+                    Ok(())
+                } else {
+                    let s = format!(
+                        "Error: {} {} ",
+                        String::from_utf8_lossy(&result.stdout),
+                        String::from_utf8_lossy(&result.stderr)
+                    );
+                    println!("{s}");
+                    Err(Error::GitError(s))
+                }
+            }
+            Err(error) => {
+                let s = format!("{}", error);
+                println!("{s}");
+                Err(Error::GitError(s))
+            }
+        }
+    }
+
+    pub fn add_study(study_id: &str) -> Result<()> {
         let result = Command::new("git")
             .args([
                 "-C",
@@ -70,21 +58,10 @@ pub mod git {
                 format!("{}.json", study_id).as_str(),
             ])
             .output();
-        match result {
-            Ok(result) => {
-                if result.status.success() {
-                    println!("{}", String::from_utf8_lossy(&result.stdout));
-                    Ok(())
-                } else {
-                    println!("{}", String::from_utf8_lossy(&result.stderr));
-                    Err(ApplicationError::AddError)
-                }
-            }
-            Err(_) => Err(ApplicationError::AddError),
-        }
+        handle_result(result)
     }
 
-    pub fn commit_study(study_id: &str) -> Result<(), ApplicationError> {
+    pub fn commit_study(study_id: &str) -> Result<()> {
         let result = Command::new("git")
             .args([
                 "-C",
@@ -95,78 +72,43 @@ pub mod git {
             ])
             .output();
 
-        match result {
-            Ok(result) => {
-                if result.status.success() {
-                    println!("{}", String::from_utf8_lossy(&result.stdout));
-                    Ok(())
-                } else if String::from_utf8_lossy(&result.stdout)
-                    .contains("nothing to commit, working tree clean")
-                {
-                    println!("{}", String::from_utf8_lossy(&result.stdout));
-                    Ok(())
-                } else {
-                    println!(
-                        "Error: {} {} ",
-                        String::from_utf8_lossy(&result.stdout),
-                        String::from_utf8_lossy(&result.stderr)
-                    );
-                    Err(ApplicationError::CommitError)
-                }
-            }
-
-            Err(error) => {
-                println!("{}", error);
-                Err(ApplicationError::CommitError)
-            }
-        }
+        handle_result(result)
     }
 
-    pub fn push_study() -> Result<(), ApplicationError> {
+    pub fn push_study() -> Result<()> {
         let result = Command::new("git").args(["-C", "studies", "push"]).output();
 
-        match result {
-            Ok(result) => {
-                if result.status.success() {
-                    println!("{}", String::from_utf8_lossy(&result.stdout));
-                    Ok(())
-                } else {
-                    println!("{}", String::from_utf8_lossy(&result.stderr));
-                    Err(ApplicationError::PushError)
-                }
-            }
-            Err(_) => Err(ApplicationError::PushError),
-        }
+        handle_result(result)
     }
 
-    pub fn checkout(commit: Option<&String>) -> Result<(), ApplicationError> {
-        if let Some(commit) = commit {
-            let result = Command::new("git")
-                .args(["-C", "studies", "checkout", commit.as_str()])
-                .output();
-            match result {
-                Ok(result) => {
-                    if result.status.success() {
-                        Ok(())
-                    } else {
-                        println!("{}", String::from_utf8_lossy(&result.stderr));
-                        Err(ApplicationError::CheckoutError(
-                            commit.to_string(),
-                            String::from_utf8_lossy(&result.stderr).to_string(),
-                        ))
-                    }
-                }
-                Err(_) => Err(ApplicationError::CheckoutError(
-                    commit.to_string(),
-                    "Unknown error".to_string(),
-                )),
-            }
-        } else {
-            Ok(())
-        }
-    }
+    // pub fn checkout(commit: Option<&String>) -> Result<()> {
+    //     if let Some(commit) = commit {
+    //         let result = Command::new("git")
+    //             .args(["-C", "studies", "checkout", commit.as_str()])
+    //             .output();
+    //         match result {
+    //             Ok(result) => {
+    //                 if result.status.success() {
+    //                     Ok(())
+    //                 } else {
+    //                     println!("{}", String::from_utf8_lossy(&result.stderr));
+    //                     Err(Error::CheckoutError(
+    //                         commit.to_string(),
+    //                         String::from_utf8_lossy(&result.stderr).to_string(),
+    //                     ))
+    //                 }
+    //             }
+    //             Err(_) => Err(Error::CheckoutError(
+    //                 commit.to_string(),
+    //                 "Unknown error".to_string(),
+    //             )),
+    //         }
+    //     } else {
+    //         Ok(())
+    //     }
+    // }
     // if git ever changes its log syntax, this will break
-    pub fn generate_metadata(study_id: &str) -> Result<Metadata, ApplicationError> {
+    pub fn generate_metadata(study_id: &str) -> Result<Metadata> {
         let result = Command::new("git")
             .args(["-C", "studies", "log", &(study_id.to_string() + ".json")])
             .output();
@@ -185,20 +127,17 @@ pub mod git {
                             "https://tuspl22-momentum.srv.mwn.de/api/v1/studies/".to_string()
                                 + study_id,
                         ),
-                        commits: zip(hashes, dates)
-                            .map(|(hash, date)| Commit {
-                                id: hash.unwrap().get(0).unwrap().as_str().to_string(),
-                                timestamp: timestamp(date.unwrap().get(0).unwrap().as_str()),
-                            })
-                            .collect(),
+
+                        commit: hash.unwrap().get(0).unwrap().as_str().to_string(),
+                        timestamp: timestamp(date.unwrap().get(0).unwrap().as_str()),
                     };
                     Ok(metadata)
                 } else {
                     println!("{}", String::from_utf8_lossy(&result.stderr));
-                    Err(ApplicationError::GenerateMetadataError)
+                    Err(Error::GenerateMetadataError)
                 }
             }
-            Err(_) => Err(ApplicationError::GenerateMetadataError),
+            Err(_) => Err(Error::GenerateMetadataError),
         }
     }
 
