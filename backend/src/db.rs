@@ -1,15 +1,13 @@
 use std::fs;
 
-use futures::stream::TryStreamExt;
-use mongodb::{
-    bson::doc, options::ClientOptions, results::InsertOneResult, Client, Collection, Database,
-};
+
 
 use crate::{
     error::Error,
+    generate_metadata,
     git::git::{add_study, commit_study, push_study},
     redcap::redcap::{Log, Response},
-    study::Study,
+    study::{Metadata, Study},
     Result,
 };
 #[derive(Debug)]
@@ -21,15 +19,21 @@ pub struct DB {
     responses: Collection<Response>,
 }
 
-impl DB {
-    async fn init() -> Result<Self> {
-        let client_options = ClientOptions::parse(
-            "mongodb+srv://<username>:<password>@<cluster-url>/test?w=majority",
-        )
-        .await?;
+impl Client {
+    async fn insert_log(&self, log: Log) -> Result<InsertOneResult> {
+        let result = self
+            .database("momentum")
+            .collection("logs")
+            .insert_one(log, None)
+            .await?;
+        Ok(result)
+    }
+}
 
+impl DB {
+    async fn init(uri: &str) -> Result<Self> {
         // Get a handle to the cluster
-        let client = Client::with_options(client_options)?;
+        let client = Client::with_uri_str(uri).await?;
         let momentum = client.database("momentum");
         momentum.run_command(doc! {"ping": 1}, None).await?;
         println!("Connected successfully.");
@@ -50,14 +54,19 @@ impl DB {
     }
 
     async fn insert_study(&self, study: Study) -> Result<InsertOneResult> {
-        let result = self.studies.insert_one(study, None).await?;
         fs::write(
             format!("studies/{}.json", study.properties.study_id),
             study.to_string(),
         )?;
         add_study(&study.properties.study_id)?;
-        commit_study(&study.properties.study_id)?;
+        let commit = commit_study(&study.properties.study_id)?;
         push_study()?;
+        study.metadata = Some(Metadata {
+            commit,
+            timestamp: chrono::Utc::now().timestamp_millis(),
+        });
+
+        let result = self.studies.insert_one(study, None).await?;
         Ok(result)
     }
 

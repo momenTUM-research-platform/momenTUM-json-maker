@@ -1,20 +1,24 @@
-use std::sync::Mutex;
-
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use api::*;
+use dotenv::dotenv;
+use std::env;
+use std::sync::Mutex;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
     let keys = init_api_keys();
     let payloads = init_payloads();
     let studies = init_study_repository();
-    let db = DB::init().unwrap();
+    let uri = env::var("MONGODB_URI");
+    let client = Client::with_uri_str(uri).await?;
+
     let app_data = web::Data::new(State {
         payloads: Mutex::new(payloads),
         keys: Mutex::new(keys),
         studies: Mutex::new(studies),
-        db,
+        client,
     });
 
     HttpServer::new(move || {

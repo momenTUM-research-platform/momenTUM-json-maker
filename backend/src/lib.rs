@@ -6,15 +6,24 @@ mod study;
 pub use crate::{
     db::DB,
     error::Error,
-    git::git::{generate_metadata, init_study_repository, timestamp},
+    git::git::init_study_repository,
     redcap::redcap::{import_response, Payload, Submission},
 };
 use actix_multipart_extract::Multipart;
 use actix_web::{get, post, route, web, HttpResponse, Responder};
+use mongodb::{bson::doc, results::InsertOneResult, Client, Collection, Database};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::{collections::HashMap, io::Read, sync::Mutex};
 use study::Study;
+
+#[derive(Debug)]
+pub struct State {
+    pub client: Client,
+    pub keys: Mutex<HashMap<String, String>>,
+    pub payloads: Mutex<HashMap<i64, Payload>>,
+    pub studies: Mutex<HashMap<String, Study>>,
+}
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -22,14 +31,6 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub struct Key {
     pub study_id: String,
     pub api_key: String,
-}
-
-#[derive(Debug)]
-pub struct State {
-    pub db: DB,
-    pub keys: Mutex<HashMap<String, String>>,
-    pub payloads: Mutex<HashMap<i64, Payload>>,
-    pub studies: Mutex<HashMap<String, Study>>,
 }
 
 #[get("/api/v1/status")]
@@ -42,15 +43,18 @@ async fn fetch_study_by_commit(
     params: web::Path<(String, String)>,
     state: web::Data<State>,
 ) -> impl Responder {
-    let (mut study_id, commit) = params.into_inner();
+    let (mut study_id, commit_id) = params.into_inner();
     if study_id.ends_with(".json") {
         study_id = study_id.replace(".json", "");
     }
-    let result = get_study(
-        state.studies.lock().unwrap().clone(),
-        study_id,
-        Some(commit),
-    );
+    let result = state
+        .client
+        .database("momentum")
+        .collection("studies")
+        .find_one(
+            doc! { "properties": { "study_id": study_id}, "metadata": {"commit" : commit_id}},
+            None,
+        );
 
     result
 }
@@ -62,13 +66,21 @@ async fn fetch_study(study_id: web::Path<String>, state: web::Data<State>) -> im
         study_id = study_id.replace(".json", "");
     }
 
-    let result = get_study(state.studies.lock().unwrap().clone(), study_id, None);
+    let result = state
+        .client
+        .database("momentum")
+        .collection("studies")
+        .find_one(doc! { "properties": { "study_id": study_id}}, None);
     result
 }
 
 #[get("/api/v1/studies")]
 async fn all_studies(state: web::Data<State>) -> Result<HttpResponse> {
-    let studies = state.studies.lock().unwrap().clone();
+    let studies = state
+        .client
+        .database("momentum")
+        .collection("studies")
+        .find(doc! {}, None);
     Ok(HttpResponse::Ok().json(studies))
 }
 

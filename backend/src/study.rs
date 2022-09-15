@@ -37,8 +37,7 @@ impl Responder for Study {
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Metadata {
     pub commit: String,
-    pub timestamp: i32,
-    pub url: String,
+    pub timestamp: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
