@@ -1,13 +1,12 @@
 pub mod redcap {
-    use actix_web::web;
-    use chrono::prelude::*;
+    use crate::error::Error;
+    use mongodb::bson::doc;
+    use rocket::form::Form;
+    use rocket_db_pools::Connection;
+    use serde::{Deserialize, Serialize};
     use std::collections::HashMap;
 
-    use actix_multipart_extract::{Multipart, MultipartForm};
-    use serde::{Deserialize, Serialize};
-    use std::fs;
-
-    use crate::{Error, State};
+    use crate::Mongo;
 
     #[derive(Debug, Serialize, Deserialize, Clone)]
     #[serde(untagged)]
@@ -17,9 +16,8 @@ pub mod redcap {
         Entries(Vec<i8>),
     }
 
-    #[derive(Serialize, Deserialize, Debug, MultipartForm)]
+    #[derive(Serialize, Deserialize, Debug, FromForm)]
     pub struct Submission {
-        #[multipart(max_size = 5MB)]
         pub data_type: String,
         pub user_id: String,
         pub study_id: String,
@@ -41,9 +39,8 @@ pub mod redcap {
         pub timestamp_in_ms: Option<i64>,
     }
 
-    #[derive(Serialize, Deserialize, Debug, MultipartForm)]
+    #[derive(Serialize, Deserialize, Debug, FromForm)]
     pub struct Log {
-        #[multipart(max_size = 5MB)]
         pub data_type: String,
         pub user_id: String,
         pub study_id: String,
@@ -55,9 +52,8 @@ pub mod redcap {
         pub timestamp_in_ms: Option<i64>,
     }
 
-    #[derive(Serialize, Deserialize, Debug, MultipartForm)]
+    #[derive(Serialize, Deserialize, Debug, FromForm)]
     pub struct Response {
-        #[multipart(max_size = 5MB)]
         pub data_type: String,
         pub user_id: String,
         pub study_id: String,
@@ -95,36 +91,45 @@ pub mod redcap {
     //     entries: Option<Vec<i8>>,
     //     hash_map: HashMap<String, Response>,
     // }
+    #[derive(Deserialize)]
+    struct Key {
+        // Database storage of API-Keys for RedCap. Only one per study_id
+        study_id: String,
+        api_key: String,
+    }
 
     const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
 
     pub async fn import_response(
-        data: Multipart<Submission>,
-        state: web::Data<State>,
+        db: Connection<Mongo>,
+        log: Form<Submission>,
         // keys: HashMap<String, String>,
         // mut payloads: MutexGuard<HashMap<i64, Payload>>,
     ) -> Result<(), Error> {
-        let keys = state.keys.lock().unwrap().clone();
-        let mut payloads = state.payloads.lock().unwrap();
+        let key = db
+            .database("momentum")
+            .collection::<Key>("keys")
+            .find_one(doc! { "study_id": &log.study_id }, None)
+            .await?;
 
-        if data.event.is_some() {
+        if log.event.is_some() {
             println!(
                 "Received log entry at {} from {} on page {} with event {}",
-                data.timestamp
+                log.timestamp
                     .as_ref()
                     .unwrap_or(&"unknown time".to_string()),
-                data.user_id,
-                data.page.as_ref().unwrap_or(&"unknown page".to_string()),
-                data.event.as_ref().unwrap_or(&"unknown event".to_string()),
+                log.user_id,
+                log.page.as_ref().unwrap_or(&"unknown page".to_string()),
+                log.event.as_ref().unwrap_or(&"unknown event".to_string()),
             );
             // Log handling
             return Ok(());
         }
-        let key = keys.get(&data.study_id);
         if key.is_none() {
             return Err(Error::NoCorrespondingAPIKey);
         }
-        if data.entries.is_none() && data.responses.is_none() {
+
+        if log.entries.is_none() && log.responses.is_none() {
             return Err(Error::NoEntriesOrResponses);
         }
 
@@ -132,7 +137,7 @@ pub mod redcap {
             (
                 "redcap_repeat_instrument".to_string(),
                 Entry::Text(
-                    data.module_name
+                    log.module_name
                         .as_ref()
                         .unwrap_or(&"unknown_module".to_string())
                         .clone(),
@@ -144,52 +149,46 @@ pub mod redcap {
             ),
             (
                 "record_id".to_string(),
-                Entry::Text(data.user_id.to_string()),
+                Entry::Text(log.user_id.to_string()),
             ),
             // ("user_id", Response::Text(data.user_id)),
             // ("study_id", Response::Text(data.study_id)),
             (
-                format!("response_time_in_ms_{}", &data.module_index),
-                Entry::Integer(data.response_time_in_ms.unwrap_or(0)),
+                format!("response_time_in_ms_{}", &log.module_index),
+                Entry::Integer(log.response_time_in_ms.unwrap_or(0)),
             ),
             (
-                format!("response_time_{}", &data.module_index),
+                format!("response_time_{}", &log.module_index),
                 Entry::Text(
-                    data.response_time
+                    log.response_time
                         .as_ref()
                         .unwrap_or(&"unknown time".to_string())
                         .clone(),
                 ),
             ),
         ]);
-        if let Some(ref response) = data.responses {
+        if let Some(ref response) = log.responses {
             println!("{:#?}", response);
-            let response: HashMap<String, Entry> = serde_json::from_str(response.as_str())?;
+            let response: HashMap<String, Entry> = serde_json::from_str(response.as_str()).unwrap();
             println!("Importing response for study {:#?}", response);
             response.iter().for_each(|(k, v)| {
-                record.insert(format!("{}_{}", k, data.module_index), v.clone());
+                record.insert(format!("{}_{}", k, log.module_index), v.clone());
             });
             println!("{:#?}", record);
         };
 
-        if let Some(entries) = data.entries.clone() {
+        if let Some(entries) = log.entries.clone() {
             record.insert("entries".to_string(), Entry::Entries(entries));
         };
 
         let payload = Payload {
-            token: key.unwrap().to_string(),
+            token: key.unwrap().api_key,
             content: "record".to_string(),
             format: "json".to_string(),
             r#type: "flat".to_string(),
             data: serde_json::to_string(&vec![record]).unwrap(),
         };
         println!("{:#?}", payload);
-
-        payloads.insert(Utc::now().timestamp_millis(), payload.clone());
-        fs::write(
-            "payloads.json",
-            serde_json::to_string_pretty(&payloads.clone())?,
-        )?;
 
         let response = reqwest::Client::new()
             .post(REDCAP_API_URL)

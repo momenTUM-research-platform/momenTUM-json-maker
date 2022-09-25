@@ -1,32 +1,29 @@
-use actix_web::{HttpResponse, ResponseError};
-use std::io;
 use thiserror::Error;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Responder)]
 pub enum Error {
-    #[error("Error when using git: {0}")]
-    GitError(String),
+    #[response(status = 404)]
     #[error("Study not found")]
-    StudyNotFound,
+    StudyNotFound(String),
+    #[response(status = 400)]
     #[error("Study invalid: {0}")]
     StudyInvalid(String),
-    #[error("Error when generating metadata")]
-    GenerateMetadataError,
-
+    #[response(status = 401)]
     #[error("No corresponding API key for redcap project found")]
-    NoCorrespondingAPIKey,
-    #[error("No entries or responses found. Must contain any of the two.")]
-    NoEntriesOrResponses,
+    NoCorrespondingAPIKey(String),
+    #[response(status = 401)]
     #[error("Redcap authentication error. Is the API key correct?")]
-    RedcapAuthenicationError,
+    RedcapAuthenicationError(String),
+    #[response(status = 400)]
+    #[error("No entries or responses found. Must contain any of the two.")]
+    NoEntriesOrResponses(String),
+    #[response(status = 500)]
     #[error("{0}")]
     RedcapError(String),
+    #[response(status = 500)]
     #[error("Database Error")]
     DbError(#[from] mongodb::error::Error),
-}
-
-impl ResponseError for Error {
-    fn error_response(&self) -> HttpResponse {
-        HttpResponse::BadRequest().body(format!("Error while handling the request: {}", self))
-    }
+    #[response(status = 500)]
+    #[error("Request error")]
+    RequestError(#[from] reqwest::Error),
 }

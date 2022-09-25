@@ -1,7 +1,5 @@
-use std::fmt;
-
-use actix_web::{body::BoxBody, http::header::ContentType, HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Study {
@@ -10,27 +8,10 @@ pub struct Study {
     pub metadata: Option<Metadata>,
 }
 
-impl Study {
-    fn to_string(&self) -> String {
-        serde_json::to_string(self).unwrap()
-    }
-}
+impl Study {}
 impl fmt::Display for Study {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.to_string())
-    }
-}
-
-impl Responder for Study {
-    type Body = BoxBody;
-
-    fn respond_to(self, _req: &HttpRequest) -> HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-
-        // Create response and set content type
-        HttpResponse::Ok()
-            .content_type(ContentType::json())
-            .body(body)
     }
 }
 
