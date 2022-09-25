@@ -1,12 +1,12 @@
 pub mod redcap {
-    use crate::error::Error;
+    use crate::{error::Error, Key};
     use mongodb::bson::doc;
     use rocket::form::Form;
     use rocket_db_pools::Connection;
     use serde::{Deserialize, Serialize};
     use std::collections::HashMap;
 
-    use crate::Mongo;
+    use crate::DB;
 
     #[derive(Debug, Serialize, Deserialize, Clone)]
     #[serde(untagged)]
@@ -91,27 +91,16 @@ pub mod redcap {
     //     entries: Option<Vec<i8>>,
     //     hash_map: HashMap<String, Response>,
     // }
-    #[derive(Deserialize)]
-    struct Key {
-        // Database storage of API-Keys for RedCap. Only one per study_id
-        study_id: String,
-        api_key: String,
-    }
 
     const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
 
-    pub async fn import_response(
-        db: Connection<Mongo>,
-        log: Form<Submission>,
-        // keys: HashMap<String, String>,
-        // mut payloads: MutexGuard<HashMap<i64, Payload>>,
-    ) -> Result<(), Error> {
+    pub async fn import_response(db: Connection<DB>, log: Form<Submission>) -> Result<(), Error> {
         let key = db
             .database("momentum")
             .collection::<Key>("keys")
             .find_one(doc! { "study_id": &log.study_id }, None)
             .await?;
-
+        println!("Got keys");
         if log.event.is_some() {
             println!(
                 "Received log entry at {} from {} on page {} with event {}",

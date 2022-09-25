@@ -1,2 +1,2 @@
 [default.databases.mongodb]
-url = tuspl22-redcap-db.srv.mwn.de"
+url = "mongodb://tuspl22-redcap-db.srv.mwn.de/momentum?retryWrites=true&w=majority"

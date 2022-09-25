@@ -1,12 +1,15 @@
 #[macro_use]
 extern crate rocket;
+
+use mongodb::options::ReplaceOptions;
 use mongodb::{bson::doc, options::FindOneOptions};
-use rocket::{http::Status, response::Responder, serde::json::Json};
+use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
 use study::Study;
 
 use crate::error::Error;
+use crate::redcap::redcap::{import_response, Submission};
 
 mod error;
 mod redcap;
@@ -14,9 +17,10 @@ mod study;
 
 #[derive(Database)]
 #[database("mongodb")]
-struct Mongo(mongodb::Client);
+pub struct DB(mongodb::Client);
+type Result<T> = std::result::Result<T, Error>;
+type PotentialStudy = Result<Json<Study>>;
 
-type PotentialStudy = Json<Option<Study>>;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Key {
     pub study_id: String,
@@ -29,7 +33,7 @@ fn status() -> &'static str {
 }
 
 #[get("/api/v1/studies/<study_id>")]
-async fn fetch_study(db: Connection<Mongo>, study_id: &str) -> Result<Json<Study>, Error> {
+async fn fetch_study(db: Connection<DB>, study_id: &str) -> PotentialStudy {
     if study_id.ends_with(".json") {
         let study_id = study_id.replace(".json", "");
     }
@@ -41,56 +45,64 @@ async fn fetch_study(db: Connection<Mongo>, study_id: &str) -> Result<Json<Study
             filter,
             FindOneOptions::builder().sort(doc! { "_id": -1}).build(),
         )
-        .await;
+        .await?;
 
     match result {
-        Ok(Some(study)) => Ok(Json(study)),
-        Ok(None) => Err(Error::StudyNotFound),
-        Err(err) => Err(Error::DbError(err)),
+        Some(study) => Ok(Json(study)),
+        None => Err(Error::StudyNotFound),
     }
 }
 
 #[post("/api/v1/studies/<study_id>")] // Support for legacy schema app, which uses POST to retrieve studies
-async fn get_study_by_post(db: Connection<Mongo>, study_id: &str) -> PotentialStudy {
+async fn get_study_by_post(db: Connection<DB>, study_id: &str) -> PotentialStudy {
     fetch_study(db, study_id).await
 }
 
 #[get("/api/v1/studies")]
-async fn all_studies(db: Connection<Mongo>) -> Json<Vec<Study>> {
+async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
     let studies = db
         .database("momentum")
         .collection::<Study>("studies")
-        .find(doc! {}, None);
-    studies
+        .find(doc! {}, None)
+        .await;
+
+    todo!()
+    // match studies {
+    //     Ok(study) => Ok(Json(study.collect::<Vec<Study>>())),
+    //     Ok(None) => (Err(Error::StudyNotFound)),
+    //     Err(err) => Err(Error::DbError(err)),
+    // }
 }
 
 #[post("/api/v1/study", data = "<study>")]
-async fn create_study(mut db: Connection<Mongo>, study: Json<Study>) {
+async fn create_study(db: Connection<DB>, study: Json<Study>) -> Result<String> {
     let result = db
         .database("momentum")
         .collection::<Study>("studies")
-        .insert_one(study, None);
-    result._id
+        .insert_one(&*study, None)
+        .await?;
+
+    Ok(result.inserted_id.to_string())
 }
 
-// #[post("/api/v1/response")]
-// async fn save_response(data: Multipart<Submission>, state: web::Data<State>) -> impl Responder {
-//     println!("Saving response for {}", data.study_id);
-//     match import_response(data, state).await {
-//         Ok(_) => HttpResponse::Ok().body("Response saved"),
-//         Err(e) => HttpResponse::BadRequest().body(e.to_string()),
-//     }
-// }
-// #[post("/api/v1/key")]
-// async fn save_key(key: web::Json<Key>, data: web::Data<State>) -> Result<HttpResponse> {
-//     let api_key = key.0.api_key.clone();
-//     let study_id = key.0.study_id.clone();
-//     let mut keys = data.keys.lock().unwrap();
-//     keys.insert(study_id, api_key);
+#[post("/api/v1/response", data = "<data>")]
+async fn save_response(data: Form<Submission>, db: Connection<DB>) -> Result<()> {
+    println!("Saving response for {}", data.study_id);
+    import_response(db, data).await
+}
+#[post("/api/v1/key", data = "<key>")]
+async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
+    db.database("momentum")
+        .collection::<Key>("keys")
+        .replace_one(
+            doc! {"study_id":&key.study_id},
+            &*key,
+            ReplaceOptions::builder().upsert(true).build(), // For true upsert, new key document will be inserted if not existing before => Only one key per study_id
+        )
+        .await?;
 
-//     fs::write("keys.json", serde_json::to_string_pretty(&keys.clone())?)?;
-//     Ok(HttpResponse::Ok().body("Key saved"))
-// }
+    Ok(())
+}
 #[catch(404)]
 pub async fn missing_route() -> &'static str {
     "There is nothing here.
@@ -107,16 +119,16 @@ Available Routes:
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(Mongo::init()).mount(
+    rocket::build().attach(DB::init()).mount(
         "/",
         routes![
             status,
-            fetch_latest_study_of_study_id,
             get_study_by_post,
-            missing_route,
             create_study,
             fetch_study,
-            all_studies
+            all_studies,
+            save_key,
+            save_response
         ],
     )
 }
