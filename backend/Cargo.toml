@@ -1,30 +1,25 @@
 [package]
-name = "backend"
-version = "0.1.0"
-edition = "2021"
-license = "GPL-3.0-or-later"
-
-[lib]
 name = "api"
-path = "src/lib.rs"
-
-[[bin]]
-name = "backend"
-path = "src/main.rs"
+version = "0.2.0"
+edition = "2021"
+authors = ["Constantin Goeldel <constantin.goeldel@tum.de>"]
+description = "The REST API serving the momenTUM-json maker and the momenTUM app"
+license = "GPL-3.0-or-later"
+homepage = "https://tuspl22-momentum.srv.mwn.de/"
+repository = "https://github.com/TUMChronobiology/momenTUM-json-maker"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "4"
-serde = { version = "1.0.140", features = ["derive"] }
-serde_json = "1.0.82"
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 thiserror = "1.0"
 reqwest = { version = "0.11", features = ["json"] }
-tokio = { version = "1", features = ["full"] }
-actix-cors = "0.6.1"
-actix-multipart-extract = "0.1"
-fancy-regex = "0.7.1"
-chrono = "0.4"
 dotenv = "0.15.0"
 mongodb = "2.3.0"
-futures = "0.3" # needed?
+
+
+[dependencies.rocket_db_pools]
+version = "0.1.0-rc.2"
+features = ["mongodb"]
