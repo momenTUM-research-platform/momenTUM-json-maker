@@ -1,5 +1,0 @@
-Flask
-PyCap
-python-dotenv
-jsonschema
-flask_cors
