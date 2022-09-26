@@ -1,16 +1,16 @@
 #[macro_use]
 extern crate rocket;
 
-use std::str::FromStr;
-
-use mongodb::bson::oid::ObjectId;
-use mongodb::bson::DateTime;
 use mongodb::options::ReplaceOptions;
-use mongodb::{bson::doc, options::FindOneOptions};
+use mongodb::{
+    bson::{doc, oid::ObjectId, DateTime},
+    options::FindOneOptions,
+};
 use rocket::futures::stream::TryStreamExt;
 use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 use study::Study;
 
 use crate::error::Error;
@@ -20,11 +20,12 @@ mod error;
 mod redcap;
 mod study;
 
+type Result<T> = std::result::Result<T, Error>;
+type PotentialStudy = Result<Json<Study>>;
+
 #[derive(Database)]
 #[database("mongodb")]
 pub struct DB(mongodb::Client);
-type Result<T> = std::result::Result<T, Error>;
-type PotentialStudy = Result<Json<Study>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Key {
@@ -54,7 +55,6 @@ async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy
                 .build(),
         )
         .await?;
-    println!("{:#?}", result);
     match result {
         Some(study) => Ok(Json(study)),
         None => Err(Error::StudyNotFound),

@@ -1,14 +1,11 @@
 pub mod redcap {
-    use crate::{error::Error, Key};
+    use crate::{error::Error, Key, DB};
     use mongodb::bson::doc;
-    use rocket::form::{Form, Strict};
     use rocket_db_pools::Connection;
     use serde::{Deserialize, Serialize};
     use std::collections::HashMap;
 
-    use crate::DB;
-
-    #[derive(Debug, Serialize, Deserialize, Clone)]
+    #[derive(Serialize, Deserialize, Clone)]
     #[serde(untagged)]
     enum Entry {
         Integer(i64),
@@ -30,7 +27,7 @@ pub mod redcap {
         pub timestamp_in_ms: i64,
     }
 
-    #[derive(Serialize, Deserialize, Debug, FromForm)]
+    #[derive(Serialize, FromForm)]
     pub struct Response {
         pub data_type: String,
         pub user_id: String,
@@ -46,7 +43,7 @@ pub mod redcap {
         pub alert_time: String,
     }
 
-    #[derive(Serialize, Debug, Deserialize, Clone)]
+    #[derive(Serialize, Deserialize)]
     pub struct Payload {
         token: String,
         content: String,
@@ -83,8 +80,6 @@ pub mod redcap {
                 "record_id".to_string(),
                 Entry::Text(res.user_id.to_string()),
             ),
-            // ("user_id", Response::Text(data.user_id)),
-            // ("study_id", Response::Text(data.study_id)),
             (
                 format!("response_time_in_ms_{}", &res.module_index),
                 Entry::Integer(res.response_time_in_ms),

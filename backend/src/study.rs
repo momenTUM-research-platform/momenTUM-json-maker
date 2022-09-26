@@ -1,8 +1,7 @@
-use mongodb::bson::{oid::ObjectId, DateTime};
+use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Study {
     pub _id: Option<ObjectId>,
     pub timestamp: Option<i64>, // time of upload
@@ -10,14 +9,7 @@ pub struct Study {
     pub modules: Vec<Module>,
 }
 
-impl Study {}
-impl fmt::Display for Study {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.to_string())
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Properties {
     pub study_id: String,
     pub study_name: String,
@@ -33,7 +25,7 @@ pub struct Properties {
     pub cache: bool,
     pub created_by: String,
 }
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Module {
     pub r#type: String,
     pub name: String,
@@ -46,7 +38,7 @@ pub struct Module {
     pub unlock_after: Vec<String>,
     pub shuffle: bool,
 }
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Alert {
     pub title: String,
     pub message: String,
@@ -60,12 +52,12 @@ pub struct Alert {
     pub timeout: bool,
     pub timeout_after: i32,
 }
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Time {
     pub hours: i8,
     pub minutes: i8,
 }
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Graph {
     pub display: bool,
     pub variable: Option<String>,
@@ -74,14 +66,14 @@ pub struct Graph {
     pub r#type: Option<String>,
     pub max_points: Option<i32>,
 }
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Section {
     pub name: String,
     pub shuffle: bool,
     pub questions: Vec<Question>,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Question {
     #[serde(rename = "instruction")]
@@ -158,7 +150,7 @@ pub enum Question {
         thumb: String,
     },
 }
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum StringOrBool {
     String(String),
