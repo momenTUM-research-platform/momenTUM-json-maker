@@ -5,7 +5,6 @@ use std::fmt;
 pub struct Study {
     pub properties: Properties,
     pub modules: Vec<Module>,
-    pub metadata: Option<Metadata>,
 }
 
 impl Study {}
@@ -13,12 +12,6 @@ impl fmt::Display for Study {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.to_string())
     }
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct Metadata {
-    pub commit: String,
-    pub timestamp: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]

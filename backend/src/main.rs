@@ -1,15 +1,19 @@
 #[macro_use]
 extern crate rocket;
 
+use std::str::FromStr;
+
+use mongodb::bson::oid::ObjectId;
 use mongodb::options::ReplaceOptions;
 use mongodb::{bson::doc, options::FindOneOptions};
-use rocket::{form::Form, serde::json::Json};
+use rocket::futures::stream::TryStreamExt;
+use rocket::{form::Form, form::Strict, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
 use study::Study;
 
 use crate::error::Error;
-use crate::redcap::redcap::{import_response, Submission};
+use crate::redcap::redcap::{import_response, Log, Response};
 
 mod error;
 mod redcap;
@@ -33,13 +37,13 @@ fn status() -> &'static str {
 }
 
 #[get("/api/v1/studies/<study_id>")]
-async fn fetch_study(db: Connection<DB>, study_id: &str) -> PotentialStudy {
+async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy {
     if study_id.ends_with(".json") {
-        let study_id = study_id.replace(".json", "");
+        study_id = study_id.replace(".json", "");
     }
-    let filter = doc! { "$or": [ {"properties": { "study_id": &study_id}}, {"_id": &study_id}]};
+    let filter = doc! { "$or": [ {"properties.study_id": &study_id}, {"_id": ObjectId::from_str(&study_id).unwrap_or(ObjectId::new())}]};
     let result = db
-        .database("momentum")
+        .database("momenTUM")
         .collection::<Study>("studies")
         .find_one(
             filter,
@@ -54,30 +58,36 @@ async fn fetch_study(db: Connection<DB>, study_id: &str) -> PotentialStudy {
 }
 
 #[post("/api/v1/studies/<study_id>")] // Support for legacy schema app, which uses POST to retrieve studies
-async fn get_study_by_post(db: Connection<DB>, study_id: &str) -> PotentialStudy {
+async fn get_study_by_post(db: Connection<DB>, study_id: String) -> PotentialStudy {
     fetch_study(db, study_id).await
 }
 
 #[get("/api/v1/studies")]
 async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
-    let studies = db
-        .database("momentum")
+    let cursor = db
+        .database("momenTUM")
         .collection::<Study>("studies")
         .find(doc! {}, None)
-        .await;
+        .await?;
+    let studies = cursor.try_collect::<Vec<Study>>().await?;
+    Ok(Json(studies))
+}
 
-    todo!()
-    // match studies {
-    //     Ok(study) => Ok(Json(study.collect::<Vec<Study>>())),
-    //     Ok(None) => (Err(Error::StudyNotFound)),
-    //     Err(err) => Err(Error::DbError(err)),
-    // }
+#[get("/api/v1/studies/all/<study_id>")]
+async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result<Json<Vec<Study>>> {
+    let cursor = db
+        .database("momenTUM")
+        .collection::<Study>("studies")
+        .find(doc! {"properties.study_id": &study_id}, None)
+        .await?;
+    let studies = cursor.try_collect::<Vec<Study>>().await?;
+    Ok(Json(studies))
 }
 
 #[post("/api/v1/study", data = "<study>")]
 async fn create_study(db: Connection<DB>, study: Json<Study>) -> Result<String> {
     let result = db
-        .database("momentum")
+        .database("momenTUM")
         .collection::<Study>("studies")
         .insert_one(&*study, None)
         .await?;
@@ -85,14 +95,24 @@ async fn create_study(db: Connection<DB>, study: Json<Study>) -> Result<String> 
     Ok(result.inserted_id.to_string())
 }
 
-#[post("/api/v1/response", data = "<data>")]
-async fn save_response(data: Form<Submission>, db: Connection<DB>) -> Result<()> {
-    println!("Saving response for {}", data.study_id);
-    import_response(db, data).await
+#[post("/api/v1/response", data = "<submission>")]
+async fn save_response(submission: Form<Response>, db: Connection<DB>) -> Result<()> {
+    import_response(db, submission.into_inner()).await
 }
+
+#[post("/api/v1/log", data = "<submission>")]
+async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
+    db.database("momenTUM")
+        .collection("logs")
+        .insert_one(submission.into_inner(), None)
+        .await?;
+
+    return Ok(());
+}
+
 #[post("/api/v1/key", data = "<key>")]
 async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
-    db.database("momentum")
+    db.database("momenTUM")
         .collection::<Key>("keys")
         .replace_one(
             doc! {"study_id":&key.study_id},
@@ -102,19 +122,6 @@ async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
         .await?;
 
     Ok(())
-}
-#[catch(404)]
-pub async fn missing_route() -> &'static str {
-    "There is nothing here.
-
-Available Routes: 
-/api/v1/status
-    /api/v1/studies/{study_id}/{commit_id}
-    /api/v1/studies/{study_id}
-    /api/v1/studies
-    /api/v1/response
-    /api/v1/key
-    "
 }
 
 #[launch]
@@ -127,8 +134,10 @@ fn rocket() -> _ {
             create_study,
             fetch_study,
             all_studies,
+            save_log,
             save_key,
-            save_response
+            save_response,
+            all_studies_of_study_id,
         ],
     )
 }
