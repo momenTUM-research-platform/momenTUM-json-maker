@@ -16,21 +16,21 @@ yarn
 yarn dev
 ```
 
-Rust backend
+Rust API
 
 Install Rust: https://www.rust-lang.org/learn/get-started
 
 Development
 
 ```
-cd backend
+cd api
 cargo watch -x run -i keys.json
 ```
 
 Production
 
 ```
-cd backend
+cd api
 cargo run --release
 ```
 

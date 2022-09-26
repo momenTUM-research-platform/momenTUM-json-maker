@@ -20,11 +20,12 @@ services:
     ports:
       - "3000:3000"
    
-  backend:
-    build: ./backend
+  api:
+    build: ./api
     ports:
       - "8000:8000"
- 
+    volumes:
+      - ./api:/usr/src/api
 
 networks:
   generator_network:
