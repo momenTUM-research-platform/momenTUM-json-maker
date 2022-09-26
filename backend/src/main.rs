@@ -4,10 +4,11 @@ extern crate rocket;
 use std::str::FromStr;
 
 use mongodb::bson::oid::ObjectId;
+use mongodb::bson::DateTime;
 use mongodb::options::ReplaceOptions;
 use mongodb::{bson::doc, options::FindOneOptions};
 use rocket::futures::stream::TryStreamExt;
-use rocket::{form::Form, form::Strict, serde::json::Json};
+use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
 use study::Study;
@@ -47,10 +48,13 @@ async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy
         .collection::<Study>("studies")
         .find_one(
             filter,
-            FindOneOptions::builder().sort(doc! { "_id": -1}).build(),
+            FindOneOptions::builder()
+                .sort(doc! { "timestamp": -1})
+                .show_record_id(true)
+                .build(),
         )
         .await?;
-
+    println!("{:#?}", result);
     match result {
         Some(study) => Ok(Json(study)),
         None => Err(Error::StudyNotFound),
@@ -85,7 +89,9 @@ async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result
 }
 
 #[post("/api/v1/study", data = "<study>")]
-async fn create_study(db: Connection<DB>, study: Json<Study>) -> Result<String> {
+async fn create_study(db: Connection<DB>, mut study: Json<Study>) -> Result<String> {
+    study._id = Some(ObjectId::new());
+    study.timestamp = Some(DateTime::now().timestamp_millis());
     let result = db
         .database("momenTUM")
         .collection::<Study>("studies")

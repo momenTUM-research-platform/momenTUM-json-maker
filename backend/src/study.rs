@@ -1,8 +1,11 @@
+use mongodb::bson::{oid::ObjectId, DateTime};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Study {
+    pub _id: Option<ObjectId>,
+    pub timestamp: Option<i64>, // time of upload
     pub properties: Properties,
     pub modules: Vec<Module>,
 }
