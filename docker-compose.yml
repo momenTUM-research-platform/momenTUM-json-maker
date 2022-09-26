@@ -13,42 +13,18 @@ services:
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
-    networks:
-      - generator_network
+   
   web:
     restart: on-failure
     build: ./frontend
     ports:
-      - "8008:3000"
-    networks:
-      - generator_network
-  api:
-    restart: on-failure
-    build: ./server
-    ports:
       - "3000:3000"
-    volumes:
-      - surveys:/usr/src/app/surveys
-    networks:
-      - generator_network
-  redcap:
-    restart: on-failure
-    build: ./redcap
-    volumes:
-      - ./frontend:/frontend
-    ports:
-      - "5000:5000"
-    networks:
-      - generator_network
+   
   backend:
     build: ./backend
     ports:
       - "8000:8000"
-    networks:
-      - generator_network
-    volumes:
-      - ./backend:/usr/src/backend
-      - ./ssh:/root/.ssh
+ 
 
 networks:
   generator_network:

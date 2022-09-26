@@ -15,7 +15,6 @@ dist-ssr
 .parcel-cache
 
 
-/server/package-lock.json
 
 # Editor directories and files
 .vscode/*
@@ -35,18 +34,7 @@ package-lock.json
 /data
 /letsencrypt
 
-/redcap/venv
-/redcap/__pycache__
-/redcap/records.json
-/server/surveys
-/redcap/keys.json
-
-/redbot/data
-/redbot/letsencrypt
-
 # Added by cargo
 
-/backend/studies
-/backend/target
-/backend/keys.json
-/backend/payloads.json
+/api/target
+
