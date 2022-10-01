@@ -1,16 +1,18 @@
 import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
-import Ajv, { DefinedError } from "ajv";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Schema from "../schema.json";
-import { Form } from "../types";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
-
+import { Study } from "../types";
+import toast, { Toaster } from "react-hot-toast";
+import { addApiKey, download, generateDictionary, load, save, upload, validate } from "./tools";
 import ToC from "./ToC";
 import "./App.css";
+import React from "react";
+import Commit from "./Commit";
+import QR from "qrcode";
 
-const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3001/api";
+export const API_URL =
+  process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
 
 const Container = styled.div`
   margin: 100px;
@@ -28,183 +30,145 @@ const Button = styled.button`
   text-decoration: none;
 `;
 
+const Latest = styled.button`
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  background: #1c426b;
+  color: white;
+  border-radius: 5px;
+  margin-right: 7px;
+  margin-top: 3px;
+  box-shadow: none;
+  font-size: 1.2rem;
+  border: none;
+  text-decoration: none;
+  margin-top: 10px;
+`;
+
 function App() {
-  const [form, setForm] = useState<Form | null>(null);
+  const [study, setStudy] = useState<Study | null>(null);
   const [schema, setSchema] = useState(Schema);
   const [liveValidate, setLiveValidate] = useState(false);
+  const [studies, setStudies] = useState<{ [key: string]: Study } | null>(null);
 
   const uiSchema = {
     title: { "ui:widget": "date" },
   };
 
   useEffect(() => {
-    if (!form) return;
+    if (!study || !studies) return;
     let schemaCopy = schema;
-
     schemaCopy.properties.modules.items.properties.condition.enum = [
       "Select one of the properties below",
       "*",
-      ...form?.properties.conditions,
+      ...study?.properties.conditions,
     ];
-    const moduleIds = form.modules.map((module) => module.uuid);
+    // const moduleIds = form.modules.map((module) => module.uuid);
+    const moduleIds = Array.from(new Set(study?.modules.map((module) => module.uuid)));
+
     schemaCopy.properties.modules.items.properties.unlock_after.items.enum =
+      //    moduleIds.size > 0 ? Array.from(moduleIds) : [""];
       moduleIds.length > 0 ? moduleIds : [""];
     setSchema({ ...schemaCopy });
-  }, [form]);
+  }, [study]);
 
   useEffect(() => {
-    console.log("Schema changed");
-  }, [schema]);
+    fetch(API_URL + "/studies")
+      .then((res) => res.json())
+      .then((data) => setStudies(data))
+      .catch((err) => toast.error("Download latest studies failed: " + String(err)));
+  }, []);
 
-  // Validation is computationally expensive, but only done on submit/uplaod
-  function isValidForm(form: Form): { valid: boolean; msg: string } {
-    const validator = new Ajv().compile(schema);
-    const valid = validator(form);
-    if (!valid) {
-      const errors = validator.errors as DefinedError[];
-      return { valid: false, msg: errors[0].message || "Unknown error" };
-    } else {
-      return { valid: true, msg: "Valid" };
-    }
-  }
-
-  function save() {
-    const data = JSON.stringify(form, null, 2);
-    const uri = "data:application/json;charset=utf-8," + encodeURIComponent(data);
-    const link = document.createElement("a");
-    link.href = uri;
-    link.download = "form.json";
-    link.click();
-  }
-
-  function load() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.onchange = (e) => {
-      // @ts-ignore
-      const file = e.target.files![0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = JSON.parse(reader.result as string);
-        setForm(data);
-      };
-      reader.readAsText(file);
-    };
-    input.click();
-  }
-
-  async function upload(form: Form) {
-    console.log(schema.properties.modules.items.properties.unlock_after.items.enum);
-
-    const { valid, msg } = isValidForm(form);
-    const proceed =
-      valid || confirm("Form is not valid. Are you sure you want to upload it? \nError: " + msg);
-    if (proceed) {
-      const data = JSON.stringify(form, null, 2);
-      const password = prompt(
-        "Please enter the password to upload surveys. If you don't know it, ask constantin.goeldel@tum.de or read the .env file on the server"
-      );
-      const postURL = BASE_URL + "/surveys";
-      const response = await fetch(postURL, {
-        method: "POST",
-        body: data,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: password || "MomenTUM",
-        },
-      });
-      const json = await response.json();
-      console.log(json);
-      if (json.status === "ok") {
-        // @ts-ignore
-        alert("Uploaded survey with id " + json.uuid + " to " + json.uri);
-      } else {
-        // @ts-ignore
-        alert("Error: " + json.message);
-      }
-    }
-  }
-
-  async function download() {
-    const uri = BASE_URL + "/surveys/" + prompt("Enter the uuid of the survey");
-    if (!uri) {
-      alert("No download link provided");
-      return;
-    }
-    const response = await fetch(uri);
-    if (response.ok) {
-      const data = await response.json();
-      setForm(data);
-    } else {
-      alert("Download failed");
-    }
-  }
-  // async function downloadDictionary() {
-  //   try {
-  //     console.log(form);
-  //     const uuid = form?.uuid ? form.uuid : prompt("Enter the uuid of the survey");
-  //     if (!uuid) {
-  //       alert("No download uuid provided");
-  //       return;
-  //     }
-  //     const uri = BASE_URL + "/dictionary/" + uuid + "?regenerate=true";
-  //     await fetch(uri, { method: "GET", redirect: "follow" });
-  //   } catch (e) {
-  //     console.error(e);
-  //     alert("Download failed");
-  //   }
-  //
-  async function generateDictionary() {
-    if (!form) return;
-    try {
-      const modules = form.modules;
-      let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`;
-      for (const module of modules) {
-        for (const section of module.sections) {
-          for (const question of section.questions) {
-            if (question.type === "instruction") continue;
-            csvString += `${question.id},${module.uuid},,text,${question.text},,,,,,,,,,,,,\n`;
-          }
-        }
-      }
-      console.log(csvString);
-      saveAs(new Blob([csvString]), "dictionary.csv");
-    } catch (err) {
-      console.error(err);
-      alert("Generation failed");
-    }
-  }
   return (
     <Container>
       <h1>Welcome to the MomenTUM Survey Generator!</h1>
-
-      <Button onClick={save}>Save JSON file</Button>
-      <Button onClick={load}>Load JSON file</Button>
-      <Button onClick={() => form && upload(form)}>Upload JSON file</Button>
-      <Button onClick={download}>Download JSON file</Button>
+      <Button onClick={() => save(study)}>Save JSON file</Button>
+      <Button onClick={() => load(setStudy)}>Load JSON file</Button>
+      <Button onClick={() => study && upload(study, schema)}>Upload JSON file</Button>
+      <Button onClick={() => download(setStudy)}>Download JSON file</Button>
       <Button onClick={generateDictionary}>Generate RedCap Dictionary</Button>
+      {/* <Button onClick={createProject}>Create project in RedCap</Button> */}
+      <Button onClick={addApiKey}>Add API key</Button>
+      <Button onClick={() => study && validate(study, schema)}>Validate</Button>
       <Button>
-        <a className="github" href="https://github.com/TUMChronobiology/momenTUM-json-maker">
+        <a className="github" href="https://github.com/TUMChronobiology/studies">
           Github
         </a>{" "}
       </Button>
-      <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
-      <label htmlFor="validate"> Live Validation?</label>
+      <br />
+      {studies &&
+        Object.entries(studies)
+          .filter(([key]) => key.includes("LATEST"))
+          .map(([key, study]) => (
+            <Latest key={key} onClick={() => setStudy(study)}>
+              <p style={{ margin: "5px 10px 0px 10px" }}>{study.properties.study_name}</p>
+              <p style={{ fontSize: "0.7rem", margin: "0px 10px 5px 10px" }}>
+                {study.properties.study_id}
+              </p>
+            </Latest>
+          ))}
 
       <br />
-      {form && <ToC form={form} />}
+      <br />
 
+      {study && studies && study.metadata && (
+        <>
+          <p>
+            This protocol has been saved {study.metadata.commits.length} times. Select a specific
+            commit by clicking on the button below.
+          </p>
+
+          {study.metadata.commits.map((commit) => (
+            <Commit
+              onClick={() =>
+                setStudy(
+                  Object.entries(studies).find(
+                    ([k, s]) => (k = study.properties.study_id + ":" + commit.id)
+                  )?.[1] || null
+                )
+              }
+              key={commit.id}
+              hash={commit.id}
+              timestamp={commit.timestamp}
+            />
+          ))}
+          <ul>
+            <li>
+              <a href={`${study.metadata.url}/${study.metadata.commits[0].id}`}>Permanent Link</a>{" "}
+            </li>
+            <li>
+              <a
+                onClick={async () => {
+                  let code = await QR.toDataURL(
+                    `${study.metadata.url}/${study.metadata.commits[0].id}`
+                  );
+                  window.open(code);
+                }}
+              >
+                QR-Code
+              </a>
+            </li>
+          </ul>
+        </>
+      )}
+      <input id="validate" onClick={() => setLiveValidate((s) => !s)} type="checkbox" />
+      <label htmlFor="validate"> Live Validation?</label>
+      <br />
+      {study && <ToC form={study} />}
       <FormComponent
-        onChange={({ formData }: { formData: Form }) => setForm(formData)}
-        onSubmit={(e) => form && upload(form)}
+        onChange={({ formData }: { formData: Study }) => setStudy(formData)}
+        onSubmit={(e) => study && upload(study, schema)}
         noValidate={!liveValidate}
         //@ts-ignore
         schema={schema}
-        formData={form}
+        formData={study}
         uiSchema={uiSchema}
         liveValidate={liveValidate}
         idPrefix="form"
       />
+      <Toaster />
     </Container>
   );
 }
