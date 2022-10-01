@@ -1,4 +1,4 @@
-// export interface Study {
+// declare interface Study {
 //   metadata: {
 //     url: string;
 //     commits: {
@@ -95,27 +95,19 @@
 //   rand_group: string;
 // }
 
-export enum Form {
-  Properties = 0,
-  Module = 1,
-  Section = 2,
-  Question = 3,
-}
-
-export interface Study {
+declare interface Study {
   _id?: { $oid: string };
   timestamp?: number;
   properties: Properties;
   modules: Module[];
 }
 
-export interface Commit {
+declare interface Commit {
   id: string;
   timestamp: number;
 }
 
-export interface Properties {
-  kind: Form.Properties;
+declare interface Properties {
   study_id: string;
   study_name: string;
   instructions: string;
@@ -131,8 +123,7 @@ export interface Properties {
   cache: boolean;
 }
 
-export interface Module {
-  kind: Form.Module;
+declare interface Module {
   type: string;
   name: string;
   submit_text: string;
@@ -163,20 +154,19 @@ export interface Module {
     max_points: number;
   };
   sections: Section[];
-  uuid: string;
+  id: string;
   unlock_after: string[];
   shuffle: boolean;
 }
 
 interface Section {
-  kind: Form.Section;
+  id: string;
   name: string;
   shuffle: boolean;
   questions: (Instruction | Text | DateTime | YesNo | Slider | Multi | External | Media)[];
 }
 
 interface Question {
-  kind: Form.Question;
   id: string;
   text: string;
   type: "instruction" | "datetime" | "multi" | "text" | "slider" | "media" | "yesno" | "external";
