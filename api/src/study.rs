@@ -34,7 +34,7 @@ pub struct Module {
     pub alerts: Alert,
     pub graph: Graph,
     pub sections: Vec<Section>,
-    pub uuid: String,
+    pub id: String,
     pub unlock_after: Vec<String>,
     pub shuffle: bool,
 }

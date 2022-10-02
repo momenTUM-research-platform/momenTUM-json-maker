@@ -97,7 +97,7 @@ export async function download(setForm: (form: Study) => void, id?: string, comm
   const uri =
     API_URL +
     "/study/" +
-    (id || prompt("Enter the uuid of the survey")) +
+    (id || prompt("Enter the id of the study")) +
     (commit ? "/" + commit : "");
   if (!uri) {
     toast.error("No download link provided");
@@ -156,7 +156,7 @@ export async function generateDictionary(form) {
       for (const section of module.sections) {
         for (const question of section.questions) {
           if (question.type === "instruction") continue;
-          csvString += `${question.id},${module.uuid},,text,${question.text},,,,,,,,,,,,,\n`;
+          csvString += `${question.id},${module.id},,text,${question.text},,,,,,,,,,,,,\n`;
         }
       }
     }

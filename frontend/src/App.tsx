@@ -31,8 +31,7 @@ function App() {
       "*",
       ...study?.properties.conditions,
     ];
-    // const moduleIds = form.modules.map((module) => module.uuid);
-    const moduleIds = Array.from(new Set(study?.modules.map((module) => module.uuid)));
+    const moduleIds = Array.from(new Set(study?.modules.map((module) => module.id)));
 
     schemaCopy.properties.modules.items.properties.unlock_after.items.enum =
       //    moduleIds.size > 0 ? Array.from(moduleIds) : [""];

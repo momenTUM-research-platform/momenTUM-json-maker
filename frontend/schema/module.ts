@@ -15,7 +15,7 @@ export const module = {
     "sections",
     "shuffle",
     "condition",
-    "uuid",
+    "id",
     "unlock_after",
   ],
   dependencies: {
@@ -40,8 +40,8 @@ export const module = {
     },
   },
   properties: {
-    uuid: {
-      $id: "#/properties/modules/items/properties/uuid",
+    id: {
+      $id: "#/properties/modules/items/properties/id",
       type: "string",
       pattern: "^[a-z][a-z0-9_]+$",
       title: "Unique identifier",
@@ -92,7 +92,7 @@ export const module = {
       type: "array",
       title: "Unlock after",
       description:
-        "A list of UUIDs of modules that must be completed before this module will appear on the task list. If you cannot see any ids, please remove the field and add it again. Self-reference will exclude the module.",
+        "A list of IDs of modules that must be completed before this module will appear on the task list. If you cannot see any ids, please remove the field and add it again. Self-reference will exclude the module.",
       examples: [[]],
       items: {
         $id: "#/properties/modules/items/properties/unlock_after/items",
