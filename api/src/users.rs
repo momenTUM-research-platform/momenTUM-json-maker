@@ -62,7 +62,7 @@ impl<'r> FromRequest<'r> for User {
 
         let mut hasher = sha2::Sha256::new();
 
-        hasher.update(password.unwrap());
+        hasher.update(String::from("VERY_STRONG_SALT") + password.unwrap());
         let password_hash = hasher.finalize();
         let password_hash = encode(&password_hash);
 
