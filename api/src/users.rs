@@ -66,8 +66,6 @@ impl<'r> FromRequest<'r> for User {
         let password_hash = hasher.finalize();
         let password_hash = encode(&password_hash);
 
-        println!("{:?}, {:?}, {password_hash}", email, password);
-
         let db = request.guard::<Connection<DB>>().await.succeeded();
 
         if db.is_none() {
@@ -86,8 +84,6 @@ impl<'r> FromRequest<'r> for User {
                 None,
             )
             .await;
-
-        println!("{:#?}", result);
 
         match result {
             Ok(Some(user)) => Outcome::Success(user),
