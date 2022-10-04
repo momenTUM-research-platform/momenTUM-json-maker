@@ -87,7 +87,7 @@ impl<'r> FromRequest<'r> for User {
 
         match result {
             Ok(Some(user)) => Outcome::Success(user),
-            _ => Outcome::Failure((rocket::http::Status::BadRequest, Error::AuthIncorrect)),
+            _ => Outcome::Failure((rocket::http::Status::Unauthorized, Error::AuthIncorrect)),
         }
     }
 }
