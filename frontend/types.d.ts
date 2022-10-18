@@ -48,14 +48,16 @@ declare interface Module {
     timeout: boolean;
     timeout_after: number;
   };
-  graph: {
-    display: boolean;
-    variable: string;
-    title: string;
-    blurb: string;
-    type: "bar" | "line";
-    max_points: number;
-  };
+  graph:
+    | {
+        display: true;
+        variable: string;
+        title: string;
+        blurb: string;
+        type: "bar" | "line";
+        max_points: number;
+      }
+    | { display: false };
   sections: Section[];
   id: string;
   unlock_after: string[];
