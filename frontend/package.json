@@ -20,6 +20,7 @@
     "ajv": "^8.11.0",
     "autoprefixer": "^10.4.12",
     "cypress": "^9.5.4",
+    "dagre": "^0.8.5",
     "dayjs": "^1.11.4",
     "file-saver": "^2.0.5",
     "framer-motion": "^6.2.9",

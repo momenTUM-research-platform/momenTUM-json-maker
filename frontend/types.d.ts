@@ -2,7 +2,9 @@ declare interface Study {
   _id?: { $oid: string };
   timestamp?: number;
   properties: Properties;
+
   modules: Module[];
+  subNodes: string[]; // list of module ids used to build linked list during editing, similiar for sections, questions. Upon finalization, replaced with module object
 }
 
 declare interface Commit {
@@ -59,6 +61,7 @@ declare interface Module {
       }
     | { display: false };
   sections: Section[];
+  subNodes: string[];
   id: string;
   unlock_after: string[];
   shuffle: boolean;
@@ -69,6 +72,7 @@ interface Section {
   name: string;
   shuffle: boolean;
   questions: (Instruction | Text | DateTime | YesNo | Slider | Multi | External | Media)[];
+  subNodes: string[];
 }
 
 interface Question {

@@ -29,9 +29,9 @@ export const alerts = {
     "message",
     "duration",
     "times",
-    "random",
+    "random", // TODO: conditionally diplay random interval depending on random
     "random_interval",
-    "sticky",
+    "sticky", // Same for sticky label
     "timeout",
     "timeout_after",
     "start_offset",
