@@ -27,6 +27,12 @@ type PotentialStudy = Result<Json<Study>>;
 #[database("mongodb")]
 pub struct DB(mongodb::Client);
 
+#[cfg(debug_assertions)]
+pub const ACTIVE_DB: &'static str = "momenTUM-dev";
+
+#[cfg(not(debug_assertions))]
+pub const ACTIVE_DB: &'static str = "momenTUM";
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Key {
     pub study_id: String,
@@ -45,7 +51,7 @@ async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy
     }
     let filter = doc! { "$or": [ {"properties.study_id": &study_id}, {"_id": ObjectId::from_str(&study_id).unwrap_or(ObjectId::new())}]};
     let result = db
-        .database("momenTUM")
+        .database(ACTIVE_DB)
         .collection::<Study>("studies")
         .find_one(
             filter,
@@ -69,7 +75,7 @@ async fn get_study_by_post(db: Connection<DB>, study_id: String) -> PotentialStu
 #[get("/api/v1/studies")]
 async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
     let cursor = db
-        .database("momenTUM")
+        .database(ACTIVE_DB)
         .collection::<Study>("studies")
         .find(doc! {}, None)
         .await?;
@@ -80,7 +86,7 @@ async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
 #[get("/api/v1/studies/all/<study_id>")]
 async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result<Json<Vec<Study>>> {
     let cursor = db
-        .database("momenTUM")
+        .database(ACTIVE_DB)
         .collection::<Study>("studies")
         .find(doc! {"properties.study_id": &study_id}, None)
         .await?;
@@ -93,7 +99,7 @@ async fn create_study(db: Connection<DB>, mut study: Json<Study>) -> Result<Stri
     study._id = Some(ObjectId::new());
     study.timestamp = Some(DateTime::now().timestamp_millis());
     let result = db
-        .database("momenTUM")
+        .database(ACTIVE_DB)
         .collection::<Study>("studies")
         .insert_one(&*study, None)
         .await?;
@@ -108,7 +114,7 @@ async fn save_response(submission: Form<Response>, db: Connection<DB>) -> Result
 
 #[post("/api/v1/log", data = "<submission>")]
 async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
-    db.database("momenTUM")
+    db.database(ACTIVE_DB)
         .collection("logs")
         .insert_one(submission.into_inner(), None)
         .await?;
@@ -118,7 +124,7 @@ async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
 
 #[post("/api/v1/key", data = "<key>")]
 async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
-    db.database("momenTUM")
+    db.database(ACTIVE_DB)
         .collection::<Key>("keys")
         .replace_one(
             doc! {"study_id":&key.study_id},
@@ -132,6 +138,7 @@ async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
 
 #[launch]
 fn rocket() -> _ {
+    println!("The API is using the {} database", ACTIVE_DB);
     rocket::build().attach(DB::init()).mount(
         "/",
         routes![
