@@ -1,5 +1,5 @@
 pub mod redcap {
-    use crate::{error::Error, Key, DB};
+    use crate::{error::Error, Key, ACTIVE_DB, DB};
     use mongodb::bson::doc;
     use rocket_db_pools::Connection;
     use serde::{Deserialize, Serialize};
@@ -57,7 +57,7 @@ pub mod redcap {
     pub async fn import_response(db: Connection<DB>, res: Response) -> Result<(), Error> {
         // Get API key from DB
         let key = db
-            .database("momenTUM")
+            .database(ACTIVE_DB)
             .collection::<Key>("keys")
             .find_one(doc! { "study_id": &res.study_id }, None)
             .await?;
@@ -100,7 +100,7 @@ pub mod redcap {
         if let Some(entries) = res.entries.clone() {
             record.insert("entries".to_string(), Entry::Entries(entries));
         };
-        db.database("momenTUM")
+        db.database(ACTIVE_DB)
             .collection::<HashMap<String, Entry>>("responses")
             .insert_one(&record, None)
             .await?;
