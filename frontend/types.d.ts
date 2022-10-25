@@ -71,7 +71,7 @@ interface Section {
   id: string;
   name: string;
   shuffle: boolean;
-  questions: (Instruction | Text | DateTime | YesNo | Slider | Multi | External | Media)[];
+  questions: Question[];
   subNodes: string[];
 }
 
@@ -94,7 +94,7 @@ interface Question {
 interface Instruction extends Question {
   type: "instruction";
 }
-interface Text extends Question {
+interface TextQuestion extends Question {
   type: "text";
   subtype: "short" | "long" | "numeric";
 }

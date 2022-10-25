@@ -1,9 +1,9 @@
-import { Study } from "../../types";
 import toast from "react-hot-toast";
 import Ajv, { DefinedError } from "ajv";
 import { API_URL } from "../App";
 import { schema } from "../../schema/schema";
 import saveAs from "file-saver";
+import { useStore } from "../state";
 
 export async function validate(form: Study, s: typeof schema) {
   if (!form) {
@@ -32,8 +32,25 @@ function isValidForm(form: Study, schema): { valid: boolean; msg: string } {
   }
 }
 
-export function save(form) {
-  const data = JSON.stringify(form, null, 2);
+export function save() {
+  const { study, modules, questions, sections } = useStore.getState();
+
+  const fullStudy: Study = {
+    ...study,
+    modules: study.subNodes.map((module_id) => {
+      return {
+        ...modules[module_id],
+        sections: modules[module_id].subNodes.map((section_id) => {
+          return {
+            ...sections[section_id],
+            questions: sections[section_id].subNodes.map((question_id) => questions[question_id]),
+          };
+        }),
+      };
+    }),
+  };
+
+  const data = JSON.stringify(fullStudy, null, 2);
   const uri = "data:application/json;charset=utf-8," + encodeURIComponent(data);
   const link = document.createElement("a");
   link.href = uri;

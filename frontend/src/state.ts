@@ -27,7 +27,9 @@ import {
 interface State {
   study: Study;
   selectedNode: string | null; // ID of the currently selected Node
-  questions: { [id: string]: Question };
+  questions: {
+    [id: string]: Question;
+  };
   modules: { [id: string]: Module };
   sections: { [id: string]: Section };
   nodes: Node[];
@@ -198,12 +200,13 @@ export const useStore = create<State>()(
         }
 
         case Nodes.Question: {
-          const question: Question = {
+          const question: TextQuestion = {
             id,
             rand_group: "",
             required: true,
             text: "",
             type: "text",
+            subtype: "short",
           };
           set(
             produce((state: State) => {
