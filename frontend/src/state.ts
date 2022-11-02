@@ -1,9 +1,4 @@
 import create from "zustand";
-import { module } from "../schema/module";
-import { properties } from "../schema/properties";
-import { question } from "../schema/question";
-import { schema } from "../schema/schema";
-import { section } from "../schema/section";
 import dagre from "dagre";
 
 import { nanoid } from "nanoid";
@@ -24,7 +19,7 @@ import {
   Position,
 } from "reactflow";
 
-interface State {
+export interface State {
   study: Study;
   selectedNode: string | null; // ID of the currently selected Node
   questions: {
@@ -261,6 +256,8 @@ export const useStore = create<State>()(
       set(
         produce((state: State) => {
           state.modules[module.id] = module;
+          const index = state.nodes.findIndex((n) => n.id === module.id);
+          state.nodes[index].data.label = module.name;
         })
       ),
     setSection: (section) =>

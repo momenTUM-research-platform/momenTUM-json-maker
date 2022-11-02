@@ -10,7 +10,7 @@ pub enum Error {
     #[error("Study not found")]
     StudyNotFound,
 
-    #[error("No corresponding API key for redcap project found")]
+    #[error("No corresponding API key for redcap project found. Please add one through the POST /api/v1/key route")]
     NoCorrespondingAPIKey,
 
     #[error("Redcap authentication error. Is the API key correct?")]
