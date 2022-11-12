@@ -9,7 +9,6 @@ import dagre from "dagre";
 
 
 export const validator = new Ajv().compile(study);
-export const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
+
 enableMapSet() // Needed for immer to be able to use Maps
 ReactDOM.render(<App />, document.getElementById("root"));

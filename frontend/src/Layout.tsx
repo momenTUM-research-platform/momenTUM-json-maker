@@ -1,21 +1,24 @@
 import React, { ReactChildren, ReactElement } from "react";
 import {
-  addApiKey,
+  
   download,
-  generateDictionary,
+  
   load,
   save,
   upload,
-  validate,
+  
 } from "./utils/actions";
 
 // Icons
+import Rotate from "../assets/rotate"
 import Download from "../assets/download";
 import Upload from "../assets/upload";
 import Load from "../assets/load";
 import Save from "../assets/save";
+import { useStore } from "./state";
 
 export function Layout({ children }: { children: ReactElement }) {
+
   return (
     <main className="max-h-screen overflow-hidden">
       <header className="flex justify-between p-8 pb-6 shadow-md">
@@ -28,6 +31,7 @@ export function Layout({ children }: { children: ReactElement }) {
           <h1 className="text-xl p-2">MomenTUM-JSON-Maker</h1>
         </div>
         <div className="flex justif">
+          <Action action={useStore().invertDirection} ><Rotate /> Rotate Canvas</Action>
           <Action action={save}>
             <Save />
             Save JSON file
