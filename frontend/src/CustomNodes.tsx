@@ -3,6 +3,7 @@ import { Handle, NodeProps, Position } from "reactflow";
 
 import {  Nodes, useStore } from "./state";
 import Plus from "../assets/plus";
+import Delete from "../assets/delete"
 
 export function NewNode({ data }: NodeProps<{ type: Nodes; parent: string }>) {
   const {direction, addNewNode} = useStore()
@@ -22,7 +23,7 @@ export function NewNode({ data }: NodeProps<{ type: Nodes; parent: string }>) {
       onClick={() => addNewNode(data.type, data.parent)}
     >
 
-      <Plus /> <Handle type="target" position={direction  === "LR" ? Position.Left: Position.Top} />
+      <Plus /> 
     </div>
   );
 }
@@ -36,7 +37,19 @@ export function CountNode({ data }: NodeProps<{ count: number; parent: string }>
       onClick={() => useStore.setState({ selectedNode: data.parent })}
     >
 
-      {getNode(data.parent).subNodes?.length} <Handle type="target" position={direction  === "LR" ? Position.Left: Position.Top} />
+      {getNode(data.parent).subNodes?.length}    </div>
+  );
+}
+
+export function DeleteNode({ data }: NodeProps<{ count: number; parent: string }>) {
+  const {direction, getNode} = useStore()
+  return (
+    <div
+      className={` bg-red-600 hover:opacity-80 p-1  text-white   rounded-2xl h-6 w-6`}
+      onClick={() => useStore().deleteNode(data.parent)}
+    >
+
+      <Delete/>  
     </div>
   );
 }

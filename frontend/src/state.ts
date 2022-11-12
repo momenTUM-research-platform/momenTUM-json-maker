@@ -18,6 +18,7 @@ import {
 } from "reactflow";
 import { alignNodes } from "./utils/alignNodes";
 import { updateDisplayedNodes } from "./utils/hideNodes";
+import { deleteNode } from "./utils/deleteNode";
 
 export interface State {
   study: Study;
@@ -42,7 +43,7 @@ export interface State {
   hideNode: (id: string, isHidden: boolean) => void
   hideEdge: (id: string, isHidden: boolean) => void
   alignNodes: (direction?: string) => void
-
+  deleteNode: (id: string) => void
   getNode: (id: string) => Module | Section | Question | Study
 }
 
@@ -84,10 +85,10 @@ let initialNodes: Node[] = [
 
 ];
 
-let initialEdges: Edge[] = [
-  { id: "properties_>_count", source: "properties", target: "properties_count", hidden: false },
-  { id: "properties_->_new_node", source: "properties", target: "properties_new_node", hidden: false },
-];
+// let initialEdges: Edge[] = [
+//   { id: "properties_->_count", source: "properties", target: "properties_count", hidden: false },
+//   { id: "properties_->_new_node", source: "properties", target: "properties_new_node", hidden: false },
+// ];
 
 export enum Nodes {
   Properties = "properties",
@@ -107,7 +108,7 @@ export const useStore = create<State>()(
     sections: new Map,
     questions: new Map,
     nodes: initialNodes,
-    edges: initialEdges,
+    edges: [],
     invertDirection: () => {
       set({ direction: get().direction === "LR" ? "TB" : "LR" })
       get().alignNodes()
@@ -169,7 +170,7 @@ export const useStore = create<State>()(
                   data: { type: "section", parent: id },
                   position: { x: 100, y: 305 }, hidden: false
                 }
-                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: false }
+                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: false }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}}
               );
 
               state.edges.push({
@@ -181,6 +182,11 @@ export const useStore = create<State>()(
                 id: id + "_->_count",
                 source: id,
                 target: id + "_count"
+                , hidden: false
+              }, {
+                id: id + "_->_delete",
+                source: id,
+                target: id + "_delete"
                 , hidden: false
               });
             })
@@ -214,7 +220,7 @@ export const useStore = create<State>()(
                   data: { type: "question", parent: id },
                   position: { x: 100, y: 405 }, hidden: false
                 }
-                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: true }
+                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: true }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}}
 
               );
               state.edges.push({
@@ -225,6 +231,11 @@ export const useStore = create<State>()(
                 id: id + "_->_count",
                 source: id,
                 target: id + "_count"
+                , hidden: false
+              }, {
+                id: id + "_->_delete",
+                source: id,
+                target: id + "_delete"
                 , hidden: false
               });
 
@@ -253,9 +264,16 @@ export const useStore = create<State>()(
                 id,
                 position: { x: 100, y: 400 },
                 data: { label: "New Question" }, hidden: false
-              }
+              }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}}
               );
+              state.edges.push( {
+                id: id + "_->_delete",
+                source: id,
+                target: id + "_delete"
+                , hidden: false
+              })
             })
+
           );
           break;
         }
@@ -323,7 +341,7 @@ export const useStore = create<State>()(
       const index = state.edges.findIndex(node => node.id === id)
       state.edges[index].hidden = isHidden
     })),
-    alignNodes: alignNodes(set, get), getNode: (id) => get().modules.get(id) || get().sections.get(id) || get().questions.get(id) || get().study
+    alignNodes: alignNodes(set, get),  deleteNode: deleteNode(set, get),  getNode: (id) => get().modules.get(id) || get().sections.get(id) || get().questions.get(id) || get().study
   }))
 );
 

@@ -30,7 +30,7 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
         const siblings = getNode(parent).subNodes
         // Get siblings while filtering out itself. BTW, are you your own sibling?
         // Don't push new node and count node when node will never have subnodes
-        siblings?.filter(s => s !== id).map(s => subNodes ? nodesToShow.push(s, s + "_new_node", s + "_count") : nodesToShow.push(s))
+        siblings?.filter(s => s !== id).map(s => subNodes ? nodesToShow.push(s, s + "_new_node", s + "_count", s + "_delete") : nodesToShow.push(s, s + "_delete"))
   
         recursivelyFindIdsOfParentNodes(parent)
       }
@@ -43,6 +43,7 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
       if (subs) {
         nodesToShow.push(id + "_new_node") // Add "newNode" to displayed nodes 
         nodesToShow.push(id + "_count")
+        nodesToShow.push(id + "_delete")
         nodesToShow.push(...subs)
         subs.forEach(recursivelyFindIdsOfSubNodes);
         ;
@@ -60,7 +61,7 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
     edges.map(edge => hideEdge(edge.id, true));
     nodesToShow.map(node => hideNode(node, false))
     edgesToShow.map(edge => hideEdge(edge.id, false));
-  
+    edges.filter(e =>  (e.id.includes("_new_node") || e.id.includes("_count")) || e.id.includes("_delete")).map(e => hideEdge(e.id, false)) 
     useStore.getState().alignNodes();
   }
   

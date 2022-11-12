@@ -2,10 +2,10 @@ import React from "react";
 import ReactFlow, { MiniMap, Controls, Background } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
-import { CountNode, NewNode } from "./CustomNodes";
+import { CountNode, NewNode, DeleteNode } from "./CustomNodes";
 import { useStore } from "./state";
 
-const nodeTypes = { newNode: NewNode , countNode: CountNode};
+const nodeTypes = { newNode: NewNode , countNode: CountNode, deleteNode: DeleteNode};
 export function Graph() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore();
 
@@ -14,7 +14,7 @@ export function Graph() {
       nodes={nodes}
       edges={edges}
       onNodeClick={(_, node) =>
-        node.type !== "newNode" && node.type !== "countNode" && useStore.setState({ selectedNode: node.id })
+        node.type !== "newNode" && node.type !== "countNode"   && node.type !== "deleteNode" && useStore.setState({ selectedNode: node.id })
       }
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
