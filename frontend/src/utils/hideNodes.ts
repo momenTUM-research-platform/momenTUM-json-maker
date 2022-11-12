@@ -21,11 +21,11 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
   
     const recursivelyFindIdsOfParentNodes = (id: string,) => {
       const { parent, subNodes } = getNode(id)
-      console.log(parent)
       if (parent) {
         nodesToShow.push(parent)
         nodesToShow.push(parent + "_new_node")
         nodesToShow.push(parent + "_count")
+        parent !== "properties" && nodesToShow.push(parent+ "_delete")
         // Also show siblings and their create button and subnode count. 
         const siblings = getNode(parent).subNodes
         // Get siblings while filtering out itself. BTW, are you your own sibling?
@@ -38,7 +38,6 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
   
     const recursivelyFindIdsOfSubNodes = (id: string) => {
       const subs = getNode(id).subNodes
-      console.log(subs)
   
       if (subs) {
         nodesToShow.push(id + "_new_node") // Add "newNode" to displayed nodes 
@@ -55,13 +54,11 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
     recursivelyFindIdsOfParentNodes(selectedNode);
   
     let edgesToShow = edges.filter((e) => nodesToShow.find((n) => e.target === n)); // This is O(n**2), can it be better?
-    console.log(edgesToShow)
     // hide all, then unhide subnodes + edges
     nodes.map(node => hideNode(node.id, true))
     edges.map(edge => hideEdge(edge.id, true));
     nodesToShow.map(node => hideNode(node, false))
     edgesToShow.map(edge => hideEdge(edge.id, false));
-    edges.filter(e =>  (e.id.includes("_new_node") || e.id.includes("_count")) || e.id.includes("_delete")).map(e => hideEdge(e.id, false)) 
     useStore.getState().alignNodes();
   }
   

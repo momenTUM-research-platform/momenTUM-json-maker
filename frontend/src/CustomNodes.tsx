@@ -19,7 +19,7 @@ export function NewNode({ data }: NodeProps<{ type: Nodes; parent: string }>) {
 
   return (
     <div
-      className={`${colors[data.type]} hover:opacity-80 p-2 rounded-lg h-8 w-8`}
+      className={`${colors[data.type]} hover:opacity-80 p-2  rounded-lg h-8 w-8`}
       onClick={() => addNewNode(data.type, data.parent)}
     >
 
@@ -42,11 +42,11 @@ export function CountNode({ data }: NodeProps<{ count: number; parent: string }>
 }
 
 export function DeleteNode({ data }: NodeProps<{ count: number; parent: string }>) {
-  const {direction, getNode} = useStore()
+  const {deleteNode} =  useStore()
   return (
     <div
-      className={` bg-red-600 hover:opacity-80 p-1  text-white   rounded-2xl h-6 w-6`}
-      onClick={() => useStore().deleteNode(data.parent)}
+      className={` bg-red-600 hover:opacity-80 p-1  text-white rounded-2xl h-6 w-6`}
+      onClick={() =>deleteNode(data.parent)}
     >
 
       <Delete/>  

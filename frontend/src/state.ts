@@ -74,11 +74,14 @@ let initialNodes: Node[] = [
     id: "properties_new_node",
     type: "newNode",
     data: { type: "module", parent: "properties" },
+    zIndex: 1001, 
     position: { x: 200, y: 205 }, hidden: false
   },
   {
     id: "properties_count",
     type: "countNode",
+    zIndex: 1001, 
+
     data: { parent: "properties" },
     position: { x: 240, y: 205 }, hidden: false
   },
@@ -117,7 +120,6 @@ export const useStore = create<State>()(
 
     },
     addNewNode: (type, parent) => {
-      console.log(type, get().selectedNode);
       const id = nanoid();
       switch (type) {
         case Nodes.Module: {
@@ -163,32 +165,18 @@ export const useStore = create<State>()(
                   id,
                   position: { x: 100, y: 200 },
                   data: { label: "New Module" }, hidden: false
+
                 },
                 {
                   id: id + "_new_node",
                   type: "newNode",
                   data: { type: "section", parent: id },
-                  position: { x: 100, y: 305 }, hidden: false
+                  position: { x: 100, y: 305 }, hidden: false, zIndex: 1001
                 }
-                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: false }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}}
+                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: false, zIndex: 1001 }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, zIndex: 1001,  position: {x: 100, y: 100}}
               );
 
-              state.edges.push({
-                id: id + "_->_new_node",
-                source: id,
-                target: id + "_new_node"
-                , hidden: false
-              }, {
-                id: id + "_->_count",
-                source: id,
-                target: id + "_count"
-                , hidden: false
-              }, {
-                id: id + "_->_delete",
-                source: id,
-                target: id + "_delete"
-                , hidden: false
-              });
+             
             })
           );
           break;
@@ -206,7 +194,6 @@ export const useStore = create<State>()(
           set(
             produce((state: State) => {
               state.sections.set(id, section);
-              console.log(state.modules.size)
               state.modules.get(parent)!.subNodes.push(id);
               state.nodes.push(
                 {
@@ -216,28 +203,15 @@ export const useStore = create<State>()(
                 },
                 {
                   id: id + "_new_node",
+                  zIndex: 1001, 
                   type: "newNode",
                   data: { type: "question", parent: id },
                   position: { x: 100, y: 405 }, hidden: false
                 }
-                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: true }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}}
+                , { id: id + "_count", type: "countNode", data: { parent: id }, position: { x: 150, y: 305 }, hidden: true, zIndex: 1001 }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, zIndex: 1001,  position: {x: 100, y: 100}}
 
               );
-              state.edges.push({
-                id: id + "_->_new_node",
-                source: id,
-                target: id + "_new_node", hidden: false
-              }, {
-                id: id + "_->_count",
-                source: id,
-                target: id + "_count"
-                , hidden: false
-              }, {
-                id: id + "_->_delete",
-                source: id,
-                target: id + "_delete"
-                , hidden: false
-              });
+             
 
             })
           );
@@ -264,14 +238,9 @@ export const useStore = create<State>()(
                 id,
                 position: { x: 100, y: 400 },
                 data: { label: "New Question" }, hidden: false
-              }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}}
+              }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}, zIndex: 1001}
               );
-              state.edges.push( {
-                id: id + "_->_delete",
-                source: id,
-                target: id + "_delete"
-                , hidden: false
-              })
+            
             })
 
           );
@@ -317,7 +286,7 @@ export const useStore = create<State>()(
         produce((state: State) => {
           state.modules.set(module.id, module);
           const index = state.nodes.findIndex((n) => n.id === module.id);
-          state.nodes[index].data.label = module.name;
+          state.nodes[index].data.label = module.name.length > 32 ? module.name.slice(0, 32) + "..." : module.name;
         })
       ),
     setSection: (section) =>
@@ -333,7 +302,6 @@ export const useStore = create<State>()(
         })
       ),
     hideNode: (id, isHidden) => set(produce((state: State) => {
-      console.log(id)
       const index = state.nodes.findIndex(node => node.id === id)
       state.nodes[index].hidden = isHidden
     })),
@@ -350,4 +318,4 @@ const unsubFromSelectedNodes = useStore.subscribe(
   (selectedNode) => updateDisplayedNodes(selectedNode)
   , { fireImmediately: false });
 
-
+useStore.getState().alignNodes()

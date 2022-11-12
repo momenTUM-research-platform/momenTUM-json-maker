@@ -8,7 +8,6 @@ export function alignNodes(set: (partial: State | Partial<State> | ((state: Stat
       const dagreGraph = new dagre.graphlib.Graph();
       dagreGraph.setDefaultEdgeLabel(() => ({}));
   
-      console.log(state.nodes.filter(n => !n.hidden).length, state.nodes.length);
   
       const nodeWidth = 172;
       const nodeHeight = 36;
@@ -19,13 +18,12 @@ export function alignNodes(set: (partial: State | Partial<State> | ((state: Stat
       dagreGraph.setGraph({ rankdir: get().direction });
 
       const nodesToPosition = state.nodes.filter(n => !(n.hidden || n.type === "newNode" || n.type === "countNode" || n.type === "deleteNode"))
-      const edgesToPosition = state.edges.filter(n => !(n.hidden || n.id.includes("_new_node") || n.id.includes("_count") || n.id.includes("_delete") ))
   
       nodesToPosition.forEach((node) => {
         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
       });
   
-      edgesToPosition.forEach((edge) => {
+      state.edges.forEach((edge) => {
         dagreGraph.setEdge(edge.source, edge.target);
       });
   
@@ -49,10 +47,9 @@ export function alignNodes(set: (partial: State | Partial<State> | ((state: Stat
   
       state.nodes.filter(n => n.type === "countNode").forEach((node) => {
         const parent = state.nodes.find(n => n.id === node.id.slice(0, -6))!; // removing _count from the id to gain parent
-  
         node.position = {
           x: parent.position.x + 50,
-          y: parent.position.y + 32
+          y: parent.position.y  -25
         };
       });
       state.nodes.filter(n => n.type === "newNode").forEach((node) => {
@@ -60,15 +57,15 @@ export function alignNodes(set: (partial: State | Partial<State> | ((state: Stat
   
         node.position = {
           x: parent.position.x + 10,
-          y: parent.position.y + 32
+          y: parent.position.y  -25
         };
       });
       state.nodes.filter(n => n.type === "deleteNode").forEach((node) => {
         const parent = state.nodes.find(n => n.id === node.id.slice(0, -7))!; // removing _delete from the id to gain parent
   
         node.position = {
-          x: parent.position.x + 135,
-          y: parent.position.y + -10
+          x: parent.position.x  + 135,
+          y: parent.position.y  -10
         };
       });
     }));
