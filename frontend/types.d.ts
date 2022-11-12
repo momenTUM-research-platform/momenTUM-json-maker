@@ -2,7 +2,7 @@ declare interface Study {
   _id?: { $oid: string };
   timestamp?: number;
   properties: Properties;
-
+  parent: null
   modules: Module[];
   subNodes: string[]; // list of module ids used to build linked list during editing, similiar for sections, questions. Upon finalization, replaced with module object
 }
@@ -61,6 +61,7 @@ declare interface Module {
       }
     | { display: false };
   sections: Section[];
+  parent: string
   subNodes: string[];
   id: string;
   unlock_after: string[];
@@ -72,6 +73,7 @@ interface Section {
   name: string;
   shuffle: boolean;
   questions: Question[];
+  parent: string
   subNodes: string[];
 }
 
@@ -89,6 +91,9 @@ interface Question {
   model?: string | number;
   hideError?: boolean;
   value?: number;
+  parent: string
+  subNodes: null // Currently, Questions will never have subnodes; necessary for recursive search for subNodes
+
 }
 
 interface Instruction extends Question {
