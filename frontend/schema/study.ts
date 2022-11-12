@@ -1,7 +1,7 @@
 import { module } from "./module";
 import { properties } from "./properties";
 
-export const schema = {
+export const study = {
   $schema: "http://json-schema.org/draft-07/schema",
   $id: "https://momenTUM.de/schema/v1/schema.json",
   type: "object",
