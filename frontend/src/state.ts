@@ -3,6 +3,7 @@ import create from "zustand";
 import { nanoid } from "nanoid";
 import produce from "immer";
 import { subscribeWithSelector } from "zustand/middleware";
+import Ajv, { ValidateFunction } from "ajv";
 import {
   addEdge,
   applyEdgeChanges,
@@ -19,6 +20,7 @@ import {
 import { alignNodes } from "./utils/alignNodes";
 import { updateDisplayedNodes } from "./utils/hideNodes";
 import { deleteNode } from "./utils/deleteNode";
+import {study }from "../schema/study"
 
 export interface State {
   study: Study;
@@ -30,6 +32,7 @@ export interface State {
   nodes: Node[];
   edges: Edge[];
   direction: "TB" | "LR"
+  validator: ValidateFunction
   invertDirection: () => void
   setStudy: (from: JSON) => void; // Parse from Study JSON file to State, fails on invalid data
   onNodesChange: OnNodesChange;
@@ -104,6 +107,8 @@ export enum Nodes {
 export const useStore = create<State>()(
   //@ts-ignore
   subscribeWithSelector((set, get) => ({
+    validator: new Ajv().compile(study),
+
     direction: "LR",
     study: emptyStudy,
     selectedNode: null,
@@ -239,7 +244,7 @@ export const useStore = create<State>()(
                 position: { x: 100, y: 400 },
                 data: { label: "New Question" }, hidden: false
               }, {id: id+ "_delete", type: "deleteNode", data: {parent: id}, position: {x: 100, y: 100}, zIndex: 1001}
-              );
+              ); 
             
             })
 

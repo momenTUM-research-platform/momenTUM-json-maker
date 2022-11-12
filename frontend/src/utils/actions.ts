@@ -2,7 +2,6 @@ import toast from "react-hot-toast";
 import { API_URL } from "../App";
 import saveAs from "file-saver";
 import { useStore } from "../state";
-import { validator } from "../../index";
 import { DefinedError } from "ajv";
 
 // export async function validate(form: Study, s: typeof schema) {
@@ -18,9 +17,9 @@ import { DefinedError } from "ajv";
 // }
 
 function validateStudy(study: Study): { valid: true; } | { valid: false, msg: string } {
-  const valid = validator(study);
+  const valid = useStore().validator(study);
   if (valid) return { valid: true };
-  const errors = validator.errors as DefinedError[];
+  const errors = useStore().validator.errors as DefinedError[];
   return {
     valid: false,
     msg:
