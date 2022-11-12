@@ -1,5 +1,4 @@
 import create from "zustand";
-import dagre from "dagre";
 
 import { nanoid } from "nanoid";
 import produce from "immer";
@@ -18,17 +17,19 @@ import {
   OnNodesChange,
   Position,
 } from "reactflow";
+import { dagreGraph } from "..";
+import dagre from "dagre";
 
 export interface State {
   study: Study;
-  selectedNode: string | null; // ID of the currently selected Node
-  questions: {
-    [id: string]: Question;
-  };
-  modules: { [id: string]: Module };
-  sections: { [id: string]: Section };
+  selectedNode:  string| null; // ID of the currently selected Node
+  questions: Map<
+    string,Question>
+  modules: Map<string,  Module >;
+  sections: Map< string ,Section >;
   nodes: Node[];
   edges: Edge[];
+  setStudy: (from: JSON) => void; // Parse from Study JSON file to State, fails on invalid data
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -37,6 +38,9 @@ export interface State {
   setSection: (from: Section) => void;
   setQuestion: (from: Question) => void;
   addNewNode: (type: Nodes, parent: string) => void;
+  hideNode: (id: string, isHidden: boolean) => void 
+  hideEdge: (id: string, isHidden: boolean) => void 
+  alignNodes: (direction?: string) => void
 }
 
 const emptyStudy: Study = {
@@ -57,20 +61,21 @@ const emptyStudy: Study = {
   },
   modules: [],
   subNodes: [],
+  parent: null
 };
 
-const initialNodes: Node[] = [
-  { id: "properties", position: { x: 200, y: 100 }, data: { label: "Properties" } },
+let initialNodes: Node[] = [
+  { id: "properties", position: { x: 200, y: 100 }, data: { label: "Properties" } , hidden: false},
   {
-    id: "new_module",
+    id: "properties_new_node",
     type: "newNode",
     data: { type: "module", parent: "properties" },
-    position: { x: 200, y: 205 },
+    position: { x: 200, y: 205 }, hidden: false
   },
 ];
 
-const initialEdges: Edge[] = [
-  { id: "properties_->_new_module", source: "properties", target: "new_module" },
+let initialEdges: Edge[] = [
+  { id: "properties_->_new_node", source: "properties", target: "properties_new_node", hidden: false },
 ];
 
 export enum Nodes {
@@ -85,17 +90,21 @@ export const useStore = create<State>()(
   subscribeWithSelector((set, get) => ({
     study: emptyStudy,
     selectedNode: null,
-    modules: {},
-    sections: {},
-    questions: {},
+    modules: new Map,
+    sections: new Map,
+    questions: new Map,
     nodes: initialNodes,
     edges: initialEdges,
+    setStudy: (_file) => {
+      
+    },
     addNewNode: (type, parent) => {
       console.log(type, get().selectedNode);
       const id = nanoid();
       switch (type) {
         case Nodes.Module: {
           const module: Module = {
+            parent: "properties", // While not correct in the study JSON, where modules and properties are siblings, in the graph properties is the parent. Needed for hiding logic
             id,
             alerts: {
               title: "",
@@ -129,27 +138,27 @@ export const useStore = create<State>()(
           };
           set(
             produce((state: State) => {
-              state.modules[id] = module;
+              state.modules.set(module.id,  module);
               state.study.subNodes.push(id);
               state.nodes.push(
                 {
                   id,
                   position: { x: Object.keys(state.modules).length * 170 + 30, y: 200 },
-                  data: { label: "New Module" },
+                  data: { label: "New Module" }, hidden: false
                 },
                 {
-                  id: id + "new_section",
+                  id: id + "_new_node",
                   type: "newNode",
                   data: { type: "section", parent: id },
-                  position: { x: Object.keys(state.modules).length * 170 + 30, y: 305 },
+                  position: { x: Object.keys(state.modules).length * 170 + 30, y: 305 }, hidden: false
                 }
               );
 
-              state.nodes.find((node) => node.id === "new_module")!.position.x += 170;
               state.edges.push({
-                id: id + "_->_new_section",
+                id: id + "_->_new_node",
                 source: id,
-                target: id + "new_section",
+                target: id + "_new_node"
+                , hidden: false
               });
             })
           );
@@ -160,35 +169,35 @@ export const useStore = create<State>()(
             id,
             name: "",
             questions: [],
+            parent, 
             subNodes: [],
             shuffle: false,
           };
 
           set(
             produce((state: State) => {
-              state.sections[id] = section;
-              state.modules[parent].subNodes.push(id);
+              state.sections.set(id, section);
+              console.log(state.modules.size)
+              state.modules.get(parent)!.subNodes.push(id);
               state.nodes.push(
                 {
                   id,
                   position: { x: Object.keys(state.sections).length * 170 + 30, y: 300 },
-                  data: { label: "New Section" },
+                  data: { label: "New Section" },hidden: false
                 },
                 {
-                  id: id + "new_question",
+                  id: id + "_new_node",
                   type: "newNode",
                   data: { type: "question", parent: id },
-                  position: { x: 200, y: 405 },
+                  position: { x: 200, y: 405 }, hidden: false
                 }
               );
               state.edges.push({
-                id: id + "_->_new_question",
+                id: id + "_->_new_node",
                 source: id,
-                target: id + "new_section",
+                target: id + "_new_node", hidden: false
               });
-              state.nodes.find(
-                (node) => node.id === state.selectedNode + "new_section"
-              )!.position.x += 170;
+              
             })
           );
           break;
@@ -197,23 +206,24 @@ export const useStore = create<State>()(
         case Nodes.Question: {
           const question: TextQuestion = {
             id,
+            parent, 
             rand_group: "",
             required: true,
             text: "",
             type: "text",
             subtype: "short",
+            subNodes: null
           };
           set(
             produce((state: State) => {
-              state.questions[id] = question;
-              state.sections[parent].subNodes.push(id);
+              state.questions.set(id , question);
+              state.sections.get(parent)!.subNodes.push(id);
 
               state.nodes.push({
                 id,
                 position: { x: Object.keys(state.questions).length * 170 + 30, y: 400 },
-                data: { label: "New Question" },
+                data: { label: "New Question" }, hidden: false
               });
-              state.nodes.find((node) => node.id === "new_question")!.position.x += 170;
             })
           );
           break;
@@ -224,7 +234,8 @@ export const useStore = create<State>()(
           state.edges.push({
             id: parent + "_->_" + id,
             source: parent,
-            target: id,
+            target: id, 
+            hidden: false
           });
           state.selectedNode = id;
         })
@@ -255,7 +266,7 @@ export const useStore = create<State>()(
     setModule: (module) =>
       set(
         produce((state: State) => {
-          state.modules[module.id] = module;
+          state.modules.set(module.id,  module);
           const index = state.nodes.findIndex((n) => n.id === module.id);
           state.nodes[index].data.label = module.name;
         })
@@ -263,91 +274,44 @@ export const useStore = create<State>()(
     setSection: (section) =>
       set(
         produce((state: State) => {
-          state.sections[section.id] = section;
+          state.sections.set(section.id, section);
         })
       ),
     setQuestion: (question) =>
       set(
         produce((state: State) => {
-          state.questions[question.id] = question;
+          state.questions.set(question.id,  question);
         })
       ),
-  }))
-);
-
-const unsubFromSelectedNodes = useStore.subscribe(
-  (state) => state.selectedNode,
-  (selectedNode) => updateDisplayedNodes(selectedNode)
-);
-
-// Is it possible to write this generically with TS?
-// const hide = (hidden: boolean) => <T, >(nodeOrEdge: Node|Edge) =>  {
-//   nodeOrEdge.hidden = hidden;
-//   return nodeOrEdge;
-// };
-
-const hideNode = (hidden: boolean) => (node: Node) => {
-  node.hidden = hidden;
-  return node;
-};
-const hideEdge = (hidden: boolean) => (edge: Edge) => {
-  edge.hidden = hidden;
-  return edge;
-};
-function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
-  const { nodes, edges, modules, sections, questions } = useStore.getState();
-
-  // Show all nodes
-  if (!selectedNode || "properties") {
-    useStore.setState({ nodes: nodes.map(hideNode(false)), edges: edges.map(hideEdge(false)) });
-    return;
-  }
-
-  // Show only subtree of nodes
-  const node: Module | Section | Question =
-    modules[selectedNode] || sections[selectedNode] || questions[selectedNode];
-
-  let subNodes: Node[] = [];
-  const recursivelyFindSubNodes = (node: Module | Section | Question) => {
-    if (!node["subNodes"]) return;
-    node["subNodes"].forEach((sub: string) => {
-      subNodes.push(nodes.find((n) => (n.id = sub))!);
-      const n = sections[sub] || questions[sub];
-      recursivelyFindSubNodes(n);
-    });
-  };
-  recursivelyFindSubNodes(node);
-
-  let subEdges = edges.filter((e) => subNodes.forEach((n) => e.id.includes(n.id))); // This is O(n**2), can it be better?
-
-  // hide all, then unhide subnodes + edges
-  useStore.setState({ nodes: nodes.map(hideNode(true)), edges: edges.map(hideEdge(true)) });
-  useStore.setState({ nodes: subNodes.map(hideNode(false)), edges: subEdges.map(hideEdge(false)) });
-
-  alignNodes(nodes, edges);
-}
-
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
+      hideNode: (id, isHidden) => set(produce((state: State) => { 
+        console.log(id)
+        const index  = state.nodes.findIndex(node => node.id === id) 
+        state.nodes[index].hidden  = isHidden 
+  })), 
+  hideEdge: (id, isHidden) => set(produce((state: State) => { const index  = state.edges.findIndex(node => node.id === id) 
+    console.log(index, id, isHidden)
+    state.edges[index].hidden  = isHidden
+})), 
+alignNodes: (direction = "TB") =>  set(produce((state: State) => {
 
 const nodeWidth = 172;
 const nodeHeight = 36;
-
-function alignNodes(nodes: Node[], edges: Edge[], direction = "TB") {
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
-  nodes.forEach((node) => {
+  state.nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
   });
 
-  edges.forEach((edge) => {
+  state.edges.forEach((edge) => {
     dagreGraph.setEdge(edge.source, edge.target);
   });
 
   dagre.layout(dagreGraph);
 
-  nodes.forEach((node) => {
+  
+
+  state.nodes.forEach((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     node.targetPosition = isHorizontal ? Position.Left : Position.Top;
     node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
@@ -360,5 +324,88 @@ function alignNodes(nodes: Node[], edges: Edge[], direction = "TB") {
     };
 
     return node;
-  });
+  })
+}))
+  }))
+);
+
+const unsubFromSelectedNodes = useStore.subscribe(
+  (state) => state.selectedNode,
+  (selectedNode) => updateDisplayedNodes(selectedNode)
+, { fireImmediately: false});
+
+// Is it possible to write this generically with TS?
+// const hide = (hidden: boolean) => <T, >(nodeOrEdge: Node|Edge) =>  {
+//   nodeOrEdge.hidden = hidden;
+//   return nodeOrEdge;
+// };
+
+// const hideNode = (hidden: boolean) => (node: Node) => {
+//   console.log(hidden, node.hidden ,node.id)
+//   node.hidden = hidden;
+//   return node;
+// };
+// const hideEdge = (hidden: boolean) => (edge: Edge) => {
+//   console.log(hidden, edge.hidden ,edge.id)
+//   edge.hidden = hidden;
+//   return edge;
+// };
+function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
+  console.log("Rendering....")
+  const { nodes, edges, modules, sections, questions, hideEdge, hideNode, study } = useStore.getState();
+
+  // Show all nodes
+  if (!selectedNode || selectedNode === "properties") {
+    nodes.map( node => hideNode(node.id, false))
+     edges.map( edge => hideEdge(edge.id, false)) ;
+    return;
+  }
+
+
+  const getNode = (id: string)  :  Module | Section | Question | Study => {
+    return modules.get(id) || sections.get(id) || questions.get(id) || study
+  }
+
+    // Show only subtree of nodes
+    const node = getNode(selectedNode)
+
+  let nodesToShow: string[] = []; // Ids of nodes selected to be shown
+  nodesToShow.push(selectedNode)
+
+const recursivelyFindIdsOfParentNodes  = (id: string) => {
+  const parent = getNode(id).parent
+
+  if (parent) {
+  nodesToShow.push(parent)
+  nodesToShow.push(parent + "_new_node")
+  recursivelyFindIdsOfParentNodes(parent)
+  }
+}
+
+  const recursivelyFindIdsOfSubNodes = (id: string) => {
+    const subs = getNode(id).subNodes
+    console.log(subs)
+
+    if (subs) {
+      nodesToShow.push(id + "_new_node") // Add "newNode" to displayed nodes 
+
+    nodesToShow.push(...subs)
+    subs.forEach(recursivelyFindIdsOfSubNodes);
+    ;
+    }
+  };
+
+
+ recursivelyFindIdsOfSubNodes(selectedNode);
+ recursivelyFindIdsOfParentNodes(selectedNode);
+
+ let edgesToShow = edges.filter((e) => nodesToShow.find((n) => e.target === n || e.source=== n )); // This is O(n**2), can it be better?
+  console.log(edgesToShow)
+  // hide all, then unhide subnodes + edges
+  nodes.map( node => hideNode(node.id, true))
+  edges.map( edge => hideEdge(edge.id, true)) ;
+   nodesToShow.map(node => hideNode(node, false))
+    edgesToShow.map( edge => hideEdge(edge.id, false)) ;
+
+  useStore.getState().alignNodes();
 }
