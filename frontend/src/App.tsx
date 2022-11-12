@@ -18,7 +18,7 @@ function App() {
         <section className="h-[calc(100vh-110px)] w-full">
           <Graph />
         </section>
-        <section className="m-8 px-20 overflow-scroll h-[calc(100vh-140px)]">
+        <section className="my-8 px-2 overflow-scroll h-[calc(100vh-140px)]">
           {selectedNode ? (
             <Form id={selectedNode} />
           ) : (
