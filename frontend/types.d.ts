@@ -1,10 +1,36 @@
+
+declare interface Atom<T> {
+  parent: string | null, 
+  subNodes: string[] | null
+  type: Atoms
+  content: T
+  title: string
+  actions: Set<Actions>, 
+  schema: any // Any schema that works for AJV and React JSON form. TODO: more specific type
+  hidden: boolean
+}
+
+declare enum Actions {
+  Create = "create",
+  Count = "count", 
+  Delete = "delete"
+}
+
+declare enum Atoms {
+  // Properties = "properties",
+  Module = "module",
+  Section = "section",
+  Question = "question",
+  PVT = "pvt",
+  Study = "study"
+}
 declare interface Study {
+  _type: Atoms.Study
+
   _id?: { $oid: string };
   timestamp?: number;
   properties: Properties;
-  parent: null
   modules: Module[];
-  subNodes: string[]; // list of module ids used to build linked list during editing, similiar for sections, questions. Upon finalization, replaced with module object
 }
 
 declare interface Commit {
@@ -29,6 +55,7 @@ declare interface Properties {
 }
 
 declare interface Module {
+  _type: Atoms.Module
   type: string;
   name: string;
   submit_text: string;
@@ -69,15 +96,18 @@ declare interface Module {
 }
 
 interface Section {
+  _type: Atoms.Section
+
   id: string;
   name: string;
   shuffle: boolean;
   questions: Question[];
-  parent: string
-  subNodes: string[];
+  
 }
 
 interface Question {
+  _type: Atoms.Question
+
   id: string;
   text: string;
   type: "instruction" | "datetime" | "multi" | "text" | "slider" | "media" | "yesno" | "external";
@@ -91,9 +121,7 @@ interface Question {
   model?: string | number;
   hideError?: boolean;
   value?: number;
-  parent: string
-  subNodes: null // Currently, Questions will never have subnodes; necessary for recursive search for subNodes
-
+ 
 }
 
 interface Instruction extends Question {

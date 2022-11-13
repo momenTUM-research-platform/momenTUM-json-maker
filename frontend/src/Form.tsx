@@ -8,8 +8,13 @@ import { section } from "../schema/section";
 import { State, useStore } from "./state";
 
 export function Form({ id }: { id: string }) {
-  const [data, update, schema] = useForm(id);
+  const {atoms, setAtom} = useStore()
+  const atom = atoms.get(id)
 
+  if (!atom) {
+    console.error("Atom " + id + " does not exist. This should never be the case!")
+    return (<></>) 
+  }
 
   let uiSchema = {
     title: { "ui:widget": "date" },
@@ -23,21 +28,11 @@ export function Form({ id }: { id: string }) {
 
   return (
     <FormComponent
-      onChange={({ formData }) => update(formData)}
-      // onSubmit={(e) => study && upload(study, schema)}
-      //@ts-ignore
-      schema={schema}
-      formData={data}
+      onChange={({ formData }) => setAtom(id, formData)}
+      schema={atom.schema}
+      formData={atom.content}
       uiSchema={uiSchema}
       idPrefix="form"
     />
   );
-}
-function useForm(id: string): [Properties | Module | Section | Question, (from: any) => void, Object] { // Returns [ current form data, changehandler to update data, schema for form ]
-  const store = useStore.getState()
-  const data = store.modules.get(id) || store.sections.get(id) || store.questions.get(id) || store.study.properties;
-  if (store.modules.get(id)) return [data, store.setModule, module];
-  if (store.sections.get(id)) return [data, store.setSection, section];
-  if (store.questions.get(id)) return [data, store.setQuestion, question];
-  return [data, store.setProperties, properties];
 }
