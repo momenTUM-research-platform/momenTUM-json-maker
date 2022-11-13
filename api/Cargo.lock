@@ -61,6 +61,7 @@ dependencies = [
 name = "api"
 version = "0.2.0"
 dependencies = [
+ "base64",
  "dotenv",
  "mongodb",
  "reqwest",
@@ -68,6 +69,7 @@ dependencies = [
  "rocket_db_pools",
  "serde",
  "serde_json",
+ "sha2",
  "thiserror",
 ]
 

@@ -15,10 +15,12 @@ use study::Study;
 
 use crate::error::Error;
 use crate::redcap::redcap::{import_response, Log, Response};
+use crate::users::User;
 
 mod error;
 mod redcap;
 mod study;
+mod users;
 
 type Result<T> = std::result::Result<T, Error>;
 type PotentialStudy = Result<Json<Study>>;
@@ -95,7 +97,12 @@ async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result
 }
 
 #[post("/api/v1/study", data = "<study>")]
-async fn create_study(db: Connection<DB>, mut study: Json<Study>) -> Result<String> {
+async fn create_study(
+    user: Result<User>, // Implicit Result to return precise error message instead of catcher route: https://api.rocket.rs/v0.5-rc/rocket/request/trait.FromRequest.html#outcomes
+    db: Connection<DB>,
+    mut study: Json<Study>,
+) -> Result<String> {
+    user?; // Tests if user authentication guard was successful.
     study._id = Some(ObjectId::new());
     study.timestamp = Some(DateTime::now().timestamp_millis());
     let result = db
