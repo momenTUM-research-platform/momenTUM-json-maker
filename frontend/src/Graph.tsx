@@ -5,7 +5,7 @@ import "reactflow/dist/style.css";
 import { CountNode, NewNode, DeleteNode } from "./CustomNodes";
 import { useStore } from "./state";
 
-const nodeTypes = { newNode: NewNode , countNode: CountNode, deleteNode: DeleteNode};
+const nodeTypes = { create: NewNode , count: CountNode, delete: DeleteNode};
 export function Graph() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore();
 
