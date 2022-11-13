@@ -21,7 +21,7 @@ export function Layout({ children }: { children: ReactElement }) {
 
   return (
     <main className="max-h-screen overflow-hidden">
-      <header className="flex justify-between p-8 pb-6 shadow-md  bg-repeat-x" style={{  backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/4/48/Gay_Pride_Flag.svg")`}} >
+      <header className="flex justify-between p-8 pb-6 shadow-md bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500"  >
         <div className="flex">
           <img
             src="/assets/icon.png"
