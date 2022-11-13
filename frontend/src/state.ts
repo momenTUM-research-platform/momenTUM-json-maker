@@ -26,6 +26,22 @@ import { initialModule, initialQuestion, initialSection, initialStudy } from "./
 import { module } from "../schema/module";
 import { section } from "../schema/section";
 import { question } from "../schema/question";
+import { Atom, Module, Question, Section, Study } from "../types";
+
+export enum Actions {
+  Create = "create",
+  Count = "count",
+  Delete = "delete"
+}
+
+export enum Atoms {
+  // Properties = "properties",
+  Module = "module",
+  Section = "section",
+  Question = "question",
+  PVT = "pvt",
+  Study = "study"
+}
 
 export interface State {
   // study: Study;
@@ -41,7 +57,9 @@ export interface State {
 
   atoms: Map<string, Atom<Study | Question | Module | Section>>
 
-  calcGraphFromAtoms: () => void
+  calcGraphFromAtoms: (add?: string) => void // if an id to add is provided, Graph will not be completely recalculated 
+  hideAllAtoms: (hide: boolean) => void
+  hideAtom: (id: string, hide: boolean) => void
   invertDirection: () => void
   setStudy: (from: JSON) => void; // Parse from Study JSON file to State, fails on invalid data
   onNodesChange: OnNodesChange;
@@ -51,8 +69,8 @@ export interface State {
   addNewNode: (type: Atoms, parent: string) => void;
   hideNode: (id: string, isHidden: boolean) => void
   hideEdge: (id: string, isHidden: boolean) => void
-  alignNodes: (direction?: string) => void
   deleteNode: (id: string) => void
+  alignNodes: (direction?: string) => void
   // getNode: (id: string) => Atom<Module | Section | Question | Study | null>
 }
 
@@ -67,28 +85,33 @@ export const useStore = create<State>()(
     validator: new Ajv().compile(study),
 
     direction: "LR",
-    atoms: new Map([["study", { parent: null, subNodes: [], type: Atoms.Study, title: "Properties", schema: study, hidden: false, actions: new Set([Actions.Create, Actions.Count]), content: initialStudy(nanoid()) }]]),
+    atoms: new Map([["study", { parent: null, subNodes: [], type: Atoms.Study, childType: Atoms.Module, title: "Properties", schema: study, hidden: false, actions: new Set([Actions.Create, Actions.Count]), content: initialStudy(nanoid()) }]]),
     selectedNode: null,
     nodes: [],
     edges: [],
 
+    hideAllAtoms: (hide) => set(produce((state: State) => {
+      state.atoms.forEach(a => a.hidden = hide)
+    })),
+    hideAtom: (id, hide) => set(produce((state: State) => {
+      console.debug(id)
+      state.atoms.get(id)!.hidden = hide
+    })),
+
+    calcGraphFromAtoms: (add) => set(produce((state: State) => {
+      console.log("Calculating new Graph", state.atoms.size)
 
 
-
-    calcGraphFromAtoms: () => set(produce((state: State) => {
-      let nodes: Node[] = []
-      let edges: Edge[] = []
-
+      let nodes: Node[] = add ? state.nodes : []
+      let edges: Edge[] = add ? state.edges : []
       state.atoms.forEach((atom, id) => {
+        if (add && id !== add) { //Don't recalculate already added nodes
+          return
+        }
         nodes.push({ id, data: { label: atom.title }, hidden: atom.hidden, position })
         atom.actions.forEach(action => {
-          nodes.push({ id: id + "_" + action, type: action, zIndex: 1001, hidden: atom.hidden, data: { type: atom.type, parent: id }, position })
-          edges.push({
-            id: id + "_->_" + action,
-            source: id,
-            target: id + "_" + action,
-            hidden: atom.hidden
-          })
+          console.debug(atom.childType)
+          nodes.push({ id: id + "_" + action, type: action, zIndex: 1001, hidden: atom.hidden, data: { childType: atom.childType, parent: id }, position })
         })
         atom.subNodes?.forEach(sub => {
           edges.push({ id: id + "_->_" + sub, source: id, target: sub, hidden: atom.hidden }
@@ -109,46 +132,39 @@ export const useStore = create<State>()(
 
     },
     addNewNode: (type, parent) => {
+      console.time("create")
       const id = nanoid();
-      switch (type) {
-        case Atoms.Module: {
-          
-          set(
-            produce((state: State) => {
-              state.atoms.set(id, {parent, subNodes: [], type: Atoms.Module, title: "New Module", schema: module, hidden: false, actions: new Set([Actions.Create, Actions.Count, Actions.Delete]), content:  initialModule(id)});
-               // If no parent exists, you've got a bigger issue
-            })
-          );
-          break;
-        }
-        case Atoms.Section: {
-          set(
-            produce((state: State) => {
-              state.atoms.set(id, {parent, subNodes: [], type: Atoms.Section, title: "New Section", schema: section, hidden: false,actions: new Set([Actions.Create, Actions.Count, Actions.Delete]), content: initialSection(id) });
-              
-            })
-          );
-          break;
-        }
+      console.debug("Creating new node " + id + " of type " + type)
 
-        case Atoms.Question: {
-          
-          set(
-            produce((state: State) => {
-              state.atoms.set(id, {parent, subNodes: null, type: Atoms.Question, title: "New Question", schema: question, hidden: false,actions: new Set([ Actions.Delete]), content: initialQuestion(id) });
-            })
-
-          );
-          break;
-        }
-      }
-      // Actions for all types
       set(
         produce((state: State) => {
+          switch (type) {
+            case Atoms.Module: {
+              state.atoms.set(id, { parent, subNodes: [], type: Atoms.Module, childType: Atoms.Section, title: "New Module", schema: module, hidden: false, actions: new Set([Actions.Create, Actions.Count, Actions.Delete]), content: initialModule(id) });
+              // If no parent exists, you've got a bigger issue
+              break;
+            }
+            case Atoms.Section: {
+              state.atoms.set(id, { parent, subNodes: [], type: Atoms.Section, childType: Atoms.Question, title: "New Section", schema: section, hidden: false, actions: new Set([Actions.Create, Actions.Count, Actions.Delete]), content: initialSection(id) });
+              break;
+            }
+            case Atoms.Question: {
+              state.atoms.set(id, { parent, subNodes: null, type: Atoms.Question, childType: null, title: "New Question", schema: question, hidden: false, actions: new Set([Actions.Delete]), content: initialQuestion(id) });
+              break;
+            }
+          }
           state.atoms.get(parent)!.subNodes!.push(id);
-          state.selectedNode = id;
+          console.debug(state.atoms.size, state.atoms.get(id), state.atoms.get(parent))
         })
       );
+      console.timeLog("create", "Add to atoms")
+      get().calcGraphFromAtoms()
+      console.timeLog("create", "Calculated Graph")
+      get().alignNodes()
+      console.timeLog("create", "Aligned Graph")
+      get().selectedNode = id;
+      console.timeEnd("create")
+
     },
     onNodesChange: (changes: NodeChange[]) => {
       set({
@@ -183,7 +199,9 @@ export const useStore = create<State>()(
 
 
     hideNode: (id, isHidden) => set(produce((state: State) => {
+
       const index = state.nodes.findIndex(node => node.id === id)
+      if (index === -1) console.log(id)
       state.nodes[index].hidden = isHidden
     })),
     hideEdge: (id, isHidden) => set(produce((state: State) => {
@@ -191,7 +209,6 @@ export const useStore = create<State>()(
       state.edges[index].hidden = isHidden
     })),
     alignNodes: alignNodes(set, get), deleteNode: deleteNode(set, get),
-    // getNode: (id) => get().atoms.get(id) || null
   }))
 );
 
@@ -199,7 +216,6 @@ const unsubFromSelectedNodes = useStore.subscribe(
   (state) => state.selectedNode,
   (selectedNode) => updateDisplayedNodes(selectedNode)
 
-  , { fireImmediately: false });
-useStore.getState().calcGraphFromAtoms()
-useStore.getState().alignNodes()
+  , { fireImmediately: true });
+
 

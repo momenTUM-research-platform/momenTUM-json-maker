@@ -3,6 +3,8 @@ import { API_URL } from "../App";
 import saveAs from "file-saver";
 import { useStore } from "../state";
 import { DefinedError } from "ajv";
+import { Module, Question, Section, Study } from "../../types";
+import { isModule, isQuestion, isSection, isStudy } from "./typeGuards";
 
 // export async function validate(form: Study, s: typeof schema) {
 //   if (!form) {
@@ -30,23 +32,42 @@ function validateStudy(study: Study): { valid: true; } | { valid: false, msg: st
   };
 }
 
-
-function contructStudy(): Study {
-  const { study, modules, questions, sections } = useStore.getState();
+// This is janky and should be more generalized
+function contructStudy(): Study | null {
+  const { atoms } = useStore.getState();
+  const study = atoms.get("study")
+  
+  if(!study || !isStudy(study.content)) {
+    console.error("Could not construct study because no study atom found")
+    return null
+  }
 
   return {
-    ...study,
-    modules: study.subNodes.map((module_id) => {
+    ...study.content,
+    modules: study.subNodes!.map((module_id) => {
+      const module = atoms.get(module_id)
+      if (!module || !isModule(module.content)) {
+        return null
+      }
       return {
-        ...modules[module_id],
-        sections: modules.get(module_id)?.subNodes.map((section_id) => {
+        ...module.content,
+        sections: module.subNodes!.map((section_id) => {
+          const section = atoms.get(section_id)
+          if (!section || !isSection(section.content)) {
+            return null
+          }
           return {
-            ...sections.get(section_id),
-            questions: sections.get(section_id)?.subNodes.map((question_id) => questions.get(question_id)),
+            ...section.content,
+            questions: section.subNodes!.map((question_id) => {
+              const question = atoms.get(question_id)
+              if (!question || !isQuestion(question.content)) {
+                return null
+              }
+              return question.content}).filter((i) : i is Question => i !== null ),
           };
-        }),
+        }).filter((i) : i is Section => i !== null ),
       };
-    }),
+    }).filter((i) : i is Module => i !== null ),
   };
 }
 

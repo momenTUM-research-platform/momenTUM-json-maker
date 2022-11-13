@@ -8,16 +8,14 @@ export function alignNodes(set: (partial: State | Partial<State> | ((state: Stat
       const dagreGraph = new dagre.graphlib.Graph();
       dagreGraph.setDefaultEdgeLabel(() => ({}));
   
-  
       const nodeWidth = 172;
       const nodeHeight = 36;
-  
-  
   
       const isHorizontal = get().direction === "LR";
       dagreGraph.setGraph({ rankdir: get().direction });
 
-      const nodesToPosition = state.nodes.filter(n => !(n.hidden || n.type === "newNode" || n.type === "countNode" || n.type === "deleteNode"))
+      // Action nodes will be placed manually 
+      const nodesToPosition = state.nodes.filter(n => !(n.hidden || n.type === "create" || n.type === "count" || n.type === "delete"))
   
       nodesToPosition.forEach((node) => {
         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -45,22 +43,22 @@ export function alignNodes(set: (partial: State | Partial<State> | ((state: Stat
         return node;
       });
   
-      state.nodes.filter(n => n.type === "countNode").forEach((node) => {
+      state.nodes.filter(n => n.type === "count").forEach((node) => {
         const parent = state.nodes.find(n => n.id === node.id.slice(0, -6))!; // removing _count from the id to gain parent
         node.position = {
           x: parent.position.x + 50,
           y: parent.position.y  -25
         };
       });
-      state.nodes.filter(n => n.type === "newNode").forEach((node) => {
-        const parent = state.nodes.find(n => n.id === node.id.slice(0, -9))!; // removing _new_node from the id to gain parent
+      state.nodes.filter(n => n.type === "create").forEach((node) => {
+        const parent = state.nodes.find(n => n.id === node.id.slice(0, -7))!; // removing _create from the id to gain parent
   
         node.position = {
           x: parent.position.x + 10,
           y: parent.position.y  -25
         };
       });
-      state.nodes.filter(n => n.type === "deleteNode").forEach((node) => {
+      state.nodes.filter(n => n.type === "delete").forEach((node) => {
         const parent = state.nodes.find(n => n.id === node.id.slice(0, -7))!; // removing _delete from the id to gain parent
   
         node.position = {

@@ -1,6 +1,6 @@
 import toast, { Toaster } from "react-hot-toast";
 
-import React from "react";
+import React, { useEffect } from "react";
 import QR from "qrcode";
 import { Form } from "./Form";
 import { Graph } from "./Graph";
@@ -11,6 +11,12 @@ export const API_URL =
   process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
 
 function App() {
+
+  useEffect(() => {
+    useStore.getState().calcGraphFromAtoms()
+    useStore.getState().alignNodes()
+  }, [])
+
   const { selectedNode } = useStore();
   return (
     <Layout>

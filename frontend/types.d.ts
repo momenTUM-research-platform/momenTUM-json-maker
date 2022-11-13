@@ -1,8 +1,10 @@
+import { Actions, Atoms } from "./src/state"
 
-declare interface Atom<T> {
+interface Atom<T> {
   parent: string | null, 
   subNodes: string[] | null
   type: Atoms
+  childType: Atoms | null
   content: T
   title: string
   actions: Set<Actions>, 
@@ -10,21 +12,8 @@ declare interface Atom<T> {
   hidden: boolean
 }
 
-declare enum Actions {
-  Create = "create",
-  Count = "count", 
-  Delete = "delete"
-}
 
-declare enum Atoms {
-  // Properties = "properties",
-  Module = "module",
-  Section = "section",
-  Question = "question",
-  PVT = "pvt",
-  Study = "study"
-}
-declare interface Study {
+interface Study {
   _type: Atoms.Study
 
   _id?: { $oid: string };
@@ -33,12 +22,12 @@ declare interface Study {
   modules: Module[];
 }
 
-declare interface Commit {
+interface Commit {
   id: string;
   timestamp: number;
 }
 
-declare interface Properties {
+interface Properties {
   study_id: string;
   study_name: string;
   instructions: string;
@@ -54,7 +43,7 @@ declare interface Properties {
   cache: boolean;
 }
 
-declare interface Module {
+interface Module {
   _type: Atoms.Module
   type: string;
   name: string;
@@ -88,8 +77,7 @@ declare interface Module {
       }
     | { display: false };
   sections: Section[];
-  parent: string
-  subNodes: string[];
+ 
   id: string;
   unlock_after: string[];
   shuffle: boolean;

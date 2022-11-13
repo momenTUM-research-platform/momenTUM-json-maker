@@ -1,16 +1,15 @@
 import produce from "immer";
-import { State, useStore } from "../state";
+import { State } from "../state";
 
 export function deleteNode(set: (partial: State | Partial<State> | ((state: State) => State | Partial<State>), replace?: boolean | undefined) => void, get: () => State): (id: string) => void {
-    const { nodes, edges, hideEdge, hideNode, atoms } = useStore.getState();
-
+    
     return (id: string) => set(produce((state: State) => {
-        const parentId = atoms.get(id)?.parent
+        const parentId = state.atoms.get(id)?.parent
         const nodesToDelete = [id]
 
         console.log(nodesToDelete)
         const recursivelyFindIdsOfSubNodes = (id: string) => {
-            const { subNodes } = atoms.get(id)!
+            const { subNodes } = state.atoms.get(id)!
             nodesToDelete.push(id + "_delete")
 
             if (subNodes) {
@@ -29,8 +28,8 @@ export function deleteNode(set: (partial: State | Partial<State> | ((state: Stat
         nodesToDelete.forEach(n => state.atoms.delete(n))
 
         if (parentId) {
-            const parent = atoms.get(parentId)!
-            atoms.set(parentId, { ...parent, subNodes: parent.subNodes!.filter(s => s !== id) })
+            const parent = state.atoms.get(parentId)!
+            state.atoms.set(parentId, { ...parent, subNodes: parent.subNodes!.filter(s => s !== id) })
 
 
         }

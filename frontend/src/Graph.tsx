@@ -14,7 +14,7 @@ export function Graph() {
       nodes={nodes}
       edges={edges}
       onNodeClick={(_, node) =>
-        node.type !== "newNode" && node.type !== "countNode"   && node.type !== "deleteNode" && useStore.setState({ selectedNode: node.id })
+        node.type !== "create" && node.type !== "count"   && node.type !== "delete" && useStore.setState({ selectedNode: node.id })
       }
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}

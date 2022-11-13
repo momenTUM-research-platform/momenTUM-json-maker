@@ -62,7 +62,7 @@ export function Layout({ children }: { children: ReactElement }) {
 function Action({ children, action }) {
   return (
     <button
-      className="pointer-events-auto ml-4 flex items-center gap-3  rounded-md bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 bg-main py-2 px-3 text-lg font-semibold leading-5 text-white hover:bg-sky-500"
+      className="pointer-events-auto ml-4 flex items-center gap-3  rounded-md  bg-main py-2 px-3 text-lg font-semibold leading-5 text-white hover:bg-sky-500"
       onClick={action}
     >
       {children}

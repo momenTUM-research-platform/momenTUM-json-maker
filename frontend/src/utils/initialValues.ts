@@ -1,3 +1,6 @@
+import { Study, Module, Section, TextQuestion } from "../../types";
+import { Atoms } from "../state";
+
 export const initialStudy  =  (id: string) : Study => { return {
     _type: Atoms.Study,
     properties: {
@@ -20,7 +23,6 @@ export const initialStudy  =  (id: string) : Study => { return {
   };
 export const  initialModule = (id: string):  Module => { return {
     _type: Atoms.Module,
-    parent: "properties", // While not correct in the study JSON, where modules and properties are siblings, in the graph properties is the parent. Needed for hiding logic
     id,
     alerts: {
       title: "",
@@ -46,7 +48,6 @@ export const  initialModule = (id: string):  Module => { return {
     },
     name: "",
     sections: [],
-    subNodes: [],
     shuffle: false,
     submit_text: "Submit",
     type: "info",

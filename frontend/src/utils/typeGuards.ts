@@ -1,3 +1,6 @@
+import { Module, Section, Question, Study } from "../../types"
+import { Atoms } from "../state"
+
 // implement for every option in Atoms enum
 export function isModule(object: any): object is Module {
     return object._type === Atoms.Module

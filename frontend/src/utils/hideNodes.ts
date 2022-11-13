@@ -1,17 +1,24 @@
 import { State, useStore } from "../state";
 
 export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
-    const { nodes, edges, hideEdge, hideNode, atoms } = useStore.getState();
+    const { nodes, edges, hideEdge, hideNode, atoms, hideAllAtoms, hideAtom } = useStore.getState();
+    
     console.time("hide")
-
     // Show all nodes
-    if (!selectedNode || selectedNode === "study") {
-      nodes.map(node => hideNode(node.id, false))
-      edges.map(edge => hideEdge(edge.id, false));
+    if (!selectedNode ) {
       useStore.getState().alignNodes();
-  
+      console.timeEnd("hide")
       return;
     }
+
+
+    if (selectedNode === "study") {
+      hideAllAtoms(false)
+      useStore.getState().alignNodes();
+      console.timeEnd("hide")
+      return;
+    }
+
     console.timeLog("hide", "Show all")
     // Show only subtree of nodes
     const node = atoms.get(selectedNode)
@@ -23,15 +30,10 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
       const { parent, subNodes } = atoms.get(id)!
       if (parent) {
         nodesToShow.push(parent)
-        nodesToShow.push(parent + "_create")
-        nodesToShow.push(parent + "_count")
-        parent !== "study" && nodesToShow.push(parent+ "_delete")
-        // Also show siblings and their create button and subnode count. 
-        const siblings = atoms.get(parent)!.subNodes
         // Get siblings while filtering out itself. BTW, are you your own sibling?
-        // Don't push new node and count node when node will never have subnodes
-        siblings?.filter(s => s !== id).map(s => subNodes ? nodesToShow.push(s, s + "_create", s + "_count", s + "_delete") : nodesToShow.push(s, s + "_delete"))
-  
+        const siblings = atoms.get(parent)!.subNodes
+        siblings && nodesToShow.push(...siblings.filter(s => s !== id))
+        // Don't push new node and count node when node will never have subnodes  
         recursivelyFindIdsOfParentNodes(parent)
       }
     }
@@ -40,9 +42,6 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
       const subs = atoms.get(id)!.subNodes
       
       if (subs) {
-        nodesToShow.push(id + "_create") // Add "newNode" to displayed nodes 
-        nodesToShow.push(id + "_count")
-        nodesToShow.push(id + "_delete")
         nodesToShow.push(...subs)
         subs.forEach(recursivelyFindIdsOfSubNodes);
         ;
@@ -55,16 +54,11 @@ export function updateDisplayedNodes(selectedNode: State["selectedNode"]) {
     recursivelyFindIdsOfParentNodes(selectedNode);
     console.timeLog("hide", "Parents")
   
-    let edgesToShow = edges.filter((e) => nodesToShow.find((n) => e.target === n)); // This is O(n**2), can it be better?
-    console.timeLog("hide", "Edges")
     // hide all, then unhide subnodes + edges
-    nodes.map(node => hideNode(node.id, true))
-    edges.map(edge => hideEdge(edge.id, true));
+    hideAllAtoms(true)
     console.timeLog("hide", "hide all")
-    nodesToShow.map(node => hideNode(node, false))
-    console.timeLog("hide", "unhide nodes")
-    edgesToShow.map(edge => hideEdge(edge.id, false));
-    console.timeLog("hide", "unhide edges")
+    nodesToShow.forEach(a  => hideAtom(a, false))
+    console.timeLog("hide", "unhide selected nodes")
     useStore.getState().alignNodes();
     console.timeEnd("hide")
   }
