@@ -5,7 +5,7 @@ import QR from "qrcode";
 import { Form } from "./Form";
 import { Graph } from "./Graph";
 import { Layout } from "./Layout";
-import { useStore } from "./state";
+import { redraw, useStore } from "./state";
 import Drag from "../assets/drag";
 
 export const API_URL =
@@ -14,33 +14,35 @@ export const API_URL =
 function App() {
   const [distribution, setDistribution] = useState(0.5);
 
-  const leftPx = Math.floor((window.innerWidth - 20) * distribution);
-  const rightPx = Math.floor((window.innerWidth - 20) * (1 - distribution));
-  console.log(distribution, leftPx, rightPx);
+  const leftPx = Math.floor((window.innerWidth - 10) * distribution);
+  const rightPx = Math.floor((window.innerWidth - 10) * (1 - distribution));
   useEffect(() => {
-    useStore.getState().calcGraphFromAtoms();
-    useStore.getState().alignNodes();
+    redraw();
   }, []);
 
   const { selectedNode } = useStore();
   return (
     <Layout>
-      <main className={`grid`} style={{ gridTemplateColumns: `${leftPx}px 20px ${rightPx}px` }}>
-        <section className="h-[calc(100vh-110px)] w-full">
+      <main className="w-full flex">
+        <section className="h-[calc(100vh-110px)]" style={{ width: leftPx }}>
           <Graph />
         </section>
         <section
           draggable={true}
           onClick={() => console.log("Clicked")}
           onDrag={(e) => {
-            console.log("Dragging", e.clientX);
-            setDistribution(distribution + e.clientX / window.innerWidth);
+            e.preventDefault();
+            setDistribution(e.clientX / window.innerWidth);
           }}
-          className="bg-slate-300 hover:bg-slate-400 flex items-center  h-[calc(100vh-110px)]"
+          className="bg-gray-200 hover:bg-gray-300 flex items-center cursor-col-resize  h-[calc(100vh-110px)]"
+          style={{ width: 10 }}
         >
           <Drag />
         </section>
-        <section className="my-8 px-2 overflow-scroll overflow-x-hidden h-[calc(100vh-110px)]">
+        <section
+          className="my-8 px-2 overflow-scroll overflow-x-hidden h-[calc(100vh-110px)]"
+          style={{ width: rightPx }}
+        >
           {selectedNode ? (
             <Form id={selectedNode} />
           ) : (
