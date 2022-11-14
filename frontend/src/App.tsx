@@ -5,7 +5,7 @@ import QR from "qrcode";
 import { Form } from "./Form";
 import { Graph } from "./Graph";
 import { Layout } from "./Layout";
-import { redraw, useStore } from "./state";
+import { useStore } from "./state";
 import Drag from "../assets/drag";
 
 export const API_URL =
@@ -13,7 +13,7 @@ export const API_URL =
 
 function App() {
   const [distribution, setDistribution] = useState(0.5);
-
+  const { redraw } = useStore();
   const leftPx = Math.floor((window.innerWidth - 10) * distribution);
   const rightPx = Math.floor((window.innerWidth - 10) * (1 - distribution));
   useEffect(() => {

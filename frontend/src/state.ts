@@ -215,7 +215,7 @@ export const useStore = create<State>()(
       );
       get().selectedNode = id;
       get().calcGraphFromAtoms();
-      redraw();
+      get().redraw();
       console.timeEnd("create");
     },
     onNodesChange: (changes: NodeChange[]) => {
