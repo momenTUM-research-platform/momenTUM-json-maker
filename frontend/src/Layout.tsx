@@ -1,37 +1,30 @@
 import React, { ReactChildren, ReactElement } from "react";
-import {
-  
-  download,
-  
-  load,
-  save,
-  upload,
-  
-} from "./utils/actions";
+import { download, load, save, upload } from "./utils/actions";
 
 // Icons
-import Rotate from "../assets/rotate"
+import Rotate from "../assets/rotate";
 import Download from "../assets/download";
 import Upload from "../assets/upload";
 import Load from "../assets/load";
 import Save from "../assets/save";
 import { useStore } from "./state";
-
+import Logo from "../assets/icon.png";
 export function Layout({ children }: { children: ReactElement }) {
-
   return (
     <main className="max-h-screen overflow-hidden">
-      <header className="flex justify-between p-8 pb-6 shadow-md "  >
+      <header className="flex justify-between p-8 pb-6 shadow-md ">
         <div className="flex">
           <img
-            src="/assets/icon.png"
+            src={Logo}
             alt="MomenTUM logo: A brain with a question mark"
             className="w-10 h-10 "
           />
           <h1 className="text-xl p-2">MomenTUM-JSON-Maker</h1>
         </div>
         <div className="flex justif">
-          <Action action={useStore().invertDirection} ><Rotate /> Rotate Canvas</Action>
+          <Action action={useStore().invertDirection}>
+            <Rotate /> Rotate Canvas
+          </Action>
           <Action action={save}>
             <Save />
             Save JSON file
