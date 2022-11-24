@@ -31,7 +31,6 @@ import {
 import { module } from "../schema/module";
 import { section } from "../schema/section";
 import { question } from "../schema/question";
-import { Atom, Module, Question, Section, Study } from "../types";
 
 export enum Actions {
   Create = "create",
