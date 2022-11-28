@@ -8,12 +8,12 @@ import { section } from "../schema/section";
 import { State, useStore } from "./state";
 
 export function Form({ id }: { id: string }) {
-  const {atoms, setAtom} = useStore()
-  const atom = atoms.get(id)
+  const { atoms, setAtom } = useStore();
+  const atom = atoms.get(id);
 
   if (!atom) {
-    console.error("Atom " + id + " does not exist. This should never be the case!")
-    return (<></>) 
+    console.error("Atom " + id + " does not exist. This should never be the case!");
+    return <></>;
   }
 
   let uiSchema = {
@@ -23,8 +23,10 @@ export function Form({ id }: { id: string }) {
     },
   };
 
-  const hiddenFields = ["id", "study_id", "post_url"]
-  hiddenFields.forEach(field => uiSchema[field] = { "ui:widget": "hidden" })
+  const hiddenFields = ["id", "study_id", "post_url"];
+  hiddenFields.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
+  console.log(id);
+  console.table(atom.content);
 
   return (
     <FormComponent

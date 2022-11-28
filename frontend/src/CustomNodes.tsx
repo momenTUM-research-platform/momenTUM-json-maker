@@ -1,16 +1,16 @@
 import React from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 
-import { Atoms, useStore } from "./state";
+import { useStore } from "./state";
 import Plus from "../assets/plus";
 import Delete from "../assets/delete";
 
-export function NewNode({ data }: NodeProps<{ childType: Atoms; parent: string }>) {
+export function NewNode({ data }: NodeProps<{ childType: AtomVariants; parent: string }>) {
   const { addNewNode, atoms } = useStore();
   if (!atoms.get(data.parent)) {
     return <></>;
   }
-  const colors: { [key in Atoms]: string } = {
+  const colors: { [key in AtomVariants]: string } = {
     module: "bg-green-500",
     section: "bg-main",
     question: "bg-amber-500",
@@ -20,7 +20,9 @@ export function NewNode({ data }: NodeProps<{ childType: Atoms; parent: string }
 
   return (
     <div
-      className={`${colors[data.childType]} cursor-cell hover:opacity-80 p-2  rounded-lg h-8 w-8`}
+      className={`${
+        colors[data.childType]
+      } cursor-cell hover:opacity-80 p-2 fade  rounded-lg h-8 w-8`}
       onClick={() => addNewNode(data.childType, data.parent)}
     >
       <Plus />

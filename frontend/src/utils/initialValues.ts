@@ -1,8 +1,8 @@
-import { Study, Module, Section, TextQuestion } from "../../types";
-import { Atoms } from "../state";
+import { AtomVariants } from "../state";
 
-export const initialStudy  =  (id: string) : Study => { return {
-    _type: Atoms.Study,
+export const initialStudy = (id: string): Study => {
+  return {
+    _type: AtomVariants.Study,
     properties: {
       study_name: "",
       study_id: id,
@@ -19,10 +19,11 @@ export const initialStudy  =  (id: string) : Study => { return {
       pls: "",
     },
     modules: [],
-}
   };
-export const  initialModule = (id: string):  Module => { return {
-    _type: Atoms.Module,
+};
+export const initialModule = (id: string): Module => {
+  return {
+    _type: AtomVariants.Module,
     id,
     alerts: {
       title: "",
@@ -52,24 +53,27 @@ export const  initialModule = (id: string):  Module => { return {
     submit_text: "Submit",
     type: "info",
     unlock_after: [],
-  }};  
+  };
+};
 
-  export const initialSection = (id: string): Section => { return  {
-    _type: Atoms.Section,
+export const initialSection = (id: string): Section => {
+  return {
+    _type: AtomVariants.Section,
     id,
     name: "",
     questions: [],
     shuffle: false,
-  }}
+  };
+};
 
-
-  export const initialQuestion = (id: string) : TextQuestion => {return {
-    _type: Atoms.Question,
+export const initialQuestion = (id: string): TextQuestion => {
+  return {
+    _type: AtomVariants.Question,
     id,
     rand_group: "",
     required: true,
     text: "",
     type: "text",
     subtype: "short",
-
-  }};
+  };
+};
