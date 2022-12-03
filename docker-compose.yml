@@ -5,7 +5,7 @@ volumes:
 services:
   nginxmanager:
     restart: on-failure
-    image: "jc21/nginx-proxy-manager:latest"
+    image: "jc21/nginx-proxy-manager:2.9.12"
     ports:
       - "80:80"
       - "81:81"
