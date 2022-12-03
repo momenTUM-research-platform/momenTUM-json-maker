@@ -178,7 +178,7 @@ pub enum StringOrBool {
     Bool(bool),
 }
 #[derive(Serialize, Deserialize)]
-enum Modules {
+pub enum Modules {
     Survey(Survey),
     PVT(PVT),
     Info, // These three are not yet implemented
