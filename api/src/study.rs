@@ -1,7 +1,7 @@
 use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Study {
     pub _id: Option<ObjectId>,
     pub timestamp: Option<i64>, // time of upload
@@ -9,7 +9,7 @@ pub struct Study {
     pub modules: Vec<Modules>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Properties {
     pub study_id: String,
     pub study_name: String,
@@ -25,14 +25,14 @@ pub struct Properties {
     pub cache: bool,
     pub created_by: String,
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Survey {
     pub r#type: String,
     pub name: String,
     pub submit_text: String,
     pub condition: String,
     pub alerts: Alert,
-    pub graph: Graph,
+    pub graph: GraphOrNoGraph,
     pub id: String,
     pub unlock_after: Vec<String>,
 
@@ -40,16 +40,16 @@ pub struct Survey {
     pub shuffle: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct PVT {
     pub r#type: String,
     pub name: String,
     pub submit_text: String,
     pub condition: String,
     pub alerts: Alert,
-    pub graph: Graph,
     pub id: String,
     pub unlock_after: Vec<String>,
+    pub graph: GraphOrNoGraph,
 
     pub trials: i32,
     pub min_waiting: i32,
@@ -59,7 +59,7 @@ pub struct PVT {
     pub exit: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Alert {
     pub title: String,
     pub message: String,
@@ -73,37 +73,34 @@ pub struct Alert {
     pub timeout: bool,
     pub timeout_after: i32,
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Time {
     pub hours: i8,
     pub minutes: i8,
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Graph {
-    pub display: bool,
-    pub variable: Option<String>,
-    pub title: Option<String>,
-    pub blurb: Option<String>,
-    pub r#type: Option<String>,
-    pub max_points: Option<i32>,
+    pub display: bool, //true
+    pub variable: String,
+    pub title: String,
+    pub blurb: String,
+    pub r#type: String,
+    pub max_points: i32,
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
+pub struct NoGraph {
+    pub display: bool, // false
+}
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Section {
     pub name: String,
     pub shuffle: bool,
     pub questions: Vec<Question>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Question {
-    #[serde(rename = "instruction")]
-    Instruction {
-        id: String,
-        text: String,
-        required: bool,
-        rand_group: Option<String>,
-    },
     #[serde(rename = "text")]
     Text {
         id: String,
@@ -111,6 +108,9 @@ pub enum Question {
         required: bool,
         rand_group: Option<String>,
         subtype: String,
+        hide_id: Option<String>,
+        hide_value: Option<StringOrBool>,
+        hide_if: Option<bool>,
     },
     #[serde(rename = "datetime")]
     Datetime {
@@ -119,6 +119,9 @@ pub enum Question {
         required: bool,
         rand_group: Option<String>,
         subtype: String,
+        hide_id: Option<String>,
+        hide_value: Option<StringOrBool>,
+        hide_if: Option<bool>,
     },
     #[serde(rename = "yesno")]
     YesNo {
@@ -169,19 +172,40 @@ pub enum Question {
         subtype: String,
         src: String,
         thumb: String,
+        hide_id: Option<String>,
+        hide_value: Option<StringOrBool>,
+        hide_if: Option<bool>,
+    },
+    #[serde(rename = "instruction")]
+    Instruction {
+        id: String,
+        text: String,
+        required: bool,
+        rand_group: Option<String>,
+        hide_id: Option<String>,
+        hide_value: Option<StringOrBool>,
+        hide_if: Option<bool>,
     },
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum StringOrBool {
     String(String),
     Bool(bool),
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(untagged)]
 pub enum Modules {
     Survey(Survey),
     PVT(PVT),
     Info, // These three are not yet implemented
     Video,
     Audio,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum GraphOrNoGraph {
+    Graph(Graph),
+    NoGraph(NoGraph),
 }
