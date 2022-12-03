@@ -1,9 +1,7 @@
 import toast from "react-hot-toast";
 import { API_URL } from "../App";
-import saveAs from "file-saver";
 import { useStore } from "../state";
 import { DefinedError } from "ajv";
-import { Module, Question, Section, Study } from "../../types";
 import { isModule, isQuestion, isSection, isStudy } from "./typeGuards";
 
 // export async function validate(form: Study, s: typeof schema) {
@@ -18,7 +16,7 @@ import { isModule, isQuestion, isSection, isStudy } from "./typeGuards";
 
 // }
 
-function validateStudy(study: Study): { valid: true; } | { valid: false, msg: string } {
+function validateStudy(study: Study): { valid: true } | { valid: false; msg: string } {
   const valid = useStore().validator(study);
   if (valid) return { valid: true };
   const errors = useStore().validator.errors as DefinedError[];
@@ -35,39 +33,46 @@ function validateStudy(study: Study): { valid: true; } | { valid: false, msg: st
 // This is janky and should be more generalized
 function contructStudy(): Study | null {
   const { atoms } = useStore.getState();
-  const study = atoms.get("study")
-  
-  if(!study || !isStudy(study.content)) {
-    console.error("Could not construct study because no study atom found")
-    return null
+  const study = atoms.get("study");
+
+  if (!study || !isStudy(study.content)) {
+    console.error("Could not construct study because no study atom found");
+    return null;
   }
 
   return {
     ...study.content,
-    modules: study.subNodes!.map((module_id) => {
-      const module = atoms.get(module_id)
-      if (!module || !isModule(module.content)) {
-        return null
-      }
-      return {
-        ...module.content,
-        sections: module.subNodes!.map((section_id) => {
-          const section = atoms.get(section_id)
-          if (!section || !isSection(section.content)) {
-            return null
-          }
-          return {
-            ...section.content,
-            questions: section.subNodes!.map((question_id) => {
-              const question = atoms.get(question_id)
-              if (!question || !isQuestion(question.content)) {
-                return null
+    modules: study
+      .subNodes!.map((module_id) => {
+        const module = atoms.get(module_id);
+        if (!module || !isModule(module.content)) {
+          return null;
+        }
+        return {
+          ...module.content,
+          sections: module
+            .subNodes!.map((section_id) => {
+              const section = atoms.get(section_id);
+              if (!section || !isSection(section.content)) {
+                return null;
               }
-              return question.content}).filter((i) : i is Question => i !== null ),
-          };
-        }).filter((i) : i is Section => i !== null ),
-      };
-    }).filter((i) : i is Module => i !== null ),
+              return {
+                ...section.content,
+                questions: section
+                  .subNodes!.map((question_id) => {
+                    const question = atoms.get(question_id);
+                    if (!question || !isQuestion(question.content)) {
+                      return null;
+                    }
+                    return question.content;
+                  })
+                  .filter((i): i is Question => i !== null),
+              };
+            })
+            .filter((i): i is Section => i !== null),
+        };
+      })
+      .filter((i): i is Module => i !== null),
   };
 }
 
@@ -89,7 +94,7 @@ export function load() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const data = JSON.parse(reader.result as string);
-      const result = validateStudy(data)  
+      const result = validateStudy(data);
       result.valid ? useStore().setStudy(data) : toast.error(result.msg);
     };
     reader.readAsText(file);
@@ -99,34 +104,33 @@ export function load() {
 
 export async function upload(form: Study) {
   const result = validateStudy(form);
-  
+
   if (!result.valid) {
-    toast.error("Form is not valid. Error: " + result.msg)
-    return
-  } ;
- 
-    const data = JSON.stringify(form, null, 2);
-    const postURL = API_URL + "/study";
-    const response = await fetch(postURL, {
-      method: "POST",
-      body: data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "MomenTUM",
-      },
-    });
-    if (response.status === 200) {
-      toast.success(
-        "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
+    toast.error("Form is not valid. Error: " + result.msg);
+    return;
+  }
+
+  const data = JSON.stringify(form, null, 2);
+  const postURL = API_URL + "/study";
+  const response = await fetch(postURL, {
+    method: "POST",
+    body: data,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "MomenTUM",
+    },
+  });
+  if (response.status === 200) {
+    toast.success(
+      "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
         form.properties.study_id,
-        {
-          duration: 20000,
-        }
-      );
-    } else {
-      toast.error("Error: " + response.statusText);
-    }
-  
+      {
+        duration: 20000,
+      }
+    );
+  } else {
+    toast.error("Error: " + response.statusText);
+  }
 }
 
 export async function download(setForm: (form: Study) => void, id?: string, commit?: string) {

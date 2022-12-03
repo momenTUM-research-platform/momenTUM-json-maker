@@ -1,4 +1,3 @@
-import { Study } from "../types";
 import toast from "react-hot-toast";
 import Ajv, { DefinedError } from "ajv";
 import { API_URL } from "./App";

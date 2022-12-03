@@ -1,20 +1,33 @@
-import { Actions, Atoms } from "./src/state"
-
-interface Atom<T> {
-  parent: string | null, 
-  subNodes: string[] | null
-  type: Atoms
-  childType: Atoms | null
-  content: T
-  title: string
-  actions: Set<Actions>, 
-  schema: any // Any schema that works for AJV and React JSON form. TODO: more specific type
-  hidden: boolean
+declare enum Actions {
+  Create = "create",
+  Count = "count",
+  Delete = "delete",
 }
 
+declare enum AtomVariants {
+  // Properties = "properties",
+  Module = "module",
+  Section = "section",
+  Question = "question",
+  PVT = "pvt",
+  Study = "study",
+}
+declare type Atoms = Map<string, Atom<Study | Question | Module | Section>>;
 
-interface Study {
-  _type: Atoms.Study
+declare interface Atom<T> {
+  parent: string | null;
+  subNodes: string[] | null;
+  type: AtomVariants;
+  childType: AtomVariants | null;
+  content: T;
+  title: string;
+  actions: Set<Actions>;
+  schema: any; // Any schema that works for AJV and React JSON form. TODO: more specific type
+  hidden: boolean;
+}
+
+declare interface Study {
+  _type: AtomVariants.Study;
 
   _id?: { $oid: string };
   timestamp?: number;
@@ -22,12 +35,7 @@ interface Study {
   modules: Module[];
 }
 
-interface Commit {
-  id: string;
-  timestamp: number;
-}
-
-interface Properties {
+declare interface Properties {
   study_id: string;
   study_name: string;
   instructions: string;
@@ -43,8 +51,8 @@ interface Properties {
   cache: boolean;
 }
 
-interface Module {
-  _type: Atoms.Module
+declare interface Module {
+  _type: AtomVariants.Module;
   type: string;
   name: string;
   submit_text: string;
@@ -77,24 +85,23 @@ interface Module {
       }
     | { display: false };
   sections: Section[];
- 
+
   id: string;
   unlock_after: string[];
   shuffle: boolean;
 }
 
-interface Section {
-  _type: Atoms.Section
+declare interface Section {
+  _type: AtomVariants.Section;
 
   id: string;
   name: string;
   shuffle: boolean;
   questions: Question[];
-  
 }
 
-interface Question {
-  _type: Atoms.Question
+declare interface Question {
+  _type: AtomVariants.Question;
 
   id: string;
   text: string;
@@ -109,7 +116,6 @@ interface Question {
   model?: string | number;
   hideError?: boolean;
   value?: number;
- 
 }
 
 interface Instruction extends Question {

@@ -5,7 +5,7 @@ import QR from "qrcode";
 import { Form } from "./Form";
 import { Graph } from "./Graph";
 import { Layout } from "./Layout";
-import { useStore } from "./state";
+import { redraw, useStore } from "./state";
 import Drag from "../assets/drag";
 
 export const API_URL =
@@ -13,7 +13,6 @@ export const API_URL =
 
 function App() {
   const [distribution, setDistribution] = useState(0.5);
-  const { redraw } = useStore();
   const leftPx = Math.floor((window.innerWidth - 10) * distribution);
   const rightPx = Math.floor((window.innerWidth - 10) * (1 - distribution));
   useEffect(() => {
@@ -40,7 +39,7 @@ function App() {
           <Drag />
         </section>
         <section
-          className="my-8 px-2 overflow-scroll overflow-x-hidden h-[calc(100vh-110px)]"
+          className="my-8 px-2 overflow-scroll overflow-x-hidden h-[calc(100vh-160px)]"
           style={{ width: rightPx }}
         >
           {selectedNode ? (
@@ -51,7 +50,6 @@ function App() {
             </div>
           )}
         </section>
-
         <Toaster />
       </main>
     </Layout>

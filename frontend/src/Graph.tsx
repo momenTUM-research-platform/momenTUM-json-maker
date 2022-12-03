@@ -3,11 +3,11 @@ import ReactFlow, { MiniMap, Controls, Background } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
 import { CountNode, NewNode, DeleteNode } from "./CustomNodes";
-import { useStore } from "./state";
+import { redraw, useStore } from "./state";
 
 const nodeTypes = { create: NewNode, count: CountNode, delete: DeleteNode };
 export function Graph() {
-  const { nodes, edges, redraw } = useStore();
+  const { nodes, edges } = useStore();
 
   return (
     <ReactFlow
