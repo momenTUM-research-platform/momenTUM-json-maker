@@ -26,6 +26,12 @@ declare interface Atom<T> {
   hidden: boolean;
 }
 
+declare interface Event {
+  timestamp: number,
+  condition: string
+  module: string // id of module
+}
+
 declare interface Study {
   _type: AtomVariants.Study;
 
