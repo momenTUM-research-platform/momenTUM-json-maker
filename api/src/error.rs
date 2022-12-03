@@ -10,7 +10,18 @@ pub enum Error {
     #[error("Study not found")]
     StudyNotFound,
 
-    #[error("No corresponding API key for redcap project found. Please add one through the POST /api/v1/key route")]
+    #[error("Authorization header is malformed. Please provide it in the following form: `email:password` base64 encoded. \n Error: {0} ")]
+    AuthMalformed(String),
+    #[error("No email provided")]
+    AuthNoEmail,
+
+    #[error("No password provided")]
+    AuthNoPassword,
+
+    #[error("Email or password incorrect")]
+    AuthIncorrect,
+
+    #[error("No corresponding API key for redcap project found")]
     NoCorrespondingAPIKey,
 
     #[error("Redcap authentication error. Is the API key correct?")]
@@ -32,6 +43,19 @@ impl<'r> Responder<'r, 'static> for Error {
     fn respond_to(self, req: &'r Request<'_>) -> response::Result<'static> {
         match self {
             Error::StudyNotFound => response::status::NotFound(self.to_string()).respond_to(req),
+            Error::AuthMalformed(_) => {
+                response::status::BadRequest(Some(self.to_string())).respond_to(req)
+            }
+            Error::AuthNoEmail => {
+                response::status::BadRequest(Some(self.to_string())).respond_to(req)
+            }
+            Error::AuthNoPassword => {
+                response::status::BadRequest(Some(self.to_string())).respond_to(req)
+            }
+            Error::AuthIncorrect => {
+                response::status::Unauthorized(Some(self.to_string())).respond_to(req)
+            }
+
             Error::NoCorrespondingAPIKey => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
             }

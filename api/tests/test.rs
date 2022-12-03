@@ -1,11 +1,11 @@
-use api::generate_metadata;
-use api::Question::{Datetime, Instruction, Media, Multi, Slider, Text, YesNo};
-use api::*;
+// use api::generate_metadata;
+// use api::Question::{Datetime, Instruction, Media, Multi, Slider, Text, YesNo};
+// use api::*;
 
-#[test]
-fn get_time_stamp() {
-    assert_eq!(timestamp("Mon Jul 25 11:08:10 2022 +0000",), 1658747290000);
-}
+// #[test]
+// fn get_time_stamp() {
+//     assert_eq!(timestamp("Mon Jul 25 11:08:10 2022 +0000",), 1658747290000);
+// }
 
 // #[test]
 // fn create_metadata() {
