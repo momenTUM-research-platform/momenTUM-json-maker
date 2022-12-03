@@ -1,3 +1,4 @@
+use mongodb::error;
 use rocket::{
     http::Status,
     response::{self, Responder},
@@ -37,6 +38,11 @@ pub enum Error {
     RequestError(#[from] reqwest::Error),
     #[error("Response deserialization error")]
     ResponseDeserializationError(#[from] serde_json::Error),
+
+    #[error("Study parsing error: {0}")]
+    StudyParsingError(String),
+    // #[error("Rocket error")]
+    // RocketError(#[from] rocket::serde::json::Error<'static>),
 }
 
 impl<'r> Responder<'r, 'static> for Error {
@@ -76,6 +82,12 @@ impl<'r> Responder<'r, 'static> for Error {
                 response::status::Custom(Status::InternalServerError, err.to_string())
                     .respond_to(req)
             }
+            Error::StudyParsingError(err) => {
+                response::status::BadRequest(Some(err)).respond_to(req)
+            } // Error::RocketError(err) => {
+              //     response::status::Custom(Status::InternalServerError, err.to_string())
+              //         .respond_to(req)
+              // }
         }
     }
 }
