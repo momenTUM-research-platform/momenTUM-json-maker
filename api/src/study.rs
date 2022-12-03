@@ -6,7 +6,7 @@ pub struct Study {
     pub _id: Option<ObjectId>,
     pub timestamp: Option<i64>, // time of upload
     pub properties: Properties,
-    pub modules: Vec<Module>,
+    pub modules: Vec<Modules>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -26,18 +26,39 @@ pub struct Properties {
     pub created_by: String,
 }
 #[derive(Serialize, Deserialize)]
-pub struct Module {
+pub struct Survey {
     pub r#type: String,
     pub name: String,
     pub submit_text: String,
     pub condition: String,
     pub alerts: Alert,
     pub graph: Graph,
-    pub sections: Vec<Section>,
     pub id: String,
     pub unlock_after: Vec<String>,
+
+    pub sections: Vec<Section>,
     pub shuffle: bool,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct PVT {
+    pub r#type: String,
+    pub name: String,
+    pub submit_text: String,
+    pub condition: String,
+    pub alerts: Alert,
+    pub graph: Graph,
+    pub id: String,
+    pub unlock_after: Vec<String>,
+
+    pub trials: i32,
+    pub min_waiting: i32,
+    pub max_waiting: i32,
+    pub max_reaction: i32,
+    pub show: bool,
+    pub exit: bool,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct Alert {
     pub title: String,
@@ -155,4 +176,12 @@ pub enum Question {
 pub enum StringOrBool {
     String(String),
     Bool(bool),
+}
+#[derive(Serialize, Deserialize)]
+enum Modules {
+    Survey(Survey),
+    PVT(PVT),
+    Info, // These three are not yet implemented
+    Video,
+    Audio,
 }
