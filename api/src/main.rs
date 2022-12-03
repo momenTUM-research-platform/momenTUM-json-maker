@@ -7,6 +7,7 @@ use mongodb::{
     options::FindOneOptions,
 };
 use rocket::futures::stream::TryStreamExt;
+use rocket::Request;
 use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
@@ -96,13 +97,14 @@ async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result
     Ok(Json(studies))
 }
 
-#[post("/api/v1/study", data = "<study>")]
+#[post("/api/v1/study", data = "<potential_study>")]
 async fn create_study(
     user: Result<User>, // Implicit Result to return precise error message instead of catcher route: https://api.rocket.rs/v0.5-rc/rocket/request/trait.FromRequest.html#outcomes
     db: Connection<DB>,
-    mut study: Json<Study>,
+    potential_study: std::result::Result<Json<Study>, rocket::serde::json::Error<'_>>,
 ) -> Result<String> {
-    user?; // Tests if user authentication guard was successful.
+    // user?; // Tests if user authentication guard was successful.
+    let mut study = potential_study.map_err(|e| error::Error::StudyParsingError(e.to_string()))?;
     study._id = Some(ObjectId::new());
     study.timestamp = Some(DateTime::now().timestamp_millis());
     let result = db
@@ -143,21 +145,29 @@ async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
     Ok(())
 }
 
+#[catch(422)]
+fn catch_malformed_request(req: &Request) -> String {
+    return format!("{}", req);
+}
+
 #[launch]
 fn rocket() -> _ {
     println!("The API is using the {} database", ACTIVE_DB);
-    rocket::build().attach(DB::init()).mount(
-        "/",
-        routes![
-            status,
-            get_study_by_post,
-            create_study,
-            fetch_study,
-            all_studies,
-            save_log,
-            save_key,
-            save_response,
-            all_studies_of_study_id,
-        ],
-    )
+    rocket::build()
+        .register("/", catchers![catch_malformed_request])
+        .attach(DB::init())
+        .mount(
+            "/",
+            routes![
+                status,
+                get_study_by_post,
+                create_study,
+                fetch_study,
+                all_studies,
+                save_log,
+                save_key,
+                save_response,
+                all_studies_of_study_id,
+            ],
+        )
 }
