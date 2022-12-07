@@ -4,22 +4,10 @@ import { Edge, Node } from "reactflow";
 import { schedule } from "./scheduler";
 import { isModule } from "./typeGuards";
 
-export function calcTimelineFromAtoms(atoms: Atoms, properties: Properties): Day[] {
+export function calcTimelineFromAtoms(atoms: Atoms, properties: Properties): Days {
   const FORECAST_LENGTH = 1000; // days
   const currentDate = dayjs();
-  let date = dayjs();
-  let days: Day[] = [];
-
-  for (let i = 0; i < FORECAST_LENGTH; i++) {
-    days.push({
-      date: date.format("YYYY-MM-DD"),
-      events: [],
-      isCurrentMonth: currentDate.isSame(date, "month"),
-      isSelected: false,
-      isToday: currentDate.isSame(date, "day"),
-    });
-    date = date.add(1, "day");
-  }
+  let days: Days = Array.from({ length: 1000 }, (_) => []); // Create an array of arrays of length 1000
 
   atoms.forEach((atom, id) => {
     if (!isModule(atom)) {
@@ -31,7 +19,7 @@ export function calcTimelineFromAtoms(atoms: Atoms, properties: Properties): Day
       .filter((event) => event.module === id)
       .forEach((event) => {
         const offsetFromToday = dayjs(event.timestamp).diff(currentDate, "days");
-        days[offsetFromToday].events.push(event);
+        days[offsetFromToday].push(event);
       });
   });
 

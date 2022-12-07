@@ -90,62 +90,35 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function Calendar({ days }: { days: Day[] }) {
+export function Calendar({ days }: { days: Days }) {
   const [date, setDate] = useState(dayjs());
-  const [selectedDay, setSelectedDay] = useState(
-    days.find((day) => dayjs(day.date).isSame(date, "day"))
-  );
+  const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [visibleDays, setVisibleDays] = useState<Day[]>([]);
   console.log(visibleDays);
 
   useEffect(() => {
     let visibleDays: Day[] = [];
     const offsetFromToday = date.diff(dayjs(), "day");
-    const isSameMonth = date.isSame(dayjs(), "month");
-    if (isSameMonth) {
-      const dayOfMonthOfFirstDay = dayjs(days[0].date).date();
-      console.log(dayOfMonthOfFirstDay);
-      for (let i = 0; i < dayOfMonthOfFirstDay; i++) {
-        const day = dayjs(days[0].date).subtract(dayOfMonthOfFirstDay - i, "days");
-        visibleDays.push({
-          date: day.format("YYYY-MM-DD"),
-          events: [],
-          isCurrentMonth: day.isSame(dayjs(), "month"),
-          isSelected: false,
-          isToday: false,
-        });
-      }
-      visibleDays.push(...days.slice(0, 42 - dayOfMonthOfFirstDay));
-    } else {
-      if (offsetFromToday < 0 || offsetFromToday > 1000) {
-        // for any month outside of those we explicitely calculated, we need to get x days before dayOfMonth(current day) = x and 42-x days after current day
-        // Then, to get the monday before the 1. of the month, subtract the day of the week of the first day of the month
-        const dayOfMonth = date.date() - 1; // Subtract one because we want to start at 0
-        const dayOfWeek = date.subtract(dayOfMonth).day();
+    // for any month outside of those we explicitely calculated, we need to get x days before dayOfMonth(current day) = x and 42-x days after current day
+    // Then, to get the monday before the 1. of the month, subtract the day of the week of the first day of the month
+    const dayOfMonth = date.date() - 1; // Subtract one, because we want the distance to the first day of the month, so not counting itself
+    const dayOfWeek = date.subtract(dayOfMonth).day();
 
-        const x = dayOfMonth + dayOfWeek - 1;
+    const x = dayOfMonth + dayOfWeek;
 
-        for (let i = -x; i < 42 - x; i++) {
-          const day = date.add(i, "days"); // Acts as subtrat if i is negative
-
-          if (offsetFromToday + 1 >= 0 && offsetFromToday + 1 < days.length) {
-            visibleDays.push(days[offsetFromToday + i]);
-          } else {
-            visibleDays.push({
-              date: day.format("YYYY-MM-DD"),
-              events: [],
-              isCurrentMonth: date.isSame(day, "month"),
-              isToday: false,
-              isSelected: false,
-            });
-          }
-        }
-      } else {
-        const possibleRange = days.slice(offsetFromToday - 30, offsetFromToday + 30);
-        const firstOfMonthIndex = possibleRange.findIndex((day) => dayjs(day.date).date() === 0);
-        console.log(possibleRange, firstOfMonthIndex);
-        visibleDays = possibleRange.slice(firstOfMonthIndex, firstOfMonthIndex + 42);
-      }
+    for (let i = -x; i < 42 - x; i++) {
+      const day = date.add(i, "days"); // Acts as subtract if i is negative
+      console.log(offsetFromToday + i);
+      visibleDays.push({
+        date: day.format("YYYY-MM-DD"),
+        events:
+          offsetFromToday + i >= 0 && offsetFromToday + i < days.length
+            ? days[offsetFromToday + i]
+            : [],
+        isCurrentMonth: date.isSame(day, "month"),
+        isToday: dayjs().isSame(day, "day"),
+        isSelected: false,
+      });
     }
 
     setVisibleDays(visibleDays);

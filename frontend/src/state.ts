@@ -62,7 +62,7 @@ export interface State {
   direction: "TB" | "LR";
   validator: ValidateFunction;
   atoms: Atoms;
-  days: Day[];
+  days: Days;
   invertDirection: () => void;
   invertMode: () => void;
   setStudy: (from: JSON) => void; // Parse from Study JSON file to State, fails on invalid data

@@ -35,6 +35,8 @@ declare interface Occurence {
   module: string; // id of module
 }
 
+declare type Days = Occurence[][]; // Array of 1000 consecutive days starting from today each containing an array of events on that day
+
 declare interface Day {
   date: string; // "YYYY-MM-DD"
   isCurrentMonth?: boolean;
@@ -43,7 +45,6 @@ declare interface Day {
 
   events: Occurence[];
 }
-
 declare interface Study {
   _type: AtomVariants.Study;
 
