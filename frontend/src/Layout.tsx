@@ -7,9 +7,12 @@ import Download from "../assets/download";
 import Upload from "../assets/upload";
 import Load from "../assets/load";
 import Save from "../assets/save";
-import { useStore } from "./state";
+import Calendar from "../assets/calendar";
+import { Mode, useStore } from "./state";
 import Logo from "../assets/icon.png";
 export function Layout({ children }: { children: ReactElement }) {
+  const { invertDirection, mode, invertMode } = useStore();
+
   return (
     <main className="max-h-screen overflow-hidden">
       <header className="flex justify-between p-8 pb-6 shadow-md ">
@@ -22,8 +25,11 @@ export function Layout({ children }: { children: ReactElement }) {
           <h1 className="text-xl p-2">MomenTUM-JSON-Maker</h1>
         </div>
         <div className="flex justif">
-          <Action action={useStore().invertDirection}>
+          <Action action={invertDirection}>
             <Rotate /> Rotate Canvas
+          </Action>
+          <Action action={invertMode}>
+            <Calendar /> Switch to {mode === Mode.Graph ? "timeline" : "graph"} view
           </Action>
           <Action action={save}>
             <Save />

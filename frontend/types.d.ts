@@ -5,7 +5,6 @@ declare enum Actions {
 }
 
 declare enum AtomVariants {
-  // Properties = "properties",
   Module = "module",
   Section = "section",
   Question = "question",
@@ -26,10 +25,23 @@ declare interface Atom<T> {
   hidden: boolean;
 }
 
-declare interface Event {
-  timestamp: number,
-  condition: string
-  module: string // id of module
+declare interface Occurence {
+  id: string;
+  timestamp: number;
+  name: string;
+  time: string;
+  datetime: string; // YYYY-MM-DD'T'HH:MM,
+  condition: string;
+  module: string; // id of module
+}
+
+declare interface Day {
+  date: string; // "YYYY-MM-DD"
+  isCurrentMonth?: boolean;
+  isSelected?: boolean;
+  isToday?: boolean;
+
+  events: Occurence[];
 }
 
 declare interface Study {

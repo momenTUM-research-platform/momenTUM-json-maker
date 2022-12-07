@@ -32,6 +32,7 @@ import { module } from "../schema/module";
 import { section } from "../schema/section";
 import { question } from "../schema/question";
 import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
+import { calcTimelineFromAtoms } from "./utils/calcTimelineFromAtoms";
 
 export enum Actions {
   Create = "create",
@@ -48,16 +49,25 @@ export enum AtomVariants {
   Study = "study",
 }
 
+export enum Mode {
+  Graph = "graph",
+  Timeline = "timeline",
+}
+
 export interface State {
   selectedNode: string | null; // ID of the currently selected Node
+  mode: Mode;
   nodes: Node[];
   edges: Edge[];
   direction: "TB" | "LR";
   validator: ValidateFunction;
   atoms: Atoms;
+  days: Day[];
   invertDirection: () => void;
+  invertMode: () => void;
   setStudy: (from: JSON) => void; // Parse from Study JSON file to State, fails on invalid data
   setAtom: (id: string, content: Study | Question | Module | Section) => void;
+  setAtoms: (atoms: Atoms) => void;
   addNewNode: (type: AtomVariants, parent: string) => void;
   deleteNode: (id: string) => void;
 }
@@ -65,6 +75,7 @@ export interface State {
 export const useStore = create<State>()((set, get) => ({
   validator: new Ajv().compile(study),
   direction: "LR",
+  mode: Mode.Graph,
   atoms: new Map([
     [
       "study",
@@ -89,6 +100,11 @@ export const useStore = create<State>()((set, get) => ({
     set({ direction: get().direction === "LR" ? "TB" : "LR" });
     redraw();
   },
+  invertMode: () => {
+    set({ mode: get().mode === Mode.Graph ? Mode.Timeline : Mode.Graph });
+    redraw();
+  },
+
   setStudy: (_file) => {},
   addNewNode: (type, parent) => {
     const id = nanoid();
@@ -168,24 +184,34 @@ export const useStore = create<State>()((set, get) => ({
       produce((state: State) => {
         const atom = state.atoms.get(id)!;
         atom.content = content;
-        if ((isSection(content) || isSection(content)) && content.name) {
+        if ((isSection(content) || isModule(content)) && content.name) {
           atom.title = content.name.length > 32 ? content.name.slice(0, 32) + "..." : content.name;
         }
         if (isQuestion(content) && content.text) {
           atom.title = content.text.length > 32 ? content.text.slice(0, 60) + "..." : content.text;
         }
+        localStorage.setItem("atoms", JSON.stringify([...state.atoms]));
       })
     ),
-
+  setAtoms(atoms) {
+    set(
+      produce((state: State) => {
+        state.atoms = atoms;
+      })
+    );
+  },
   deleteNode: deleteNode(set, get),
+  days: [],
 }));
 
 export function redraw() {
-  let { atoms, selectedNode, direction } = useStore.getState();
+  let { atoms, selectedNode, direction, mode } = useStore.getState();
+  // @ts-ignore Existence is guaranteed, but can't be expressed in typescript
+  let properties = atoms.get("study")!.content.properties;
   selectedNode = selectedNode || "study";
   atoms = hideAtoms(selectedNode, atoms);
   let [nodes, edges] = calcGraphFromAtoms(atoms);
   [nodes, edges] = alignNodes(nodes, edges, direction);
-
-  useStore.setState({ nodes, edges });
+  const days = calcTimelineFromAtoms(atoms, properties);
+  useStore.setState({ nodes, edges, days });
 }
