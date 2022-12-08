@@ -1,7 +1,10 @@
+import { useStore } from "../src/state";
 import { alerts } from "./alerts";
 import { graph } from "./graph";
 import { pvt } from "./pvt";
 import { survey } from "./survey";
+
+const { conditions } = useStore.getState();
 
 export const module = {
   $id: "#/properties/modules/items",
@@ -83,7 +86,7 @@ export const module = {
       description:
         "The condition that this module belongs to. It must match one of the values from the conditions array from the study properties, or have the value * to be scheduled for all participants.",
       default: "",
-      enum: ["Select one of the conditions below", "*"],
+      enum: conditions,
     },
     alerts: alerts,
     graph: graph,
