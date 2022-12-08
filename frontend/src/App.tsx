@@ -18,11 +18,10 @@ function App() {
   const rightPx = Math.floor((window.innerWidth - 10) * (1 - distribution));
   const { selectedNode, setAtoms, mode } = useStore();
   useEffect(() => {
-    if (localStorage.getItem("atoms")) {
-      const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
-      console.log(atoms);
-      setAtoms(atoms);
-    }
+    // if (localStorage.getItem("atoms")) {
+    //   const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
+    //   setAtoms(atoms);
+    // }
     redraw();
   }, []);
 
