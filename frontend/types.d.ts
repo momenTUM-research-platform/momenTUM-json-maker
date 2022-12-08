@@ -8,7 +8,6 @@ declare enum AtomVariants {
   Module = "module",
   Section = "section",
   Question = "question",
-  PVT = "pvt",
   Study = "study",
 }
 declare type Atoms = Map<string, Atom<Study | Question | Module | Section>>;
@@ -20,8 +19,7 @@ declare interface Atom<T> {
   childType: AtomVariants | null;
   content: T;
   title: string;
-  actions: Set<Actions>;
-  schema: any; // Any schema that works for AJV and React JSON form. TODO: more specific type
+  actions: Actions[];
   hidden: boolean;
 }
 

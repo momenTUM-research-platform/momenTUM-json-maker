@@ -8,7 +8,7 @@ import { nanoid } from "nanoid";
 export function schedule(module: Module, properties: Properties): Occurence[] {
   // allocate the participant to a study condition
 
-  const conditions = properties.conditions;
+  const condition = module.condition;
 
   let events: Occurence[] = [];
 
@@ -51,20 +51,18 @@ export function schedule(module: Module, properties: Properties): Occurence[] {
         minute: "numeric",
       } as const;
 
-      conditions.forEach((condition) => {
-        const date = dayjs(taskTime.getTime());
-        const event: Occurence = {
-          id: nanoid(),
-          timestamp: date.millisecond(),
-          name: module.submit_text,
-          time: date.format("h:mm A"), // 8:02 PM
-          datetime: date.toISOString(),
-          module: module.id,
-          condition,
-        };
+      const date = dayjs(taskTime.getTime());
+      const event: Occurence = {
+        id: nanoid(),
+        timestamp: date.unix() * 1000,
+        name: module.name,
+        time: date.format("h:mm A"), // 8:02 PM
+        datetime: date.toISOString(),
+        module: module.id,
+        condition,
+      };
 
-        events.push(event);
-      });
+      events.push(event);
     });
 
     // as a final step increment the date by 1 to set for next day
@@ -77,6 +75,6 @@ export function schedule(module: Module, properties: Properties): Occurence[] {
 
     return dateA.getTime() - dateB.getTime();
   });
-
+  console.log(events);
   return events;
 }

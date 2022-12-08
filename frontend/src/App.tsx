@@ -16,10 +16,11 @@ function App() {
   const [distribution, setDistribution] = useState(0.5);
   const leftPx = Math.floor((window.innerWidth - 10) * distribution);
   const rightPx = Math.floor((window.innerWidth - 10) * (1 - distribution));
-  const { selectedNode, setAtoms, mode, days } = useStore();
+  const { selectedNode, setAtoms, mode } = useStore();
   useEffect(() => {
-    if (localStorage.getItem("map")) {
-      const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("map")!)); // Load previous state from local storage
+    if (localStorage.getItem("atoms")) {
+      const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
+      console.log(atoms);
       setAtoms(atoms);
     }
     redraw();
@@ -29,7 +30,7 @@ function App() {
     <Layout>
       <main className="w-full flex">
         <section className="h-[calc(100vh-110px)]" style={{ width: leftPx }}>
-          {mode === Mode.Graph ? <Graph /> : <Calendar days={days} />}
+          {mode === Mode.Graph ? <Graph /> : <Calendar />}
         </section>
         <section
           draggable={true}

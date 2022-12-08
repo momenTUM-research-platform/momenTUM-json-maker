@@ -22,26 +22,26 @@ export const section = {
       default: false,
       examples: [false],
     },
-    questions: {
-      $id: "#/properties/modules/items/properties/sections/items/properties/questions",
-      type: "array",
-      title: "Questions",
-      description: "An array containing all of the questions for this section of the module.",
-      default: [],
-      examples: [
-        [
-          {
-            id: "instruction-1wnjocfw",
-            type: "instruction",
-            text: "Hello! Welcome to the study! This module only shows for those enrolled in the control condition.",
-            required: false,
-            hide_id: "",
-            hide_value: "",
-            hide_if: true,
-          },
-        ],
-      ],
-      items: question,
-    },
+    // questions: {
+    //   $id: "#/properties/modules/items/properties/sections/items/properties/questions",
+    //   type: "array",
+    //   title: "Questions",
+    //   description: "An array containing all of the questions for this section of the module.",
+    //   default: [],
+    //   examples: [
+    //     [
+    //       {
+    //         id: "instruction-1wnjocfw",
+    //         type: "instruction",
+    //         text: "Hello! Welcome to the study! This module only shows for those enrolled in the control condition.",
+    //         required: false,
+    //         hide_id: "",
+    //         hide_value: "",
+    //         hide_if: true,
+    //       },
+    //     ],
+    //   ],
+    //   items: question,
+    // },
   },
 };

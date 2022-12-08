@@ -5,33 +5,33 @@ export const survey = {
     type: {
       enum: ["survey"],
     },
-    sections: {
-      $id: "#/properties/modules/items/properties/sections",
-      type: "array",
-      title: "Sections",
-      description: "Sections contain questions",
-      default: [],
-      examples: [
-        [
-          {
-            name: "Welcome",
-            questions: [
-              {
-                id: "instruction-1wnjocfw",
-                type: "instruction",
-                text: "Hello! Welcome to the study! This module only shows for those enrolled in the control condition.",
-                required: false,
-                hide_id: "",
-                hide_value: "",
-                hide_if: true,
-              },
-            ],
-            shuffle: false,
-          },
-        ],
-      ],
-      items: section,
-    },
+    // sections: {
+    //   $id: "#/properties/modules/items/properties/sections",
+    //   type: "array",
+    //   title: "Sections",
+    //   description: "Sections contain questions",
+    //   default: [],
+    //   examples: [
+    //     [
+    //       {
+    //         name: "Welcome",
+    //         questions: [
+    //           {
+    //             id: "instruction-1wnjocfw",
+    //             type: "instruction",
+    //             text: "Hello! Welcome to the study! This module only shows for those enrolled in the control condition.",
+    //             required: false,
+    //             hide_id: "",
+    //             hide_value: "",
+    //             hide_if: true,
+    //           },
+    //         ],
+    //         shuffle: false,
+    //       },
+    //     ],
+    //   ],
+    //   items: section,
+    // },
     shuffle: {
       $id: "#/properties/modules/items/properties/shuffle",
       type: "boolean",

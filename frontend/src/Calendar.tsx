@@ -9,126 +9,45 @@ import {
 import { Menu, Transition } from "@headlessui/react";
 import dayjs from "dayjs";
 import { useStore } from "./state";
-
-// const days: Day[] = [
-//   { date: "2021-12-27", events: [] },
-//   { date: "2021-12-28", events: [] },
-//   { date: "2021-12-29", events: [] },
-//   { date: "2021-12-30", events: [] },
-//   { date: "2021-12-31", events: [] },
-//   { date: "2022-01-01", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-02", isCurrentMonth: true, events: [] },
-//   {
-//     date: "2022-01-03",
-//     isCurrentMonth: true,
-//     events: [
-//       { id: 1, name: "Design review", time: "10AM", datetime: "2022-01-03T10:00", href: "#" },
-//       { id: 2, name: "Sales meeting", time: "2PM", datetime: "2022-01-03T14:00", href: "#" },
-//     ],
-//   },
-//   { date: "2022-01-04", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-05", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-06", isCurrentMonth: true, events: [] },
-//   {
-//     date: "2022-01-07",
-//     isCurrentMonth: true,
-//     events: [{ id: 3, name: "Date night", time: "6PM", datetime: "2022-01-08T18:00", href: "#" }],
-//   },
-//   { date: "2022-01-08", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-09", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-10", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-11", isCurrentMonth: true, events: [] },
-//   {
-//     date: "2022-01-12",
-//     isCurrentMonth: true,
-//     isToday: true,
-//     events: [
-//       { id: 6, name: "Sam's birthday party", time: "2PM", datetime: "2022-01-25T14:00", href: "#" },
-//     ],
-//   },
-//   { date: "2022-01-13", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-14", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-15", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-16", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-17", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-18", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-19", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-20", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-21", isCurrentMonth: true, events: [] },
-//   {
-//     date: "2022-01-22",
-//     isCurrentMonth: true,
-//     isSelected: true,
-//     events: [
-//       { id: 4, name: "Maple syrup museum", time: "3PM", datetime: "2022-01-22T15:00", href: "#" },
-//       { id: 5, name: "Hockey game", time: "7PM", datetime: "2022-01-22T19:00", href: "#" },
-//     ],
-//   },
-//   { date: "2022-01-23", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-24", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-25", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-26", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-27", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-28", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-29", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-30", isCurrentMonth: true, events: [] },
-//   { date: "2022-01-31", isCurrentMonth: true, events: [] },
-//   { date: "2022-02-01", events: [] },
-//   { date: "2022-02-02", events: [] },
-//   {
-//     date: "2022-02-03",
-//     events: [
-//       { id: 7, name: "Cinema with friends", time: "9PM", datetime: "2022-02-04T21:00", href: "#" },
-//     ],
-//   },
-//   { date: "2022-02-04", events: [] },
-//   { date: "2022-02-05", events: [] },
-//   { date: "2022-02-06", events: [] },
-// ];
+import { useTimeline } from "./utils/useTimeline";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function Calendar({ days }: { days: Days }) {
-  const [date, setDate] = useState(dayjs());
+const conditionColors = [
+  "#3070b3",
+  "#06d6a0",
+  "#ffd166",
+  "#ef476f",
+  "#073b4c",
+  "#ffc6ff",
+  "#ff7d00",
+]; // Assuming these are enough
+
+export function Calendar() {
+  const { conditions } = useStore();
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
-  const [visibleDays, setVisibleDays] = useState<Day[]>([]);
-  console.log(visibleDays);
+  const [date, setDate, days] = useTimeline();
 
-  useEffect(() => {
-    let visibleDays: Day[] = [];
-    const offsetFromToday = date.diff(dayjs(), "day");
-    // for any month outside of those we explicitely calculated, we need to get x days before dayOfMonth(current day) = x and 42-x days after current day
-    // Then, to get the monday before the 1. of the month, subtract the day of the week of the first day of the month
-    const dayOfMonth = date.date() - 1; // Subtract one, because we want the distance to the first day of the month, so not counting itself
-    const dayOfWeek = date.subtract(dayOfMonth).day();
-
-    const x = dayOfMonth + dayOfWeek;
-
-    for (let i = -x; i < 42 - x; i++) {
-      const day = date.add(i, "days"); // Acts as subtract if i is negative
-      console.log(offsetFromToday + i);
-      visibleDays.push({
-        date: day.format("YYYY-MM-DD"),
-        events:
-          offsetFromToday + i >= 0 && offsetFromToday + i < days.length
-            ? days[offsetFromToday + i]
-            : [],
-        isCurrentMonth: date.isSame(day, "month"),
-        isToday: dayjs().isSame(day, "day"),
-        isSelected: false,
-      });
-    }
-
-    setVisibleDays(visibleDays);
-  }, [date]);
+  console.log(days);
 
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
       <header className="flex items-center justify-between border-b border-gray-200 py-4 px-6 lg:flex-none">
         <h1 className="text-lg font-semibold text-gray-900">{date.format("MMMM YYYY")}</h1>
         <div className="flex items-center">
+          <ul className="flex">
+            {conditions.map((condition, i) => (
+              <>
+                <div
+                  className="h-2  mt-1 p-2 rounded-full "
+                  style={{ backgroundColor: conditionColors[i] }}
+                ></div>
+                <li className=" ml-1 mr-4 text ">{condition === "*" ? "All" : condition}</li>
+              </>
+            ))}
+          </ul>
           <div className="flex items-center rounded-md shadow-sm md:items-stretch">
             <button
               type="button"
@@ -371,7 +290,7 @@ export function Calendar({ days }: { days: Days }) {
         </div>
         <div className="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
           <div className="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-6 lg:gap-px">
-            {visibleDays.map((day) => (
+            {days.map((day) => (
               <div
                 key={day.date}
                 className={classNames(
@@ -391,12 +310,18 @@ export function Calendar({ days }: { days: Days }) {
                 </time>
                 {day.events.length > 0 && (
                   <ol className="mt-2">
-                    {day.events.slice(0, 2).map((event) => (
+                    {day.events.slice(0, 4).map((event) => (
                       <li key={event.id}>
                         <a
+                          className="group flex cursor-pointer"
                           onClick={() => useStore.setState({ selectedNode: event.module })}
-                          className="group flex"
                         >
+                          <div
+                            className="h-2  mt-1 p-2 mr-1 rounded-full inline-block "
+                            style={{
+                              backgroundColor: conditionColors[conditions.indexOf(event.condition)],
+                            }}
+                          ></div>
                           <p className="flex-auto truncate font-medium text-gray-900 group-hover:text-main">
                             {event.name}
                           </p>
@@ -409,8 +334,8 @@ export function Calendar({ days }: { days: Days }) {
                         </a>
                       </li>
                     ))}
-                    {day.events.length > 2 && (
-                      <li className="text-gray-500">+ {day.events.length - 2} more</li>
+                    {day.events.length > 4 && (
+                      <li className="text-gray-500">+ {day.events.length - 4} more</li>
                     )}
                   </ol>
                 )}
@@ -418,7 +343,7 @@ export function Calendar({ days }: { days: Days }) {
             ))}
           </div>
           <div className="isolate grid w-full grid-cols-7 grid-rows-6 gap-px lg:hidden">
-            {visibleDays.map((day) => (
+            {days.map((day) => (
               <button
                 key={day.date}
                 type="button"

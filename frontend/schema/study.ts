@@ -1,4 +1,3 @@
-import { module } from "./module";
 import { properties } from "./properties";
 
 export const study = {
@@ -12,14 +11,14 @@ export const study = {
   required: ["properties", "modules"],
   properties: {
     properties: properties,
-    modules: {
-      $id: "#/properties/modules",
-      type: "array",
-      title: "Modules",
-      description:
-        "Modules store the individual survey/intervention tasks that will be delivered to the participants.",
-      default: [],
-      items: module,
-    },
+    // modules: {
+    //   $id: "#/properties/modules",
+    //   type: "array",
+    //   title: "Modules",
+    //   description:
+    //     "Modules store the individual survey/intervention tasks that will be delivered to the participants.",
+    //   default: [],
+    //   items: module,
+    // },
   },
 };

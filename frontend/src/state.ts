@@ -2,7 +2,6 @@ import create from "zustand";
 
 import { nanoid } from "nanoid";
 import produce from "immer";
-import { subscribeWithSelector } from "zustand/middleware";
 import Ajv, { ValidateFunction } from "ajv";
 import {
   addEdge,
@@ -13,9 +12,6 @@ import {
   EdgeChange,
   Node,
   NodeChange,
-  OnConnect,
-  OnEdgesChange,
-  OnNodesChange,
 } from "reactflow";
 import { alignNodes } from "./utils/alignNodes";
 import { hideAtoms } from "./utils/hideAtoms";
@@ -28,11 +24,7 @@ import {
   initialSection,
   initialStudy,
 } from "./utils/initialValues";
-import { module } from "../schema/module";
-import { section } from "../schema/section";
-import { question } from "../schema/question";
 import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
-import { calcTimelineFromAtoms } from "./utils/calcTimelineFromAtoms";
 
 export enum Actions {
   Create = "create",
@@ -41,11 +33,9 @@ export enum Actions {
 }
 
 export enum AtomVariants {
-  // Properties = "properties",
   Module = "module",
   Section = "section",
   Question = "question",
-  PVT = "pvt",
   Study = "study",
 }
 
@@ -62,17 +52,19 @@ export interface State {
   direction: "TB" | "LR";
   validator: ValidateFunction;
   atoms: Atoms;
-  days: Days;
+  conditions: string[];
   invertDirection: () => void;
   invertMode: () => void;
   setStudy: (from: JSON) => void; // Parse from Study JSON file to State, fails on invalid data
   setAtom: (id: string, content: Study | Question | Module | Section) => void;
   setAtoms: (atoms: Atoms) => void;
+  saveAtoms: () => void;
   addNewNode: (type: AtomVariants, parent: string) => void;
   deleteNode: (id: string) => void;
 }
 
 export const useStore = create<State>()((set, get) => ({
+  conditions: ["*", "Treatment", "Control"],
   validator: new Ajv().compile(study),
   direction: "LR",
   mode: Mode.Graph,
@@ -85,9 +77,8 @@ export const useStore = create<State>()((set, get) => ({
         type: AtomVariants.Study,
         childType: AtomVariants.Module,
         title: "Properties",
-        schema: study,
         hidden: false,
-        actions: new Set([Actions.Create, Actions.Count]),
+        actions: [Actions.Create, Actions.Count],
         content: initialStudy(nanoid()),
       },
     ],
@@ -120,9 +111,8 @@ export const useStore = create<State>()((set, get) => ({
               type: AtomVariants.Module,
               childType: AtomVariants.Section,
               title: "New Module",
-              schema: module,
               hidden: false,
-              actions: new Set([Actions.Create, Actions.Count, Actions.Delete]),
+              actions: [Actions.Create, Actions.Count, Actions.Delete],
               content: initialModule(id),
             });
             // If no parent exists, you've got a bigger issue
@@ -135,9 +125,8 @@ export const useStore = create<State>()((set, get) => ({
               type: AtomVariants.Section,
               childType: AtomVariants.Question,
               title: "New Section",
-              schema: section,
               hidden: false,
-              actions: new Set([Actions.Create, Actions.Count, Actions.Delete]),
+              actions: [Actions.Create, Actions.Count, Actions.Delete],
               content: initialSection(id),
             });
             break;
@@ -149,9 +138,8 @@ export const useStore = create<State>()((set, get) => ({
               type: AtomVariants.Question,
               childType: null,
               title: "New Question",
-              schema: question,
               hidden: false,
-              actions: new Set([Actions.Delete]),
+              actions: [Actions.Delete],
               content: initialQuestion(id),
             });
             break;
@@ -190,7 +178,6 @@ export const useStore = create<State>()((set, get) => ({
         if (isQuestion(content) && content.text) {
           atom.title = content.text.length > 32 ? content.text.slice(0, 60) + "..." : content.text;
         }
-        localStorage.setItem("atoms", JSON.stringify([...state.atoms]));
       })
     ),
   setAtoms(atoms) {
@@ -200,18 +187,23 @@ export const useStore = create<State>()((set, get) => ({
       })
     );
   },
+  saveAtoms: async () => {
+    console.log("saving to local storage");
+    // Saving all atoms takes some time and we don't want it to block rendering changes to atoms
+    localStorage.setItem("atoms", JSON.stringify([...get().atoms]));
+  },
+
   deleteNode: deleteNode(set, get),
-  days: [],
 }));
 
 export function redraw() {
   let { atoms, selectedNode, direction, mode } = useStore.getState();
+  console.log(atoms);
   // @ts-ignore Existence is guaranteed, but can't be expressed in typescript
   let properties = atoms.get("study")!.content.properties;
   selectedNode = selectedNode || "study";
   atoms = hideAtoms(selectedNode, atoms);
   let [nodes, edges] = calcGraphFromAtoms(atoms);
   [nodes, edges] = alignNodes(nodes, edges, direction);
-  const days = calcTimelineFromAtoms(atoms, properties);
-  useStore.setState({ nodes, edges, days });
+  useStore.setState({ nodes, edges });
 }
