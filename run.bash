@@ -13,9 +13,8 @@ git pull
 cd frontend
 npm i -g pnpm 
 pnpm i  
-pnpm run build
+pnpm run build &
 
-echo "##" Building frontend done "##"
 
 cd ../api
 
