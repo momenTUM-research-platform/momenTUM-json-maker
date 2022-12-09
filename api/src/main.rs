@@ -6,7 +6,9 @@ use mongodb::{
     bson::{doc, oid::ObjectId, DateTime},
     options::FindOneOptions,
 };
+use rocket::fairing::{Fairing, Info, Kind};
 use rocket::futures::stream::TryStreamExt;
+use rocket::http::Header;
 use rocket::Request;
 use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
@@ -150,12 +152,45 @@ fn catch_malformed_request(req: &Request) -> String {
     return format!("{}", req);
 }
 
+/// Catches all OPTION requests in order to get the CORS related Fairing triggered.
+#[options("/<_..>")]
+fn all_options() {
+    /* Intentionally left empty */
+}
+
+pub struct CORS;
+
+#[rocket::async_trait]
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Add CORS headers to responses",
+            kind: Kind::Response,
+        }
+    }
+
+    async fn on_response<'r>(
+        &self,
+        _request: &'r Request<'_>,
+        response: &mut rocket::Response<'r>,
+    ) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "POST, GET, PATCH, OPTIONS",
+        ));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
 #[launch]
 fn rocket() -> _ {
     println!("The API is using the {} database", ACTIVE_DB);
     rocket::build()
         .register("/", catchers![catch_malformed_request])
         .attach(DB::init())
+        .attach(CORS)
         .mount(
             "/",
             routes![
@@ -168,6 +203,7 @@ fn rocket() -> _ {
                 save_key,
                 save_response,
                 all_studies_of_study_id,
+                all_options
             ],
         )
 }

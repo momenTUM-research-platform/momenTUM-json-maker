@@ -55,7 +55,6 @@ export interface State {
   conditions: string[];
   invertDirection: () => void;
   invertMode: () => void;
-  setStudy: (from: JSON) => void; // Parse from Study JSON file to State, fails on invalid data
   setAtom: (id: string, content: Study | Question | Module | Section) => void;
   setAtoms: (atoms: Atoms) => void;
   saveAtoms: () => void;
@@ -95,8 +94,6 @@ export const useStore = create<State>()((set, get) => ({
     set({ mode: get().mode === Mode.Graph ? Mode.Timeline : Mode.Graph });
     redraw();
   },
-
-  setStudy: (_file) => {},
   addNewNode: (type, parent) => {
     const id = nanoid();
     console.debug("Creating new node " + id + " of type " + type + " with parent " + parent);

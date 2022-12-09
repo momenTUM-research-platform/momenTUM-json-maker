@@ -2,7 +2,8 @@ import toast from "react-hot-toast";
 import { API_URL } from "../App";
 import { useStore } from "../state";
 import { DefinedError } from "ajv";
-import { isModule, isQuestion, isSection, isStudy } from "./typeGuards";
+import { contructStudy } from "./construct";
+import { deconstructStudy } from "./deconstruct";
 
 // export async function validate(form: Study, s: typeof schema) {
 //   if (!form) {
@@ -16,64 +17,21 @@ import { isModule, isQuestion, isSection, isStudy } from "./typeGuards";
 
 // }
 
-function validateStudy(study: Study): { valid: true } | { valid: false; msg: string } {
-  const valid = useStore().validator(study);
-  if (valid) return { valid: true };
+function validateStudy(study: Study): study is Study {
+  const valid = useStore.getState().validator(study);
+  if (valid) return true;
   const errors = useStore().validator.errors as DefinedError[];
-  return {
-    valid: false,
-    msg:
-      errors.reduce(
-        (acc, e) => acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
-        ""
-      ) || "Unknown error",
-  };
+
+  toast.error(
+    errors.reduce(
+      (acc, e) => acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
+      ""
+    ) || "Unknown error"
+  );
+  return false;
 }
-
-// This is janky and should be more generalized
-function contructStudy(): Study | null {
-  const { atoms } = useStore.getState();
-  const study = atoms.get("study");
-
-  if (!study || !isStudy(study.content)) {
-    console.error("Could not construct study because no study atom found");
-    return null;
-  }
-
-  return {
-    ...study.content,
-    modules: study
-      .subNodes!.map((module_id) => {
-        const module = atoms.get(module_id);
-        if (!module || !isModule(module.content)) {
-          return null;
-        }
-        return {
-          ...module.content,
-          sections: module
-            .subNodes!.map((section_id) => {
-              const section = atoms.get(section_id);
-              if (!section || !isSection(section.content)) {
-                return null;
-              }
-              return {
-                ...section.content,
-                questions: section
-                  .subNodes!.map((question_id) => {
-                    const question = atoms.get(question_id);
-                    if (!question || !isQuestion(question.content)) {
-                      return null;
-                    }
-                    return question.content;
-                  })
-                  .filter((i): i is Question => i !== null),
-              };
-            })
-            .filter((i): i is Section => i !== null),
-        };
-      })
-      .filter((i): i is Module => i !== null),
-  };
+export function validate() {
+  validateStudy(contructStudy()) && toast.success("Study is valid");
 }
 
 export function save() {
@@ -81,11 +39,12 @@ export function save() {
   const uri = "data:application/json;charset=utf-8," + encodeURIComponent(data);
   const link = document.createElement("a");
   link.href = uri;
-  link.download = "form.json";
+  link.download = "study.json";
   link.click();
 }
 
 export function load() {
+  const { setAtoms } = useStore.getState();
   const input = document.createElement("input");
   input.type = "file";
   input.onchange = (e) => {
@@ -94,51 +53,47 @@ export function load() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const data = JSON.parse(reader.result as string);
-      const result = validateStudy(data);
-      result.valid ? useStore().setStudy(data) : toast.error(result.msg);
+      if (validateStudy(data)) {
+        const atoms = deconstructStudy(data);
+        setAtoms(atoms);
+      }
     };
     reader.readAsText(file);
   };
   input.click();
 }
 
-export async function upload(form: Study) {
-  const result = validateStudy(form);
+export async function upload() {
+  const study = contructStudy();
 
-  if (!result.valid) {
-    toast.error("Form is not valid. Error: " + result.msg);
-    return;
-  }
-
-  const data = JSON.stringify(form, null, 2);
-  const postURL = API_URL + "/study";
-  const response = await fetch(postURL, {
-    method: "POST",
-    body: data,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "MomenTUM",
-    },
-  });
-  if (response.status === 200) {
-    toast.success(
-      "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
-        form.properties.study_id,
-      {
-        duration: 20000,
-      }
-    );
-  } else {
-    toast.error("Error: " + response.statusText);
+  if (validateStudy(study)) {
+    const data = JSON.stringify(study, null, 2);
+    const postURL = API_URL + "/study";
+    const response = await fetch(postURL, {
+      method: "POST",
+      body: data,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "MomenTUM",
+      },
+    });
+    if (response.status === 200) {
+      toast.success(
+        "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
+          study.properties.study_id,
+        {
+          duration: 20000,
+        }
+      );
+    } else {
+      toast.error("Error: " + response.statusText);
+    }
   }
 }
 
-export async function download(setForm: (form: Study) => void, id?: string, commit?: string) {
-  const uri =
-    API_URL +
-    "/study/" +
-    (id || prompt("Enter the id of the study")) +
-    (commit ? "/" + commit : "");
+export async function download() {
+  const { setAtoms } = useStore.getState();
+  const uri = API_URL + "/studies/" + prompt("Enter the id of the study");
   if (!uri) {
     toast.error("No download link provided");
     return;
@@ -148,7 +103,10 @@ export async function download(setForm: (form: Study) => void, id?: string, comm
   const response = await fetch(uri);
   if (response.ok) {
     const data = await response.json();
-    setForm(data);
+    if (validateStudy(data)) {
+      const atoms = deconstructStudy(data);
+      setAtoms(atoms);
+    }
   } else {
     toast.error("Download failed");
   }

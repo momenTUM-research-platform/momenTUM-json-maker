@@ -18,7 +18,7 @@ declare interface Atom<T> {
   type: AtomVariants;
   childType: AtomVariants | null;
   content: T;
-  title: string;
+  title: string; // Displayed on node
   actions: Actions[];
   hidden: boolean;
 }

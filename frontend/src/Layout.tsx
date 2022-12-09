@@ -1,6 +1,5 @@
 import React, { ReactChildren, ReactElement } from "react";
-import { download, load, save, upload } from "./utils/actions";
-
+import { download, load, save, upload, validate } from "./utils/actions";
 // Icons
 import Rotate from "../assets/rotate";
 import Download from "../assets/download";
@@ -9,6 +8,8 @@ import Load from "../assets/load";
 import Save from "../assets/save";
 import Calendar from "../assets/calendar";
 import { Mode, useStore } from "./state";
+import { ShieldCheckIcon } from "@heroicons/react/24/outline";
+// @ts-expect-error
 import Logo from "../assets/icon.png";
 export function Layout({ children }: { children: ReactElement }) {
   const { invertDirection, mode, invertMode } = useStore();
@@ -31,21 +32,25 @@ export function Layout({ children }: { children: ReactElement }) {
           <Action action={invertMode}>
             <Calendar /> Switch to {mode === Mode.Graph ? "timeline" : "graph"} view
           </Action>
+          <Action action={validate}>
+            <ShieldCheckIcon className="h-6 w-6" />
+            Validate Study
+          </Action>
           <Action action={save}>
             <Save />
-            Save JSON file
+            Save Study
           </Action>
 
           <Action action={load}>
             <Load />
-            Load JSON file
+            Load Study
           </Action>
           <Action action={upload}>
-            <Upload /> Upload JSON file
+            <Upload /> Upload Study
           </Action>
           <Action action={download}>
             <Download />
-            Download JSON file
+            Download Study
           </Action>
           {/* <Action action={generateDictionary}>Generate RedCap Dictionary</Action>
           <Action action={addApiKey}>Add API key</Action>
@@ -58,7 +63,7 @@ export function Layout({ children }: { children: ReactElement }) {
   );
 }
 
-function Action({ children, action }) {
+function Action({ children, action }: { children: React.ReactNode; action: () => void }) {
   return (
     <button
       className="pointer-events-auto ml-4 flex items-center gap-3  rounded-md  bg-main py-2 px-3 text-lg font-semibold leading-5 text-white hover:bg-sky-500"

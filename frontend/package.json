@@ -10,7 +10,8 @@
     "ci": "cypress run",
     "build": "parcel build index.html",
     "vite": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -24,7 +25,6 @@
     "@types/dagre": "^0.7.48",
     "ajv": "^8.11.0",
     "autoprefixer": "^10.4.12",
-    "cypress": "^9.5.4",
     "dagre": "^0.8.5",
     "dayjs": "^1.11.4",
     "file-saver": "^2.0.5",
