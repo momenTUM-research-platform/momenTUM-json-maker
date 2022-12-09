@@ -1,4 +1,6 @@
-import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
+import FormComponent from "@rjsf/mui";
+import validator from "@rjsf/validator-ajv8";
+import { RJSFSchema } from "@rjsf/utils";
 import { module } from "../schema/module";
 import { properties } from "../schema/properties";
 import { question } from "../schema/question";
@@ -14,15 +16,15 @@ export function Form({ id }: { id: string }) {
     return <></>;
   }
 
-  let uiSchema: { [key: string]: any } = {
-    title: { "ui:widget": "date" },
-    "ui:submitButtonOptions": {
-      norender: true,
-    },
-  };
+  // let uiSchema: { [key: string]: any } = {
+  //   title: { "ui:widget": "date" },
+  //   "ui:submitButtonOptions": {
+  //     norender: true,
+  //   },
+  // };
 
-  const hiddenFields = ["id", "study_id", "post_url"];
-  hiddenFields.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
+  // const hiddenFields = ["id", "study_id", "post_url"];
+  // hiddenFields.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
 
   // Maps Atoms to JSON Schema
   const schema: { [key in AtomVariants]: () => Object } = {
@@ -38,7 +40,8 @@ export function Form({ id }: { id: string }) {
       onBlur={saveAtoms}
       schema={schema[atom.content._type]()}
       formData={atom.content}
-      uiSchema={uiSchema}
+      validator={validator}
+      // uiSchema={uiSchema}
       idPrefix="form"
     />
   );
