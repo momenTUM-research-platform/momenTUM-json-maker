@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { API_URL } from "../App";
 import { useStore } from "../state";
 import { DefinedError } from "ajv";
-import { contructStudy } from "./construct";
+import { constructStudy } from "./construct";
 import { deconstructStudy } from "./deconstruct";
 
 // export async function validate(form: Study, s: typeof schema) {
@@ -17,10 +17,11 @@ import { deconstructStudy } from "./deconstruct";
 
 // }
 
-function validateStudy(study: Study): study is Study {
-  const valid = useStore.getState().validator(study);
+export function validateStudy(study: Study): study is Study {
+  const { validator } = useStore.getState();
+  const valid = validator(study);
   if (valid) return true;
-  const errors = useStore().validator.errors as DefinedError[];
+  const errors = validator.errors as DefinedError[];
 
   toast.error(
     errors.reduce(
@@ -31,11 +32,11 @@ function validateStudy(study: Study): study is Study {
   return false;
 }
 export function validate() {
-  validateStudy(contructStudy()) && toast.success("Study is valid");
+  validateStudy(constructStudy()) && toast.success("Study is valid");
 }
 
 export function save() {
-  const data = JSON.stringify(contructStudy(), null, 2);
+  const data = JSON.stringify(constructStudy(), null, 2);
   const uri = "data:application/json;charset=utf-8," + encodeURIComponent(data);
   const link = document.createElement("a");
   link.href = uri;
@@ -64,7 +65,7 @@ export function load() {
 }
 
 export async function upload() {
-  const study = contructStudy();
+  const study = constructStudy();
 
   if (validateStudy(study)) {
     const data = JSON.stringify(study, null, 2);

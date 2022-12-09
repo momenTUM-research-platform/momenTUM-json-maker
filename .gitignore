@@ -14,7 +14,7 @@ dist-ssr
 
 .parcel-cache
 
-
+log.txt
 
 # Editor directories and files
 .vscode/*
