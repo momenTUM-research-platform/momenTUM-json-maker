@@ -8,7 +8,9 @@
     "serve": "serve dist",
     "test": "cypress open",
     "ci": "cypress run",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html",
+    "vite": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
