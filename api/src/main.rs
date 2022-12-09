@@ -52,9 +52,9 @@ async fn index() -> Option<NamedFile> {
     NamedFile::open(path).await.ok()
 }
 
-#[get("/assets/<path..>")]
+#[get("/<path..>")]
 async fn assets(path: PathBuf) -> Option<NamedFile> {
-    let path = Path::new(relative!("../frontend/dist/assets/")).join(path);
+    let path = Path::new(relative!("../frontend/dist/")).join(path);
     if path.is_file() {
         NamedFile::open(path).await.ok()
     } else {

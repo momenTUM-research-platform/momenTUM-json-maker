@@ -7,7 +7,7 @@ import Upload from "../assets/upload";
 import Load from "../assets/load";
 import Save from "../assets/save";
 import Calendar from "../assets/calendar";
-import { Mode, useStore } from "./state";
+import { useStore } from "./state";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error
 import Logo from "../assets/icon.png";
@@ -30,7 +30,7 @@ export function Layout({ children }: { children: ReactElement }) {
             <Rotate /> Rotate Canvas
           </Action>
           <Action action={invertMode}>
-            <Calendar /> Switch to {mode === Mode.Graph ? "timeline" : "graph"} view
+            <Calendar /> Switch to {mode} view
           </Action>
           <Action action={validate}>
             <ShieldCheckIcon className="h-6 w-6" />

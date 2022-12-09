@@ -1,8 +1,6 @@
-import { AtomVariants } from "../state";
-
 export const initialStudy = (id: string): Study => {
   return {
-    _type: AtomVariants.Study,
+    _type: "study",
     properties: {
       study_name: "",
       study_id: id,
@@ -23,7 +21,7 @@ export const initialStudy = (id: string): Study => {
 };
 export const initialModule = (id: string): Module => {
   return {
-    _type: AtomVariants.Module,
+    _type: "module",
     id,
     alerts: {
       title: "",
@@ -58,7 +56,7 @@ export const initialModule = (id: string): Module => {
 
 export const initialSection = (id: string): Section => {
   return {
-    _type: AtomVariants.Section,
+    _type: "section",
     id,
     name: "",
     questions: [],
@@ -68,7 +66,7 @@ export const initialSection = (id: string): Section => {
 
 export const initialQuestion = (id: string): TextQuestion => {
   return {
-    _type: AtomVariants.Question,
+    _type: "question",
     id,
     rand_group: "",
     required: true,

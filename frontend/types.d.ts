@@ -1,15 +1,9 @@
-declare enum Actions {
-  Create = "create",
-  Count = "count",
-  Delete = "delete",
-}
+declare type AtomVariants = "module" | "section" | "question" | "study";
 
-declare enum AtomVariants {
-  Module = "module",
-  Section = "section",
-  Question = "question",
-  Study = "study",
-}
+declare type Actions = "create" | "count" | "delete";
+
+declare type Mode = "graph" | "timeline";
+
 declare type Atoms = Map<string, Atom<Study | Question | Module | Section>>;
 
 declare interface Atom<T> {
@@ -44,7 +38,7 @@ declare interface Day {
   events: Occurence[];
 }
 declare interface Study {
-  _type: AtomVariants.Study;
+  _type: "study";
 
   _id?: { $oid: string };
   timestamp?: number;
@@ -69,7 +63,7 @@ declare interface Properties {
 }
 
 declare interface Module {
-  _type: AtomVariants.Module;
+  _type: "module";
   type: string;
   name: string;
   submit_text: string;
@@ -109,7 +103,7 @@ declare interface Module {
 }
 
 declare interface Section {
-  _type: AtomVariants.Section;
+  _type: "section";
 
   id: string;
   name: string;
@@ -118,7 +112,7 @@ declare interface Section {
 }
 
 declare interface Question {
-  _type: AtomVariants.Question;
+  _type: "question";
 
   id: string;
   text: string;

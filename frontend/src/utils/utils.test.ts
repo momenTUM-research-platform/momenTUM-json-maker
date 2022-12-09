@@ -1,7 +1,6 @@
 import { constructStudy } from "./construct";
 import { describe, expect, it } from "vitest";
 import { validateStudy } from "./actions";
-import { AtomVariants } from "../state";
 describe("Constructing a study from atoms", () => {
   it("Creates valid study from nearly empty atoms", () => {
     expect(validateStudy(constructStudy())).to.be.true;
@@ -25,7 +24,7 @@ describe("Constructing a study from atoms", () => {
         pls: "",
       },
       modules: [],
-      _type: AtomVariants.Study,
+      _type: "study",
     };
     expect(constructedStudy).toEqual(study);
   });

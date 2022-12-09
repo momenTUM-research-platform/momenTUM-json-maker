@@ -8,11 +8,11 @@ export function deconstructStudy(study: Study): Atoms {
       const atom: Atom<Study> = {
         parent: parent,
         subNodes: object.modules.map((m) => m.id),
-        type: AtomVariants.Study,
-        childType: AtomVariants.Module,
-        content: { ...object, _type: AtomVariants.Study },
+        type: "study",
+        childType: "module",
+        content: { ...object, _type: "study" },
         title: "Properties",
-        actions: [Actions.Count, Actions.Create],
+        actions: ["count", "create"],
         hidden: false,
       };
       atoms.set("study", atom);
@@ -21,11 +21,11 @@ export function deconstructStudy(study: Study): Atoms {
       const atom: Atom<Module> = {
         parent: parent,
         subNodes: object.sections.map((s) => s.id),
-        type: AtomVariants.Study,
-        childType: AtomVariants.Module,
-        content: { ...object, _type: AtomVariants.Module },
+        type: "study",
+        childType: "module",
+        content: { ...object, _type: "module" },
         title: object.name,
-        actions: [Actions.Count, Actions.Create],
+        actions: ["count", "create"],
         hidden: false,
       };
 
@@ -35,11 +35,11 @@ export function deconstructStudy(study: Study): Atoms {
       const atom: Atom<Section> = {
         parent: parent,
         subNodes: object.questions.map((s) => s.id),
-        type: AtomVariants.Study,
-        childType: AtomVariants.Module,
-        content: { ...object, _type: AtomVariants.Section },
+        type: "study",
+        childType: "module",
+        content: { ...object, _type: "section" },
         title: object.name,
-        actions: [Actions.Count, Actions.Create],
+        actions: ["count", "create"],
         hidden: false,
       };
 
@@ -49,11 +49,11 @@ export function deconstructStudy(study: Study): Atoms {
       const atom: Atom<Question> = {
         parent: parent,
         subNodes: null,
-        type: AtomVariants.Study,
-        childType: AtomVariants.Module,
-        content: { ...object, _type: AtomVariants.Question },
+        type: "study",
+        childType: "module",
+        content: { ...object, _type: "question" },
         title: object.text,
-        actions: [Actions.Count, Actions.Create],
+        actions: ["count", "create"],
         hidden: false,
       };
 

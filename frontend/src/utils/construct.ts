@@ -1,4 +1,4 @@
-import { AtomVariants, useStore } from "../state";
+import { useStore } from "../state";
 
 export function constructStudy(): Study {
   const { atoms } = useStore.getState();
@@ -13,17 +13,17 @@ export function constructStudy(): Study {
           const copy = JSON.parse(JSON.stringify(node)); // Copy
           const children = appendChildren(copy);
           switch (result._type) {
-            case AtomVariants.Study: {
+            case "study": {
               //@ts-expect-error
               result.modules.push(children);
               break;
             }
-            case AtomVariants.Module: {
+            case "module": {
               // @ts-expect-error
               result.sections.push(children);
               break;
             }
-            case AtomVariants.Section: {
+            case "section": {
               // @ts-expect-error
               result.questions.push(children);
               break;

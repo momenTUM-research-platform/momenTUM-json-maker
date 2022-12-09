@@ -26,24 +26,6 @@ import {
 } from "./utils/initialValues";
 import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
 
-export enum Actions {
-  Create = "create",
-  Count = "count",
-  Delete = "delete",
-}
-
-export enum AtomVariants {
-  Module = "module",
-  Section = "section",
-  Question = "question",
-  Study = "study",
-}
-
-export enum Mode {
-  Graph = "graph",
-  Timeline = "timeline",
-}
-
 export interface State {
   selectedNode: string | null; // ID of the currently selected Node
   mode: Mode;
@@ -66,18 +48,18 @@ export const useStore = create<State>()((set, get) => ({
   conditions: ["*", "Treatment", "Control"],
   validator: new Ajv().compile(study),
   direction: "LR",
-  mode: Mode.Graph,
+  mode: "graph",
   atoms: new Map([
     [
       "study",
       {
         parent: null,
         subNodes: [],
-        type: AtomVariants.Study,
-        childType: AtomVariants.Module,
+        type: "study",
+        childType: "module",
         title: "Properties",
         hidden: false,
-        actions: [Actions.Create, Actions.Count],
+        actions: ["create", "count"],
         content: initialStudy(nanoid()),
       },
     ],
@@ -91,7 +73,7 @@ export const useStore = create<State>()((set, get) => ({
     redraw();
   },
   invertMode: () => {
-    set({ mode: get().mode === Mode.Graph ? Mode.Timeline : Mode.Graph });
+    set({ mode: get().mode === "graph" ? "timeline" : "graph" });
     redraw();
   },
   addNewNode: (type, parent) => {
@@ -101,42 +83,42 @@ export const useStore = create<State>()((set, get) => ({
     set(
       produce((state: State) => {
         switch (type) {
-          case AtomVariants.Module: {
+          case "module": {
             state.atoms.set(id, {
               parent,
               subNodes: [],
-              type: AtomVariants.Module,
-              childType: AtomVariants.Section,
+              type: "module",
+              childType: "section",
               title: "New Module",
               hidden: false,
-              actions: [Actions.Create, Actions.Count, Actions.Delete],
+              actions: ["create", "count", "delete"],
               content: initialModule(id),
             });
             // If no parent exists, you've got a bigger issue
             break;
           }
-          case AtomVariants.Section: {
+          case "section": {
             state.atoms.set(id, {
               parent,
               subNodes: [],
-              type: AtomVariants.Section,
-              childType: AtomVariants.Question,
+              type: "section",
+              childType: "question",
               title: "New Section",
               hidden: false,
-              actions: [Actions.Create, Actions.Count, Actions.Delete],
+              actions: ["create", "count", "delete"],
               content: initialSection(id),
             });
             break;
           }
-          case AtomVariants.Question: {
+          case "question": {
             state.atoms.set(id, {
               parent,
               subNodes: null,
-              type: AtomVariants.Question,
+              type: "question",
               childType: null,
               title: "New Question",
               hidden: false,
-              actions: [Actions.Delete],
+              actions: ["delete"],
               content: initialQuestion(id),
             });
             break;

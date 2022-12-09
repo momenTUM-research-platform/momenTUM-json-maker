@@ -1,7 +1,5 @@
-import dagre from "dagre";
-import produce from "immer";
+import * as dagre from "dagre";
 import { Edge, Node, Position } from "reactflow";
-import { State } from "../state";
 
 export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [Node[], Edge[]] {
   const dagreGraph = new dagre.graphlib.Graph({ directed: true });

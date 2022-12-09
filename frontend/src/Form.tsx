@@ -1,10 +1,9 @@
 import { MuiForm5 as FormComponent } from "@rjsf/material-ui";
-import React from "react";
 import { module } from "../schema/module";
 import { properties } from "../schema/properties";
 import { question } from "../schema/question";
 import { section } from "../schema/section";
-import { AtomVariants, useStore } from "./state";
+import { useStore } from "./state";
 
 export function Form({ id }: { id: string }) {
   const { atoms, setAtom, conditions, saveAtoms } = useStore();
@@ -15,7 +14,7 @@ export function Form({ id }: { id: string }) {
     return <></>;
   }
 
-  let uiSchema = {
+  let uiSchema: { [key: string]: any } = {
     title: { "ui:widget": "date" },
     "ui:submitButtonOptions": {
       norender: true,
@@ -27,10 +26,10 @@ export function Form({ id }: { id: string }) {
 
   // Maps Atoms to JSON Schema
   const schema: { [key in AtomVariants]: () => Object } = {
-    [AtomVariants.Study]: () => properties,
-    [AtomVariants.Module]: () => module(conditions),
-    [AtomVariants.Section]: () => section,
-    [AtomVariants.Question]: () => question,
+    ["study"]: () => properties,
+    ["module"]: () => module(conditions),
+    ["section"]: () => section,
+    ["question"]: () => question,
   };
 
   return (

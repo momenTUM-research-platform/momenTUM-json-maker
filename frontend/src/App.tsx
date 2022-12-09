@@ -1,11 +1,10 @@
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
-import React, { useEffect, useState } from "react";
-import QR from "qrcode";
+import { useEffect, useState } from "react";
 import { Form } from "./Form";
 import { Graph } from "./Graph";
 import { Layout } from "./Layout";
-import { Mode, redraw, useStore } from "./state";
+import { redraw, useStore } from "./state";
 import Drag from "../assets/drag";
 import { Calendar } from "./Calendar";
 
@@ -29,7 +28,7 @@ function App() {
     <Layout>
       <main className="w-full flex">
         <section className="h-[calc(100vh-110px)]" style={{ width: leftPx }}>
-          {mode === Mode.Graph ? <Graph /> : <Calendar />}
+          {mode === "graph" ? <Graph /> : <Calendar />}
         </section>
         <section
           draggable={true}

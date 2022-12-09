@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import { useStore } from "./state";
 import { useTimeline } from "./utils/useTimeline";
 
-function classNames(...classes) {
+function classNames(...classes: (boolean | null | undefined | string)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
