@@ -19,10 +19,10 @@ pnpm run build &
 cd ../api
 
 export ROCKET_ADDRESS=0.0.0.0
-export ROCKET_PORT=80
+export ROCKET_PORT=8000
 
 
 cargo install --path . 
+echo "##" Building API done "##"
 api 
 
-echo "##" Building API done "##"
