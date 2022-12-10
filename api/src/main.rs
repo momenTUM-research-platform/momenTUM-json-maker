@@ -19,7 +19,7 @@ use std::str::FromStr;
 use study::Study;
 
 use crate::error::Error;
-use crate::redcap::redcap::{import_response, Log, Response};
+use crate::redcap::{import_response, Log, Response};
 use crate::users::User;
 
 mod error;
@@ -35,10 +35,10 @@ type PotentialStudy = Result<Json<Study>>;
 pub struct DB(mongodb::Client);
 
 #[cfg(debug_assertions)]
-pub const ACTIVE_DB: &'static str = "momenTUM-dev";
+pub const ACTIVE_DB: &str = "momenTUM-dev";
 
 #[cfg(not(debug_assertions))]
-pub const ACTIVE_DB: &'static str = "momenTUM";
+pub const ACTIVE_DB: &str = "momenTUM";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Key {
@@ -119,12 +119,12 @@ async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result
 
 #[post("/api/v1/study", data = "<potential_study>")]
 async fn create_study(
-    user: Result<User>, // Implicit Result to return precise error message instead of catcher route: https://api.rocket.rs/v0.5-rc/rocket/request/trait.FromRequest.html#outcomes
+    // user: Result<User>,
     db: Connection<DB>,
-    potential_study: std::result::Result<Json<Study>, rocket::serde::json::Error<'_>>,
+    potential_study: std::result::Result<Json<Study>, rocket::serde::json::Error<'_>>, // Use Result to return precise error message instead of catcher route: https://api.rocket.rs/v0.5-rc/rocket/request/trait.FromRequest.html#outcomes
 ) -> Result<String> {
     // user?; // Tests if user authentication guard was successful.
-    let mut study = potential_study.map_err(|e| error::Error::StudyParsingError(e.to_string()))?;
+    let mut study = potential_study.map_err(|e| error::Error::StudyParsing(e.to_string()))?;
     study._id = Some(ObjectId::new());
     study.timestamp = Some(DateTime::now().timestamp_millis());
     let result = db
@@ -148,11 +148,12 @@ async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
         .insert_one(submission.into_inner(), None)
         .await?;
 
-    return Ok(());
+    Ok(())
 }
 
 #[post("/api/v1/key", data = "<key>")]
-async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
+async fn save_key(user: Result<User>, key: Json<Key>, db: Connection<DB>) -> Result<()> {
+    user?;
     db.database(ACTIVE_DB)
         .collection::<Key>("keys")
         .replace_one(
@@ -165,16 +166,35 @@ async fn save_key(key: Json<Key>, db: Connection<DB>) -> Result<()> {
     Ok(())
 }
 
+#[post("/api/v1/user", data = "<new_user>")]
+async fn add_user(
+    new_user: Json<User>,
+    user: Result<User>,
+    db: Connection<DB>,
+) -> Result<&'static str> {
+    let is_admin_user = user?.email == "admin@tum.de";
+
+    if is_admin_user {
+        db.database(ACTIVE_DB)
+            .collection::<User>("users")
+            .insert_one(new_user.0, None)
+            .await?;
+        Ok("Inserted new user")
+    } else {
+        Err(Error::NotAdmin)
+    }
+}
+
 #[catch(422)]
 fn catch_malformed_request(req: &Request) -> String {
-    return format!("{}", req);
+    format!("{req}")
 }
 
 /// Catches all OPTION requests in order to get the CORS related Fairing triggered.
-#[options("/<_..>")]
-fn all_options() {
-    /* Intentionally left empty */
-}
+// #[options("/<_..>")]
+// fn all_options() {
+//     /* Intentionally left empty */
+// }
 
 pub struct CORS;
 
@@ -204,7 +224,7 @@ impl Fairing for CORS {
 
 #[launch]
 fn rocket() -> _ {
-    println!("The API is using the {} database", ACTIVE_DB);
+    println!("The API is using the {ACTIVE_DB} database");
     rocket::build()
         .register("/", catchers![catch_malformed_request])
         .attach(DB::init())
@@ -223,7 +243,7 @@ fn rocket() -> _ {
                 save_key,
                 save_response,
                 all_studies_of_study_id,
-                all_options
+                add_user
             ],
         )
 }

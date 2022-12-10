@@ -1,4 +1,3 @@
-use mongodb::error;
 use rocket::{
     http::Status,
     response::{self, Responder},
@@ -22,25 +21,28 @@ pub enum Error {
     #[error("Email or password incorrect")]
     AuthIncorrect,
 
+    #[error("You are not an admin user")]
+    NotAdmin,
+
     #[error("No corresponding API key for redcap project found")]
     NoCorrespondingAPIKey,
 
     #[error("Redcap authentication error. Is the API key correct?")]
-    RedcapAuthenicationError,
+    RedcapAuthenication,
 
     #[error("{0}")]
-    RedcapError(String),
+    Redcap(String),
 
     #[error("Database Error")]
-    DbError(#[from] mongodb::error::Error),
+    DB(#[from] mongodb::error::Error),
 
     #[error("Request error")]
-    RequestError(#[from] reqwest::Error),
+    Request(#[from] reqwest::Error),
     #[error("Response deserialization error")]
-    ResponseDeserializationError(#[from] serde_json::Error),
+    ResponseDeserialization(#[from] serde_json::Error),
 
     #[error("Study parsing error: {0}")]
-    StudyParsingError(String),
+    StudyParsing(String),
     // #[error("Rocket error")]
     // RocketError(#[from] rocket::serde::json::Error<'static>),
 }
@@ -61,33 +63,32 @@ impl<'r> Responder<'r, 'static> for Error {
             Error::AuthIncorrect => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
             }
+            Error::NotAdmin => {
+                response::status::Unauthorized(Some(self.to_string())).respond_to(req)
+            }
 
             Error::NoCorrespondingAPIKey => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
             }
-            Error::RedcapAuthenicationError => {
+            Error::RedcapAuthenication => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
             }
-            Error::RedcapError(err) => {
-                response::status::Custom(Status::BadRequest, err).respond_to(req)
-            }
-            Error::ResponseDeserializationError(err) => {
+            Error::Redcap(err) => response::status::Custom(Status::BadRequest, err).respond_to(req),
+            Error::ResponseDeserialization(err) => {
                 response::status::Custom(Status::BadRequest, err.to_string()).respond_to(req)
             }
-            Error::DbError(err) => {
+            Error::DB(err) => {
                 response::status::Custom(Status::InternalServerError, err.to_string())
                     .respond_to(req)
             }
-            Error::RequestError(err) => {
+            Error::Request(err) => {
                 response::status::Custom(Status::InternalServerError, err.to_string())
                     .respond_to(req)
             }
-            Error::StudyParsingError(err) => {
-                response::status::BadRequest(Some(err)).respond_to(req)
-            } // Error::RocketError(err) => {
-              //     response::status::Custom(Status::InternalServerError, err.to_string())
-              //         .respond_to(req)
-              // }
+            Error::StudyParsing(err) => response::status::BadRequest(Some(err)).respond_to(req), // Error::RocketError(err) => {
+                                                                                                 //     response::status::Custom(Status::InternalServerError, err.to_string())
+                                                                                                 //         .respond_to(req)
+                                                                                                 // }
         }
     }
 }

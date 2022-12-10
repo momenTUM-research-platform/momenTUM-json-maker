@@ -41,7 +41,7 @@ pub struct Survey {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct PVT {
+pub struct Pvt {
     pub r#type: String,
     pub name: String,
     pub submit_text: String,
@@ -197,7 +197,7 @@ pub enum StringOrBool {
 #[serde(untagged)]
 pub enum Modules {
     Survey(Survey),
-    PVT(PVT),
+    Pvt(Pvt),
     Info, // These three are not yet implemented
     Video,
     Audio,
