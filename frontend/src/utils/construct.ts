@@ -1,7 +1,6 @@
 import { useStore } from "../state";
 
-export function constructStudy(): Study {
-  const { atoms } = useStore.getState();
+export function constructStudy(atoms: Atoms): Study {
   const start = JSON.parse(JSON.stringify(atoms.get("study")!));
 
   function appendChildren(atom: Atom<Study | Question | Module | Section>) {

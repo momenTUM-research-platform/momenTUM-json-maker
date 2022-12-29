@@ -1,16 +1,13 @@
 import React, { ReactChildren, ReactElement } from "react";
-import { download, load, save, upload, validate } from "./utils/actions";
+import { download, load, save, saveDictionary, upload, validate } from "./utils/actions";
 // Icons
 import Rotate from "../assets/rotate";
-import Download from "../assets/download";
-import Upload from "../assets/upload";
-import Load from "../assets/load";
-import Save from "../assets/save";
 import Calendar from "../assets/calendar";
 import { useStore } from "./state";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error
 import Logo from "../assets/icon.png";
+import { Menu } from "./Menu";
 export function Layout({ children }: { children: ReactElement }) {
   const { invertDirection, mode, invertMode } = useStore();
 
@@ -36,25 +33,12 @@ export function Layout({ children }: { children: ReactElement }) {
             <ShieldCheckIcon className="h-6 w-6" />
             Validate Study
           </Action>
-          <Action action={save}>
-            <Save />
-            Save Study
-          </Action>
 
-          <Action action={load}>
-            <Load />
-            Load Study
-          </Action>
-          <Action action={upload}>
-            <Upload /> Upload Study
-          </Action>
-          <Action action={download}>
-            <Download />
-            Download Study
-          </Action>
-          {/* <Action action={generateDictionary}>Generate RedCap Dictionary</Action>
+          <Menu />
+          {/*
+          
           <Action action={addApiKey}>Add API key</Action>
-          <Action action={validate}>Validate</Action> */}
+  */}
         </div>
       </header>
       {children}

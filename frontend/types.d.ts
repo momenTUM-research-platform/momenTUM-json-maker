@@ -108,7 +108,7 @@ declare interface Section {
   id: string;
   name: string;
   shuffle: boolean;
-  questions: Question[];
+  questions: (Instruction | TextQuestion | DateTime | YesNo | Slider | Multi | Media | External)[];
 }
 
 declare interface Question {
@@ -116,9 +116,13 @@ declare interface Question {
 
   id: string;
   text: string;
-  type: "instruction" | "datetime" | "multi" | "text" | "slider" | "media" | "yesno" | "external";
+  //  type: "instruction" | "datetime" | "multi" | "text" | "slider" | "media" | "yesno" | "external";
   required: boolean;
   rand_group: string;
+
+  hide_id?: string;
+  hide_value?: string | boolean;
+  hide_if?: boolean;
 
   // find out whats really needed
   noToggle?: boolean;
@@ -144,9 +148,6 @@ interface YesNo extends Question {
   type: "yesno";
   yes_text: string;
   no_text: string;
-  hide_id?: string;
-  hide_value?: boolean;
-  hide_if?: boolean;
 }
 interface Slider extends Question {
   type: "slider";
@@ -154,9 +155,6 @@ interface Slider extends Question {
   max: number;
   hint_left: string;
   hint_right: string;
-  hide_id?: string;
-  hide_value?: string; //  prefix with < or > => <50
-  hide_if?: boolean;
 }
 interface Multi extends Question {
   type: "multi";
@@ -165,9 +163,6 @@ interface Multi extends Question {
   options: string[];
   optionsChecked?: Option[]; // adjust in Generator
   shuffle: boolean;
-  hide_id?: string;
-  hide_value?: string;
-  hide_if?: boolean;
 }
 interface Media extends Question {
   type: "media";

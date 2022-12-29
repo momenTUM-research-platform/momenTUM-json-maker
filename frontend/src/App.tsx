@@ -7,6 +7,7 @@ import { Layout } from "./Layout";
 import { redraw, useStore } from "./state";
 import Drag from "../assets/drag";
 import { Calendar } from "./Calendar";
+import { Modal } from "./Modal";
 
 export const API_URL =
   process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
@@ -55,6 +56,7 @@ function App() {
           )}
         </section>
         <Toaster />
+        <Modal />
       </main>
     </Layout>
   );

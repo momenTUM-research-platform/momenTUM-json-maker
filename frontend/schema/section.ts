@@ -16,7 +16,8 @@ export const section = {
     shuffle: {
       $id: "#/properties/modules/items/properties/sections/items/properties/shuffle",
       type: "boolean",
-      title: "Shuffle Sections?",
+      title:
+        "Shuffle Questions? Used for counterbalancing. If true, the order of the questions in this section will be randomised.",
       description:
         "Used for counterbalancing. If true, the order of the questions in this section will be randomised.",
       default: false,

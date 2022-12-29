@@ -166,7 +166,7 @@ export const alerts = {
       title: "Start offset",
       description:
         "Indicates when the module should first be displayed to the user, where zero is the day that the participant enrolled.",
-      default: 0,
+      default: 1,
       examples: [0],
     },
   },

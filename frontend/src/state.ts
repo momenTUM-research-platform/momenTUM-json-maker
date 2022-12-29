@@ -35,10 +35,12 @@ export interface State {
   validator: ValidateFunction;
   atoms: Atoms;
   conditions: string[];
+  modal: null | "download" | "upload";
   invertDirection: () => void;
   invertMode: () => void;
   setAtom: (id: string, content: Study | Question | Module | Section) => void;
   setAtoms: (atoms: Atoms) => void;
+  setModal: (value: null | "upload" | "download") => void;
   saveAtoms: () => void;
   addNewNode: (type: AtomVariants, parent: string) => void;
   deleteNode: (id: string) => void;
@@ -46,6 +48,7 @@ export interface State {
 
 export const useStore = create<State>()((set, get) => ({
   conditions: ["*", "Treatment", "Control"],
+  modal: null,
   validator: new Ajv().compile(study),
   direction: "LR",
   mode: "graph",
@@ -165,6 +168,9 @@ export const useStore = create<State>()((set, get) => ({
         state.atoms = atoms;
       })
     );
+  },
+  setModal(value) {
+    set({ modal: value });
   },
   saveAtoms: async () => {
     console.log("saving to local storage");

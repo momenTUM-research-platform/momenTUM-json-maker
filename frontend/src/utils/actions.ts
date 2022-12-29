@@ -19,9 +19,11 @@ import { deconstructStudy } from "./deconstruct";
 
 export function validateStudy(study: Study): study is Study {
   const { validator } = useStore.getState();
+  console.log(study);
   const valid = validator(study);
   if (valid) return true;
   const errors = validator.errors as DefinedError[];
+  console.error(errors);
 
   toast.error(
     errors.reduce(
@@ -32,11 +34,14 @@ export function validateStudy(study: Study): study is Study {
   return false;
 }
 export function validate() {
-  validateStudy(constructStudy()) && toast.success("Study is valid");
+  const { atoms } = useStore.getState();
+  validateStudy(constructStudy(atoms)) && toast.success("Study is valid");
 }
 
 export function save() {
-  const data = JSON.stringify(constructStudy(), null, 2);
+  const { atoms } = useStore.getState();
+
+  const data = JSON.stringify(constructStudy(atoms), null, 2);
   const uri = "data:application/json;charset=utf-8," + encodeURIComponent(data);
   const link = document.createElement("a");
   link.href = uri;
@@ -64,31 +69,31 @@ export function load() {
   input.click();
 }
 
-export async function upload() {
-  const study = constructStudy();
-
-  if (validateStudy(study)) {
-    const data = JSON.stringify(study, null, 2);
-    const postURL = API_URL + "/study";
-    const response = await fetch(postURL, {
-      method: "POST",
-      body: data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "MomenTUM",
-      },
-    });
-    if (response.status === 200) {
-      toast.success(
-        "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
-          study.properties.study_id,
-        {
-          duration: 20000,
-        }
-      );
-    } else {
-      toast.error("Error: " + response.statusText);
-    }
+export async function upload(study: Study): Promise<string> {
+  const data = JSON.stringify(study, null, 2);
+  const postURL = API_URL + "/study";
+  const response = await fetch(postURL, {
+    method: "POST",
+    body: data,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "MomenTUM",
+    },
+  });
+  const body = await response.text();
+  if (body.includes("ObjectId(")) {
+    // Success
+    return body.slice(9, -2); // ID of the uploaded study
+    // toast.success(
+    //   "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
+    //     study.properties.study_id,
+    //   {
+    //     duration: 20000,
+    //   }
+    // );
+  } else {
+    console.log(body)
+    throw new Error(body);
   }
 }
 
@@ -146,23 +151,27 @@ export async function download() {
 //   }
 // }
 
-// export async function generateDictionary(form) {
-//   if (!form) return;
-//   try {
-//     const modules = form.modules;
-//     let csvString = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`;
-//     for (const module of modules) {
-//       for (const section of module.sections) {
-//         for (const question of section.questions) {
-//           if (question.type === "instruction") continue;
-//           csvString += `${question.id},${module.id},,text,${question.text},,,,,,,,,,,,,\n`;
-//         }
-//       }
-//     }
-//     console.log(csvString);
-//     saveAs(new Blob([csvString]), "dictionary.csv");
-//   } catch (err) {
-//     console.error(err);
-//     toast.error("Generation failed");
-//   }
-// }
+export async function saveDictionary() {
+  const { atoms } = useStore.getState();
+  const study = constructStudy(atoms);
+  const dictionary = generateDictionary(study);
+  const uri = "data:application/json;charset=utf-8," + encodeURIComponent(dictionary);
+  const link = document.createElement("a");
+  link.href = uri;
+  link.download = "dictionary.csv";
+  link.click();
+}
+
+export function generateDictionary(study: Study): string {
+  const modules = study.modules;
+  let dictionary = `"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"\n`;
+  for (const module of modules) {
+    for (const section of module.sections) {
+      for (const question of section.questions) {
+        if (question.type === "instruction") continue;
+        dictionary += `${question.id},${module.id},,text,${question.text},,,,,,,,,,,,,\n`;
+      }
+    }
+  }
+  return dictionary;
+}
