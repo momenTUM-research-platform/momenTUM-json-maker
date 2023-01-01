@@ -29,7 +29,7 @@ export function Upload({ close }: { close: () => void }) {
   const study: Study = useMemo(() => constructStudy(atoms), []);
   useEffect(() => {
     console.log("hele");
-    const action = [
+    const actions = [
       //  Authenticate
       () =>
         new Promise((resolve, reject) => {
@@ -43,13 +43,12 @@ export function Upload({ close }: { close: () => void }) {
       // Upload
       () => upload(study),
     ];
-    action[step]()
+    actions[step]()
       .then(() => {
         console.log("Finished step", step);
         setStep(step + 1);
       })
-      .catch((e) => toast.error(e))
-      .finally(() => console.log("?"));
+      .catch((e) => toast.error(e));
   }, [step]);
 
   return (

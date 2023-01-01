@@ -72,28 +72,32 @@ export function load() {
 export async function upload(study: Study): Promise<string> {
   const data = JSON.stringify(study, null, 2);
   const postURL = API_URL + "/study";
-  const response = await fetch(postURL, {
-    method: "POST",
-    body: data,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "MomenTUM",
-    },
-  });
-  const body = await response.text();
-  if (body.includes("ObjectId(")) {
-    // Success
-    return body.slice(9, -2); // ID of the uploaded study
-    // toast.success(
-    //   "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
-    //     study.properties.study_id,
-    //   {
-    //     duration: 20000,
-    //   }
-    // );
-  } else {
-    console.log(body)
-    throw new Error(body);
+  try {
+    const response = await fetch(postURL, {
+      method: "POST",
+      body: data,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "MomenTUM",
+      },
+    });
+    const body = await response.text();
+    if (body.includes("ObjectId(")) {
+      // Success
+      return body.slice(9, -2); // ID of the uploaded study
+      // toast.success(
+      //   "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
+      //     study.properties.study_id,
+      //   {
+      //     duration: 20000,
+      //   }
+      // );
+    } else {
+      console.log(body);
+      throw body;
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
