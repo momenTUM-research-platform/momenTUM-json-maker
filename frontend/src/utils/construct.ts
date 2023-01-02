@@ -1,5 +1,3 @@
-import { useStore } from "../state";
-
 export function constructStudy(atoms: Atoms): Study {
   const start = JSON.parse(JSON.stringify(atoms.get("study")!));
 
@@ -11,7 +9,7 @@ export function constructStudy(atoms: Atoms): Study {
         if (node) {
           const copy = JSON.parse(JSON.stringify(node)); // Copy
           const children = appendChildren(copy);
-          switch (result._type) {
+          switch (atom.content._type) {
             case "study": {
               //@ts-expect-error
               result.modules.push(children);
