@@ -168,9 +168,12 @@ export const useStore = create<State>()((set, get) => ({
       })
     ),
   setAtoms(atoms) {
+    // Completely replace the atoms and recalculate the graph
     set(
       produce((state: State) => {
         state.atoms = atoms;
+        state.edges = [];
+        state.nodes = [];
       })
     );
   },

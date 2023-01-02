@@ -2,7 +2,7 @@
     "_type": "study",
     "properties": {
         "study_name": "Environmental effects on sleep",
-        "study_id": "TUM_2022_env_trial01",
+        "study_id": "tum_2022_env_trial01",
         "created_by": "Anna Biller",
         "instructions": "This is a trial",
         "post_url": "https: //tuspl22-momentum.srv.mwn.de/post.php",

@@ -6,6 +6,11 @@ declare type Mode = "graph" | "timeline";
 
 declare type Atoms = Map<string, Atom<Study | Question | Module | Section>>;
 
+declare interface QuestionEnum {
+  id: string;
+  text: string;
+}
+
 declare interface Atom<T> {
   parent: string | null;
   subNodes: string[] | null;

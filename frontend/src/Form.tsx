@@ -1,6 +1,6 @@
 import FormComponent from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
-import { RJSFSchema } from "@rjsf/utils";
+import { useMemo, useState } from "react";
 import { module } from "../schema/module";
 import { properties } from "../schema/properties";
 import { question } from "../schema/question";
@@ -10,7 +10,18 @@ import { useStore } from "./state";
 export function Form({ id }: { id: string }) {
   const { atoms, setAtom, conditions, saveAtoms } = useStore();
   const atom = atoms.get(id);
+  const [questionIds, setQuestionIds] = useState<QuestionEnum[]>([]);
 
+  useMemo(() => {
+    const ids: QuestionEnum[] = [{ id: "none", text: "None" }];
+    for (const [key, value] of atoms.entries()) {
+      console.log(atom?.type);
+      if (value.content._type === "question") {
+        ids.push({ id: key, text: value.content.text });
+      }
+    }
+    setQuestionIds(ids);
+  }, [atoms]);
   if (!atom) {
     console.error("Atom " + id + " does not exist. This should never be the case!");
     return <></>;
@@ -31,7 +42,7 @@ export function Form({ id }: { id: string }) {
     ["study"]: () => properties,
     ["module"]: () => module(conditions),
     ["section"]: () => section,
-    ["question"]: () => question,
+    ["question"]: () => question(questionIds),
   };
 
   return (

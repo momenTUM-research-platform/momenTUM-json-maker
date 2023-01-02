@@ -57,9 +57,11 @@ export function load() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const data = JSON.parse(reader.result as string);
-      if (validateStudy(data)) {
-        const atoms = deconstructStudy(data);
-        setAtoms(atoms);
+      const deconstructed = deconstructStudy(data);
+      const rebuild = constructStudy(deconstructed);
+      console.log(rebuild);
+      if (validateStudy(rebuild)) {
+        setAtoms(deconstructed);
         redraw();
       }
     };

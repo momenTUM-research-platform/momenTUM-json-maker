@@ -1,5 +1,4 @@
 import { Edge, Node } from "reactflow";
-import { isSection } from "./typeGuards";
 
 const position = { x: 0, y: 0 }; // Specified position does not matter as overwritten by dagre graph layout
 
