@@ -11,7 +11,8 @@ export function QR({ close }: { close: () => void }) {
   const study = useMemo(() => constructStudy(atoms), [atoms]);
   const study_id = study.properties.study_id;
   const url =
-    "https://tuspl22-momentum.srv.mwn.de/api/v1/studies" + (selection === 1 ? permalink : study_id);
+    "https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
+    (selection === 1 ? permalink : study_id);
 
   if (!permalink)
     return (
