@@ -15,7 +15,7 @@ export function Modal() {
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+      <Dialog as="div" className="relative z-10" onClose={() => setModal(null)}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -42,7 +42,6 @@ export function Modal() {
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <Upload
                   close={() => {
-                    setOpen(false);
                     setModal(null);
                   }}
                 />

@@ -105,13 +105,26 @@ export function Menu() {
                     className="-m-3 flow-root rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-100"
                   >
                     <span className="flex items-center">
-                      <span className="text-base font-medium text-gray-900">Enterprise</span>
+                      <span className="text-base font-medium text-gray-900">Documentation</span>
                       <span className="ml-3 inline-flex items-center rounded-full bg-indigo-100 px-3 py-0.5 text-xs font-medium leading-5 text-main">
                         New
                       </span>
                     </span>
                     <span className="mt-1 block text-sm text-gray-500">
-                      Empower your entire team with even more advanced tools.
+                      Access to the API documentation and guides{" "}
+                      <a
+                        className="text-main underline "
+                        href="https://documenter.getpostman.com/view/13190321/2s8Z6zzBti"
+                      >
+                        here.
+                      </a>{" "}
+                      Other documentation is in the Github repository{" "}
+                      <a
+                        className="text-main underline "
+                        href="https://github.com/momenTUM-research-platform/momenTUM-json-maker/wiki"
+                      >
+                        here.
+                      </a>
                     </span>
                   </a>
                 </div>

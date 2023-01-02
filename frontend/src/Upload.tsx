@@ -10,7 +10,7 @@ import { constructStudy } from "./utils/construct";
 
 const steps = [
   {
-    name: "Authenticate",
+    name: "Authentication",
     description: "Authenticate yourself with the server",
   },
   {
@@ -56,15 +56,10 @@ export function Upload({ close }: { close: () => void }) {
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
         <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
       </div>
-      <div className="mt-3 text-center sm:mt-5">
+      <div className="mt-3 mb-2 text-center sm:mt-5">
         <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
           Upload
         </Dialog.Title>
-        <div className="mt-2">
-          <p className="text-sm text-gray-500">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur amet labore.
-          </p>
-        </div>
       </div>
 
       <nav aria-label="Progress">
