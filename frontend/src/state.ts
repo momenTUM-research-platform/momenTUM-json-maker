@@ -1,6 +1,6 @@
 import create from "zustand";
 
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 import produce from "immer";
 import Ajv, { ValidateFunction } from "ajv";
 import {
@@ -25,6 +25,8 @@ import {
   initialStudy,
 } from "./utils/initialValues";
 import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
+// Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
+const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
 
 export interface State {
   selectedNode: string | null; // ID of the currently selected Node
@@ -35,18 +37,21 @@ export interface State {
   validator: ValidateFunction;
   atoms: Atoms;
   conditions: string[];
-  modal: null | "download" | "upload";
+  modal: null | "download" | "upload" | "qr";
+  permalink: string | null;
   invertDirection: () => void;
   invertMode: () => void;
   setAtom: (id: string, content: Study | Question | Module | Section) => void;
   setAtoms: (atoms: Atoms) => void;
-  setModal: (value: null | "upload" | "download") => void;
+  setModal: (value: null | "upload" | "download" | "qr") => void;
   saveAtoms: () => void;
   addNewNode: (type: AtomVariants, parent: string) => void;
   deleteNode: (id: string) => void;
+  setPermalink: (permalink: string) => void;
 }
 
 export const useStore = create<State>()((set, get) => ({
+  permalink: null,
   conditions: ["*", "Treatment", "Control"],
   modal: null,
   validator: new Ajv().compile(study),
@@ -62,7 +67,7 @@ export const useStore = create<State>()((set, get) => ({
         childType: "module",
         title: "Properties",
         hidden: false,
-        actions: ["create", "count"],
+        actions: ["create"],
         content: initialStudy(nanoid()),
       },
     ],
@@ -94,7 +99,7 @@ export const useStore = create<State>()((set, get) => ({
               childType: "section",
               title: "New Module",
               hidden: false,
-              actions: ["create", "count", "delete"],
+              actions: ["create", "delete"],
               content: initialModule(id),
             });
             // If no parent exists, you've got a bigger issue
@@ -108,7 +113,7 @@ export const useStore = create<State>()((set, get) => ({
               childType: "question",
               title: "New Section",
               hidden: false,
-              actions: ["create", "count", "delete"],
+              actions: ["create", "delete"],
               content: initialSection(id),
             });
             break;
@@ -172,6 +177,9 @@ export const useStore = create<State>()((set, get) => ({
   setModal(value) {
     set({ modal: value });
   },
+  setPermalink(permalink) {
+    set({ permalink });
+  },
   saveAtoms: async () => {
     console.log("saving to local storage");
     // Saving all atoms takes some time and we don't want it to block rendering changes to atoms
@@ -183,7 +191,6 @@ export const useStore = create<State>()((set, get) => ({
 
 export function redraw() {
   let { atoms, selectedNode, direction, mode } = useStore.getState();
-  console.log(atoms);
   // @ts-ignore Existence is guaranteed, but can't be expressed in typescript
   let properties = atoms.get("study")!.content.properties;
   selectedNode = selectedNode || "study";

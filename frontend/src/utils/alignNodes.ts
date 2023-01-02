@@ -17,7 +17,7 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
   // state.atoms.forEach((a, id) => console.log(id, a.hidden));
   // Action nodes will be placed manually
   const nodesToPosition = nodes.filter(
-    (n) => !(n.hidden || n.type === "create" || n.type === "count" || n.type === "delete")
+    (n) => !(n.hidden || n.type === "create" || n.type === "delete")
   );
 
   //console.log(nodesToPosition.map((a) => [a.id, a.hidden]));
@@ -49,21 +49,12 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
   });
 
   nodes
-    .filter((n) => n.type === "count")
-    .forEach((node) => {
-      const parent = nodes.find((n) => n.id === node.id.slice(0, -6))!; // removing _count from the id to gain parent
-      node.position = {
-        x: parent.position.x + 10,
-        y: parent.position.y - 25,
-      };
-    });
-  nodes
     .filter((n) => n.type === "create")
     .forEach((node) => {
       const parent = nodes.find((n) => n.id === node.id.slice(0, -7))!; // removing _create from the id to gain parent
 
       node.position = {
-        x: parent.position.x + 50,
+        x: parent.position.x + 10,
         y: parent.position.y - 25,
       };
     });

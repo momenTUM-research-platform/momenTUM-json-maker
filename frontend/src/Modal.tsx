@@ -3,15 +3,18 @@ import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useStore } from "./state";
 import { Upload } from "./Upload";
+import { Download } from "./Download";
+import { QR } from "./QR";
 
 export function Modal() {
   const { modal, setModal } = useStore();
-  const [open, setOpen] = useState(false);
-  console.log(modal, open);
+  const open = !!modal;
 
-  useEffect(() => {
-    setOpen(!!modal);
-  }, [modal]);
+  const modals = {
+    upload: <Upload close={() => setModal(null)} />,
+    download: <Download close={() => setModal(null)} />,
+    qr: <QR close={() => setModal(null)} />,
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -40,11 +43,7 @@ export function Modal() {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                <Upload
-                  close={() => {
-                    setModal(null);
-                  }}
-                />
+                {modals[modal!]}
               </Dialog.Panel>
             </Transition.Child>
           </div>

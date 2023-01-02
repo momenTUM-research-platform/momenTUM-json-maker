@@ -16,15 +16,15 @@ export function Form({ id }: { id: string }) {
     return <></>;
   }
 
-  // let uiSchema: { [key: string]: any } = {
-  //   title: { "ui:widget": "date" },
-  //   "ui:submitButtonOptions": {
-  //     norender: true,
-  //   },
-  // };
+  let uiSchema: { [key: string]: any } = {
+    title: { "ui:widget": "date" },
+    "ui:submitButtonOptions": {
+      norender: true,
+    },
+  };
 
-  // const hiddenFields = ["id", "study_id", "post_url"];
-  // hiddenFields.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
+  const hiddenFields = ["id", "study_id", "post_url"];
+  hiddenFields.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
 
   // Maps Atoms to JSON Schema
   const schema: { [key in AtomVariants]: () => Object } = {
@@ -38,10 +38,12 @@ export function Form({ id }: { id: string }) {
     <FormComponent
       onChange={({ formData }) => setAtom(id, formData)}
       onBlur={saveAtoms}
+      children={true}
+      liveValidate={true}
       schema={schema[atom.content._type]()}
       formData={atom.content}
       validator={validator}
-      // uiSchema={uiSchema}
+      uiSchema={uiSchema}
       idPrefix="form"
     />
   );

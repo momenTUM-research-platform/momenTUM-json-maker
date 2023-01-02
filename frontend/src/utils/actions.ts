@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { API_URL } from "../App";
-import { useStore } from "../state";
+import { redraw, useStore } from "../state";
 import { DefinedError } from "ajv";
 import { constructStudy } from "./construct";
 import { deconstructStudy } from "./deconstruct";
@@ -17,13 +17,11 @@ import { deconstructStudy } from "./deconstruct";
 
 // }
 
-export function validateStudy(study: Study): study is Study {
+export function validateStudy(study: any): study is Study {
   const { validator } = useStore.getState();
-  console.log(study);
   const valid = validator(study);
   if (valid) return true;
   const errors = validator.errors as DefinedError[];
-  console.error(errors);
 
   toast.error(
     errors.reduce(
@@ -62,6 +60,7 @@ export function load() {
       if (validateStudy(data)) {
         const atoms = deconstructStudy(data);
         setAtoms(atoms);
+        redraw();
       }
     };
     reader.readAsText(file);
@@ -71,54 +70,41 @@ export function load() {
 
 export async function upload(study: Study): Promise<string> {
   const data = JSON.stringify(study, null, 2);
+  console.log(data);
   const postURL = API_URL + "/study";
   try {
     const response = await fetch(postURL, {
       method: "POST",
       body: data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "MomenTUM",
-      },
+      redirect: "follow",
     });
+    console.log(await response);
     const body = await response.text();
     if (body.includes("ObjectId(")) {
       // Success
-      return body.slice(9, -2); // ID of the uploaded study
-      // toast.success(
-      //   "Uploaded survey!. Available at https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
-      //     study.properties.study_id,
-      //   {
-      //     duration: 20000,
-      //   }
-      // );
+      return body.slice(10, -2); // ID of the uploaded study
     } else {
-      console.log(body);
       throw body;
     }
   } catch (error) {
-    throw error;
+    console.error(error);
+
+    throw "Error: " + error;
   }
 }
 
-export async function download() {
-  const { setAtoms } = useStore.getState();
-  const uri = API_URL + "/studies/" + prompt("Enter the id of the study");
-  if (!uri) {
-    toast.error("No download link provided");
-    return;
-  }
-  console.log(uri);
-
-  const response = await fetch(uri);
-  if (response.ok) {
-    const data = await response.json();
-    if (validateStudy(data)) {
-      const atoms = deconstructStudy(data);
-      setAtoms(atoms);
+export async function download(study_id: string): Promise<Study> {
+  const uri = API_URL + "/studies/" + study_id;
+  try {
+    const response = await fetch(uri);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      throw "Status: " + response.statusText + " " + (await response.text());
     }
-  } else {
-    toast.error("Download failed");
+  } catch (error) {
+    console.log(error);
+    throw "Error: " + error;
   }
 }
 

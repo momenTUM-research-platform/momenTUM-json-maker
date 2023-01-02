@@ -25,10 +25,10 @@ const steps = [
 ];
 export function Upload({ close }: { close: () => void }) {
   const [step, setStep] = useState(0);
-  const { atoms } = useStore();
+  const { atoms, setModal, setPermalink } = useStore();
   const study: Study = useMemo(() => constructStudy(atoms), []);
   useEffect(() => {
-    console.log("hele");
+    if (step < 0 || step > 3) return;
     const actions = [
       //  Authenticate
       () =>
@@ -42,10 +42,13 @@ export function Upload({ close }: { close: () => void }) {
         ),
       // Upload
       () => upload(study),
+      // Finished
+      () => new Promise((resolve, reject) => resolve(null)),
     ];
     actions[step]()
-      .then(() => {
+      .then((result) => {
         console.log("Finished step", step);
+        if (step === 2) setPermalink(result as string);
         setStep(step + 1);
       })
       .catch((e) => toast.error(e));
@@ -97,7 +100,7 @@ export function Upload({ close }: { close: () => void }) {
                       aria-hidden="true"
                     />
                   ) : null}
-                  <a className="group relative flex items-start" aria-current="content">
+                  <a className="group relative flex items-start">
                     <span className="flex h-9 items-center" aria-hidden="true">
                       <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-indigo-600 bg-white">
                         <span className="h-2.5 w-2.5 rounded-full bg-indigo-600" />
@@ -134,15 +137,28 @@ export function Upload({ close }: { close: () => void }) {
           ))}
         </ol>
       </nav>
-      <div className="mt-5 sm:mt-6">
-        <button
-          type="button"
-          className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
-          onClick={close}
-        >
-          Go back to dashboard
-        </button>
-      </div>
+
+      {step === 4 ? (
+        <div className="mt-5 sm:mt-6">
+          <button
+            type="button"
+            className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
+            onClick={() => setModal("qr")}
+          >
+            Get Download Link + QR-Code
+          </button>
+        </div>
+      ) : (
+        <div className="mt-5 sm:mt-6">
+          <button
+            type="button"
+            className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
+            onClick={close}
+          >
+            Go back to editor
+          </button>
+        </div>
+      )}
     </div>
   );
 }

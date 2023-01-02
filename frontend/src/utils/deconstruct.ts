@@ -12,7 +12,7 @@ export function deconstructStudy(study: Study): Atoms {
         childType: "module",
         content: { ...object, _type: "study" },
         title: "Properties",
-        actions: ["count", "create"],
+        actions: ["create"],
         hidden: false,
       };
       atoms.set("study", atom);
@@ -25,7 +25,7 @@ export function deconstructStudy(study: Study): Atoms {
         childType: "module",
         content: { ...object, _type: "module" },
         title: object.name,
-        actions: ["count", "create"],
+        actions: ["create", "delete"],
         hidden: false,
       };
 
@@ -39,7 +39,7 @@ export function deconstructStudy(study: Study): Atoms {
         childType: "module",
         content: { ...object, _type: "section" },
         title: object.name,
-        actions: ["count", "create"],
+        actions: ["create", "delete"],
         hidden: false,
       };
 
@@ -53,7 +53,7 @@ export function deconstructStudy(study: Study): Atoms {
         childType: "module",
         content: { ...object, _type: "question" },
         title: object.text,
-        actions: ["count", "create"],
+        actions: ["delete"],
         hidden: false,
       };
 

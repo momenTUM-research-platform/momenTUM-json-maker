@@ -21,7 +21,6 @@ export function deleteNode(
 
           if (subNodes) {
             nodesToDelete.push(id + "_new_node"); // Add "newNode" to displayed nodes
-            nodesToDelete.push(id + "_count");
             nodesToDelete.push(...subNodes);
             subNodes.forEach(recursivelyFindIdsOfSubNodes);
           }

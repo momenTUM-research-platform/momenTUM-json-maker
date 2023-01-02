@@ -27,7 +27,7 @@ export function Layout({ children }: { children: ReactElement }) {
             <Rotate /> Rotate Canvas
           </Action>
           <Action action={invertMode}>
-            <Calendar /> Switch to {mode} view
+            <Calendar /> Switch to {mode === "timeline" ? "graph" : "calendar"} view
           </Action>
           <Action action={validate}>
             <ShieldCheckIcon className="h-6 w-6" />

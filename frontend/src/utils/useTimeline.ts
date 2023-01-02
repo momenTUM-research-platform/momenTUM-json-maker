@@ -50,7 +50,7 @@ export function useTimeline(): [
     // for any month outside of those we explicitely calculated, we need to get x days before dayOfMonth(current day) = x and 42-x days after current day
     // Then, to get the monday before the 1. of the month, subtract the day of the week of the first day of the month
     const dayOfMonth = date.date() - 1; // Subtract one, because we want the distance to the first day of the month, so not counting itself
-    const dayOfWeek = date.subtract(dayOfMonth).day();
+    const dayOfWeek = (date.subtract(dayOfMonth).day() + 5) % 7; // Day of week is given from sunday to saturday, this converts it to monday to sunday
 
     const x = dayOfMonth + dayOfWeek;
 

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Study {
     pub _id: Option<ObjectId>,
+    pub _type: String,
     pub timestamp: Option<i64>, // time of upload
     pub properties: Properties,
     pub modules: Vec<Modules>,
@@ -28,6 +29,7 @@ pub struct Properties {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Survey {
     pub r#type: String,
+    pub _type: String,
     pub name: String,
     pub submit_text: String,
     pub condition: String,
@@ -43,6 +45,7 @@ pub struct Survey {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Pvt {
     pub r#type: String,
+    pub _type: String,
     pub name: String,
     pub submit_text: String,
     pub condition: String,
@@ -93,7 +96,10 @@ pub struct NoGraph {
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Section {
+    pub id: String,
     pub name: String,
+    _type: String,
+
     pub shuffle: bool,
     pub questions: Vec<Question>,
 }
@@ -104,6 +110,7 @@ pub enum Question {
     #[serde(rename = "text")]
     Text {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -115,6 +122,7 @@ pub enum Question {
     #[serde(rename = "datetime")]
     Datetime {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -126,6 +134,7 @@ pub enum Question {
     #[serde(rename = "yesno")]
     YesNo {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -138,6 +147,7 @@ pub enum Question {
     #[serde(rename = "slider")]
     Slider {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -152,6 +162,7 @@ pub enum Question {
     #[serde(rename = "multi")]
     Multi {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -166,6 +177,7 @@ pub enum Question {
     #[serde(rename = "media")]
     Media {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -179,6 +191,7 @@ pub enum Question {
     #[serde(rename = "instruction")]
     Instruction {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,

@@ -1,4 +1,5 @@
 import { Edge, Node } from "reactflow";
+import { isSection } from "./typeGuards";
 
 const position = { x: 0, y: 0 }; // Specified position does not matter as overwritten by dagre graph layout
 
@@ -18,11 +19,12 @@ export function calcGraphFromAtoms(atoms: Atoms): [Node[], Edge[]] {
         position,
       });
     });
-    atom.subNodes?.forEach((sub) => {
+    atom.subNodes?.forEach((sub, i) => {
       edges.push({
         id: id + "_->_" + sub,
         source: id,
         target: sub,
+        label: i + 1,
         hidden: atom.hidden || atoms.get(sub)!.hidden,
       });
     });

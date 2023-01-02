@@ -7,6 +7,7 @@ import {
   BookOpenIcon,
   CloudArrowDownIcon,
   CloudArrowUpIcon,
+  QrCodeIcon,
 } from "@heroicons/react/24/outline";
 import { download, load, save, saveDictionary, upload } from "./utils/actions";
 import { classNames } from "./Calendar";
@@ -47,6 +48,13 @@ export function Menu() {
         "Generate a representation of your study that enables Redcap to store the responses from your participants.",
       action: saveDictionary,
       icon: BookOpenIcon,
+    },
+    {
+      name: "Show QR Code",
+      description:
+        "See the QR code for the study you are currently working on. You can scan this code with the Momentum app to participate in the study.",
+      action: () => setModal("qr"),
+      icon: QrCodeIcon,
     },
     //   {
     //     name: "Reports",
@@ -100,10 +108,7 @@ export function Menu() {
                   ))}
                 </div>
                 <div className="bg-gray-50 p-5 sm:p-8">
-                  <a
-                    href="#"
-                    className="-m-3 flow-root rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-100"
-                  >
+                  <div className="-m-3 flow-root rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-100">
                     <span className="flex items-center">
                       <span className="text-base font-medium text-gray-900">Documentation</span>
                       <span className="ml-3 inline-flex items-center rounded-full bg-indigo-100 px-3 py-0.5 text-xs font-medium leading-5 text-main">
@@ -126,7 +131,7 @@ export function Menu() {
                         here.
                       </a>
                     </span>
-                  </a>
+                  </div>
                 </div>
               </div>
             </Popover.Panel>

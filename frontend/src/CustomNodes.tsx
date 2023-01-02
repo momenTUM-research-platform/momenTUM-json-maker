@@ -29,19 +29,7 @@ export function NewNode({ data }: NodeProps<{ childType: AtomVariants; parent: s
   );
 }
 
-export function CountNode({ data }: NodeProps<{ count: number; parent: string }>) {
-  const { atoms } = useStore();
-  return (
-    <div
-      className={` bg-black p-2  text-white text-center pt-1   rounded-lg h-8 w-8`}
-      onClick={() => useStore.setState({ selectedNode: data.parent })}
-    >
-      {atoms.get(data.parent)?.subNodes?.length}
-    </div>
-  );
-}
-
-export function DeleteNode({ data }: NodeProps<{ count: number; parent: string }>) {
+export function DeleteNode({ data }: NodeProps<{ parent: string }>) {
   const { deleteNode, atoms } = useStore();
   if (!atoms.get(data.parent)) {
     return <></>;
