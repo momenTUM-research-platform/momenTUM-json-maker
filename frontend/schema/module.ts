@@ -45,7 +45,7 @@ export const module = (conditions: string[]) => {
       id: {
         $id: "#/properties/modules/items/properties/id",
         type: "string",
-        pattern: "^[a-z][a-z0-9_]+$",
+        pattern: "^[a-z0-9_]+$",
         title: "Unique identifier",
         description:
           "A unique identifier for this module. Will be generated if not provided. Must be lowercase and only letters, numbers and underscores. Cannot begin with a number",
@@ -99,7 +99,7 @@ export const module = (conditions: string[]) => {
         items: {
           $id: "#/properties/modules/items/properties/unlock_after/items",
           type: "string",
-          pattern: "^[a-zA-Z0-9_]+$",
+          pattern: "^[a-z0-9_]+$",
           enum: [""],
         },
       },

@@ -6,7 +6,7 @@ export const question = {
     id: {
       $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/id",
       type: "string",
-      pattern: "^[a-zA-Z0-9_]+$",
+      pattern: "^[a-z0-9_]+$",
       title: "Question ID",
       description:
         "A unique id to identify this question. This id is sent to the server along with any response value. Note: Every element in the entire study protocol must have a unique id for some features to function correctly.",
@@ -35,7 +35,7 @@ export const question = {
     hide_id: {
       $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_id",
       type: "string",
-      pattern: "^[a-zA-Z0-9_]+$",
+      pattern: "^[a-z0-9_]+$",
       title: "Hide/Show for ID",
       description:
         "The id of the question that will trigger this question to dynamically show/hide. To use branching, you need to add two additional properties to the question object that is to be dynamically shown/hidden. Currently, branching is supported by the multi, yesno, and slider question types.",

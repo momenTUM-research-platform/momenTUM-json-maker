@@ -43,7 +43,7 @@ export const properties = {
     study_id: {
       $id: "#/properties/properties/properties/study_id",
       type: "string",
-      pattern: "^[a-zA-Z0-9_]+$",
+      pattern: "^[a-z0-9_]+$",
       title: "ID",
       description: "An identifier for the study which is sent to the server with response data.",
       default: "",
