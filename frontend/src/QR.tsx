@@ -10,7 +10,8 @@ export function QR({ close }: { close: () => void }) {
   const [selection, setSelection] = useState(0);
   const study = useMemo(() => constructStudy(atoms), [atoms]);
   const study_id = study.properties.study_id;
-  const url = "tuspl22-momentum.srv.mwn.de/api/v1/" + (selection === 1 ? permalink : study_id);
+  const url =
+    "https://tuspl22-momentum.srv.mwn.de/api/v1/studies" + (selection === 1 ? permalink : study_id);
 
   if (!permalink)
     return (
