@@ -3,36 +3,22 @@ import create from "zustand";
 import { customAlphabet } from "nanoid";
 import produce from "immer";
 import Ajv, { ValidateFunction } from "ajv";
-import {
-  addEdge,
-  applyEdgeChanges,
-  applyNodeChanges,
-  Connection,
-  Edge,
-  EdgeChange,
-  Node,
-  NodeChange,
-} from "reactflow";
-import { alignNodes } from "./utils/alignNodes";
-import { hideAtoms } from "./utils/hideAtoms";
 import { deleteNode } from "./utils/deleteNode";
 import { study } from "../schema/study";
-import { isModule, isQuestion, isSection, isStudy } from "./utils/typeGuards";
+import { isModule, isQuestion, isSection, isProperties } from "./utils/typeGuards";
 import {
   initialModule,
   initialQuestion,
   initialSection,
-  initialStudy,
+  initialProperties,
 } from "./utils/initialValues";
-import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
 // Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
 const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
 
 export interface State {
   selectedNode: string | null; // ID of the currently selected Node
   mode: Mode;
-  nodes: Node[];
-  edges: Edge[];
+
   direction: "TB" | "LR";
   validator: ValidateFunction;
   atoms: Atoms;
@@ -43,7 +29,7 @@ export interface State {
   showHidingLogic: boolean;
   invertDirection: () => void;
   invertMode: () => void;
-  setAtom: (id: string, content: Study | Question | Module | Section) => void;
+  setAtom: (id: string, content: Properties | Question | Module | Section) => void;
   setAtoms: (atoms: Atoms) => void;
   setModal: (value: null | "upload" | "download" | "qr") => void;
   saveAtoms: () => void;
@@ -70,27 +56,41 @@ export const useStore = create<State>()((set, get) => ({
       "study",
       {
         parent: null,
-        subNodes: [],
+        subNodes: ["properties"], // This is not quite correct as it also has one child of type properties. It is added manually when calculating the graph.
         type: "study",
-        childType: "module",
-        title: "Properties",
+        childType: "module", // Not quite correct as it also has one child of type properties
+        title: "Study",
         hidden: false,
         actions: ["create"],
-        content: initialStudy(nanoid()),
+        content: {
+          // These will not be used, but are required for typechecking.
+          properties: {} as Properties,
+          modules: [],
+          _type: "study",
+        },
+      },
+    ],
+    [
+      "properties",
+      {
+        parent: "study",
+        subNodes: null,
+        type: "properties",
+        childType: null,
+        title: "Properties",
+        hidden: false,
+        actions: [],
+        content: initialProperties,
       },
     ],
   ]),
   selectedNode: null,
-  nodes: [],
-  edges: [],
 
   invertDirection: () => {
     set({ direction: get().direction === "LR" ? "TB" : "LR" });
-    redraw();
   },
   invertMode: () => {
     set({ mode: get().mode === "graph" ? "timeline" : "graph" });
-    redraw();
   },
   addNewNode: (type, parent) => {
     const id = nanoid();
@@ -144,24 +144,10 @@ export const useStore = create<State>()((set, get) => ({
       })
     );
     get().selectedNode = id;
-    redraw();
+
     //  console.timeEnd("create");
   },
-  onNodesChange: (changes: NodeChange[]) => {
-    set({
-      nodes: applyNodeChanges(changes, get().nodes),
-    });
-  },
-  onEdgesChange: (changes: EdgeChange[]) => {
-    set({
-      edges: applyEdgeChanges(changes, get().edges),
-    });
-  },
-  onConnect: (connection: Connection) => {
-    set({
-      edges: addEdge(connection, get().edges),
-    });
-  },
+
   setAtom: (id, content) =>
     set(
       produce((state: State) => {
@@ -173,7 +159,7 @@ export const useStore = create<State>()((set, get) => ({
         if (isQuestion(content) && content.text) {
           atom.title = content.text.length > 32 ? content.text.slice(0, 60) + "..." : content.text;
         }
-        if (isStudy(content)) {
+        if (isProperties(content)) {
           // @ts-ignore Because we are using the root node also as the properties node (which is not correct for the study), the properties fields are in the study object
           state.conditions = ["*", ...content.conditions];
         }
@@ -181,13 +167,7 @@ export const useStore = create<State>()((set, get) => ({
     ),
   setAtoms(atoms) {
     // Completely replace the atoms and recalculate the graph
-    set(
-      produce((state: State) => {
-        state.atoms = atoms;
-        state.edges = [];
-        state.nodes = [];
-      })
-    );
+    set({ atoms });
   },
   setModal(value) {
     set({ modal: value });
@@ -203,14 +183,3 @@ export const useStore = create<State>()((set, get) => ({
 
   deleteNode: deleteNode(set, get),
 }));
-
-export function redraw() {
-  let { atoms, selectedNode, direction, mode } = useStore.getState();
-  // @ts-ignore Existence is guaranteed, but can't be expressed in typescript
-  let properties = atoms.get("study")!.content.properties;
-  selectedNode = selectedNode || "study";
-  atoms = hideAtoms(selectedNode, atoms);
-  let [nodes, edges] = calcGraphFromAtoms(atoms);
-  [nodes, edges] = alignNodes(nodes, edges, direction);
-  useStore.setState({ nodes, edges });
-}

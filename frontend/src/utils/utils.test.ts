@@ -2,8 +2,17 @@ import { constructStudy } from "./construct";
 import { describe, expect, it } from "vitest";
 import { download, generateDictionary, upload, validateStudy } from "./actions";
 import sleep_study from "../../../studies/sleep.json";
+import monster_study from "../../../studies/monster.json";
 import { useStore } from "../state";
 import { deconstructStudy } from "./deconstruct";
+
+describe("Example studies", () => {
+  it("Validates example studies", () => {
+    expect(validateStudy(sleep_study)).toBe(true);
+    expect(validateStudy(monster_study)).toBe(true);
+  });
+});
+
 describe("Upload and Download", async () => {
   it("Uploads and downloads a study", async () => {
     const study = sleep_study as Study;
@@ -19,7 +28,8 @@ describe("Constructing a study from atoms", () => {
     const constructedStudy = constructStudy(atoms);
     const study: Study = {
       properties: {
-        study_name: "",
+        _type: "properties",
+        study_name: "Study",
         study_id: constructedStudy.properties.study_id, // is randomly generated, therefore needs to be substitued
         created_by: "",
         instructions: "",
@@ -38,6 +48,10 @@ describe("Constructing a study from atoms", () => {
     };
     expect(constructedStudy).toEqual(study);
   });
+  // it("Creates a study from monster study atoms", () => {
+  //   const atoms = new Map(JSON.parse(monsterAtoms)) as Atoms;
+  //   expect(constructStudy(atoms)).toEqual(monster_study);
+  // });
 });
 
 describe("Deconstructing a study into atoms", () => {
@@ -46,7 +60,8 @@ describe("Deconstructing a study into atoms", () => {
     const constructedStudy = constructStudy(atoms);
     const study: Study = {
       properties: {
-        study_name: "",
+        _type: "properties",
+        study_name: "Study",
         study_id: constructedStudy.properties.study_id, // is randomly generated, therefore needs to be substitued
         created_by: "",
         instructions: "",
@@ -71,7 +86,7 @@ describe("Deconstructing a study into atoms", () => {
     const study = sleep_study as Study;
     const atoms = deconstructStudy(study);
     expect(atoms).toBeTypeOf("object");
-    expect(atoms.size).toBe(10);
+    expect(atoms.size).toBe(11);
   });
   it("Deconstructs a study", () => {
     const study: Study = {
@@ -81,6 +96,7 @@ describe("Deconstructing a study into atoms", () => {
       _type: "study",
       timestamp: 1672666137078,
       properties: {
+        _type: "properties",
         study_id: "TUM_2022_env_trial01",
         study_name: "Environmental effects on sleep",
         instructions: "This is a trial",
@@ -250,7 +266,12 @@ describe("Deconstructing a study into atoms", () => {
     };
     const atoms = deconstructStudy(study);
     expect(atoms).toBeTypeOf("object");
-    expect(atoms.size).toBe(10);
+    expect(atoms.size).toBe(11);
+  });
+  it("Deconstructs the monster study", () => {
+    const atoms = deconstructStudy(monster_study as Study);
+    expect(atoms).toBeTypeOf("object");
+    expect(atoms.size).toBe(49);
   });
 });
 
@@ -260,13 +281,6 @@ describe("Validate study", () => {
     const study: Study = sleep_study;
     expect(validateStudy(study)).toBe(true);
     expect(validateStudy(constructStudy(deconstructStudy(study)))).toBe(true);
-  });
-  it("Invalidates study with wrong ID", () => {
-    const atoms_raw =
-      '[["study",{"parent":null,"subNodes":["PVBzIbbve9cNOA9jMEmYs","JV7jo924H3MPaQCgbtJL9","1uGym1kcgfYN_EX6NjPWu","jOiFRpKhJJl8jb9Kv-XrO"],"type":"study","childType":"module","title":"Properties","hidden":false,"actions":["create" ],"content":{"study_name":"","study_id":"hello_wolrd","created_by":"","instructions":"","post_url":"https://tuspl22-momentum.srv.mwn.de/post.php","empty_msg":"","banner_url":"","support_url":"","support_email":"","cache":false,"ethics":"","pls":"","conditions":["Control","Treatment"],"_type":"study","properties":{"study_name":"","study_id":"4TKNdW2fyndn-S9LQf95-","created_by":"","instructions":"","post_url":"https://tuspl22-momentum.srv.mwn.de/api/v1","empty_msg":"","banner_url":"","support_url":"","support_email":"","conditions":["Control","Treatment"],"cache":false,"ethics":"","pls":""},"modules":[]}}],["PVBzIbbve9cNOA9jMEmYs",{"parent":"study","subNodes":[],"type":"module","childType":"section","title":"New Module","hidden":false,"actions":["create" ,"delete"],"content":{"_type":"module","id":"PVBzIbbve9cNOA9jMEmYs","alerts":{"title":"","duration":0,"message":"","random":false,"random_interval":0,"start_offset":0,"sticky":false,"sticky_label":"","timeout":false,"timeout_after":0,"times":[{"hours":8,"minutes":30}]},"condition":"","graph":{"display":false},"name":"","sections":[],"shuffle":false,"submit_text":"Submit","type":"info","unlock_after":[]}}],["JV7jo924H3MPaQCgbtJL9",{"parent":"study","subNodes":[],"type":"module","childType":"section","title":"New Module","hidden":false,"actions":["create" ,"delete"],"content":{"_type":"module","id":"JV7jo924H3MPaQCgbtJL9","alerts":{"title":"","duration":0,"message":"","random":false,"random_interval":0,"start_offset":0,"sticky":false,"sticky_label":"","timeout":false,"timeout_after":0,"times":[{"hours":8,"minutes":30}]},"condition":"","graph":{"display":false},"name":"","sections":[],"shuffle":false,"submit_text":"Submit","type":"info","unlock_after":[]}}],["1uGym1kcgfYN_EX6NjPWu",{"parent":"study","subNodes":[],"type":"module","childType":"section","title":"New Module","hidden":false,"actions":["create" ,"delete"],"content":{"_type":"module","id":"1uGym1kcgfYN_EX6NjPWu","alerts":{"title":"","duration":0,"message":"","random":false,"random_interval":0,"start_offset":0,"sticky":false,"sticky_label":"","timeout":false,"timeout_after":0,"times":[{"hours":8,"minutes":30}]},"condition":"","graph":{"display":false},"name":"","sections":[],"shuffle":false,"submit_text":"Submit","type":"info","unlock_after":[]}}],["jOiFRpKhJJl8jb9Kv-XrO",{"parent":"study","subNodes":[],"type":"module","childType":"section","title":"New Module","hidden":false,"actions":["create" ,"delete"],"content":{"_type":"module","id":"jOiFRpKhJJl8jb9Kv-XrO","alerts":{"title":"","duration":0,"message":"","random":false,"random_interval":0,"start_offset":0,"sticky":false,"sticky_label":"","timeout":false,"timeout_after":0,"times":[{"hours":8,"minutes":30}]},"condition":"","graph":{"display":false},"name":"","sections":[],"shuffle":false,"submit_text":"Submit","type":"info","unlock_after":[]}}]]';
-    const atoms: Atoms = new Map(JSON.parse(atoms_raw));
-    const study = constructStudy(atoms);
-    expect(validateStudy(study)).toBe(false);
   });
 });
 

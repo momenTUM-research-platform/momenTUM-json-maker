@@ -5,7 +5,7 @@ import { resolve } from "path";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { classNames } from "./Calendar";
-import { redraw, useStore } from "./state";
+import { useStore } from "./state";
 import { download, upload, validateStudy } from "./utils/actions";
 import { constructStudy } from "./utils/construct";
 import { deconstructStudy } from "./utils/deconstruct";
@@ -53,7 +53,7 @@ export function Download({ close }: { close: () => void }) {
           const atoms = deconstructStudy(study!);
           console.log(atoms, study);
           setAtoms(atoms);
-          redraw();
+
           resolve(null);
         }),
     ];

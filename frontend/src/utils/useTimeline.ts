@@ -36,14 +36,14 @@ export function useTimeline(): [
   const { atoms } = useStore();
   const [days, setDays] = useState<Days>(
     // @ts-ignore
-    calcTimelineFromAtoms(atoms, atoms.get("study")!.content.properties)
+    calcTimelineFromAtoms(atoms, atoms.get("properties")!.content)
   );
   const [visibleDays, setVisibleDays] = useState<Day[]>([]);
 
   useEffect(() => {
     console.log("Running");
     // @ts-ignore
-    const events = calcTimelineFromAtoms(atoms, atoms.get("study")!.content.properties);
+    const events = calcTimelineFromAtoms(atoms, atoms.get("properties")!.content);
     setDays(events);
     let visibleDays: Day[] = [];
     const offsetFromToday = date.diff(dayjs(), "day");

@@ -1,6 +1,7 @@
 {
     "_type": "study",
     "properties": {
+        "_type": "properties",
         "study_name": "Environmental effects on sleep",
         "study_id": "tum_2022_env_trial01",
         "created_by": "Anna Biller",

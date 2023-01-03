@@ -55,6 +55,7 @@ export function Settings() {
                         aria-describedby="comments-description"
                         name="comments"
                         type="checkbox"
+                        readOnly
                         checked={liveValidation}
                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
@@ -89,6 +90,7 @@ export function Settings() {
                         aria-describedby="candidates-description"
                         name="candidates"
                         type="checkbox"
+                        readOnly
                         checked={showHidingLogic}
                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />

@@ -1,16 +1,28 @@
-export function constructStudy(atoms: Atoms): Study {
-  const start = JSON.parse(JSON.stringify(atoms.get("study")!));
+import { isStudy } from "./typeGuards";
 
-  function appendChildren(atom: Atom<Study | Question | Module | Section>) {
+export function constructStudy(atoms: Atoms): Study {
+  const start = JSON.parse(JSON.stringify(atoms.get("study"))) as Atom<Study>;
+  console.log(start.content);
+  let study = appendChildren(start);
+  return study;
+
+  function appendChildren<T>(atom: Atom<T>): T {
     let result = atom.content;
+    if (isStudy(result)) {
+      result.properties = atoms.get("properties")!.content as Properties;
+    }
+
+    // After instatiation, recursively append children
     atom.subNodes &&
       atom.subNodes.forEach((id) => {
         let node = atoms.get(id);
         if (node) {
-          const copy = JSON.parse(JSON.stringify(node)); // Copy
+          const copy = JSON.parse(JSON.stringify(node)); // Deep Copy
           const children = appendChildren(copy);
-          switch (atom.content._type) {
-            case "study": {
+          // @ts-ignore
+          const type: AtomVariants = atom.content._type;
+          switch (type) {
+            case "properties": {
               //@ts-expect-error
               result.modules.push(children);
               break;
@@ -30,7 +42,4 @@ export function constructStudy(atoms: Atoms): Study {
       });
     return result;
   }
-
-  let study = appendChildren(start) as Study;
-  return study;
 }

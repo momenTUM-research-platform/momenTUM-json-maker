@@ -12,6 +12,7 @@ pub struct Study {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Properties {
+    pub _type: String,
     pub study_id: String,
     pub study_name: String,
     pub instructions: String,

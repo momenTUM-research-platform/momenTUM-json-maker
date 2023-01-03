@@ -15,6 +15,7 @@ export function NewNode({ data }: NodeProps<{ childType: AtomVariants; parent: s
     section: "bg-main",
     question: "bg-amber-500",
     study: "bg-black",
+    properties: "bg-blue-500",
   };
 
   return (

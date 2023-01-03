@@ -28,7 +28,6 @@ export function deleteNode(
 
         recursivelyFindIdsOfSubNodes(id);
 
-        state.nodes = state.nodes.filter((n) => !nodesToDelete.find((nodes) => nodes === n.id));
         nodesToDelete.forEach((n) => state.atoms.delete(n));
 
         if (parentId) {

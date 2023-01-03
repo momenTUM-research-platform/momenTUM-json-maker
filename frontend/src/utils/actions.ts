@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { API_URL } from "../App";
-import { redraw, useStore } from "../state";
+import { useStore } from "../state";
 import { DefinedError } from "ajv";
 import { constructStudy } from "./construct";
 import { deconstructStudy } from "./deconstruct";
@@ -59,10 +59,8 @@ export function load() {
       const data = JSON.parse(reader.result as string);
       const deconstructed = deconstructStudy(data);
       const rebuild = constructStudy(deconstructed);
-      console.log(rebuild);
       if (validateStudy(rebuild)) {
         setAtoms(deconstructed);
-        redraw();
       }
     };
     reader.readAsText(file);
@@ -72,7 +70,6 @@ export function load() {
 
 export async function upload(study: Study): Promise<string> {
   const data = JSON.stringify(study, null, 2);
-  console.log(data);
   const postURL = API_URL + "/study";
   try {
     const response = await fetch(postURL, {
@@ -80,7 +77,6 @@ export async function upload(study: Study): Promise<string> {
       body: data,
       redirect: "follow",
     });
-    console.log(await response);
     const body = await response.text();
     if (body.includes("ObjectId(")) {
       // Success
@@ -105,7 +101,7 @@ export async function download(study_id: string): Promise<Study> {
       throw "Status: " + response.statusText + " " + (await response.text());
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw "Error: " + error;
   }
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Form } from "./Form";
 import { Graph } from "./Graph";
 import { Layout } from "./Layout";
-import { redraw, useStore } from "./state";
+import { useStore } from "./state";
 import Drag from "../assets/drag";
 import { Calendar } from "./Calendar";
 import { Modal } from "./Modal";
@@ -22,7 +22,6 @@ function App() {
       const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
       setAtoms(atoms);
     }
-    redraw();
   }, []);
 
   return (

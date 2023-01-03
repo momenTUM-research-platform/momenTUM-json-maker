@@ -1,24 +1,20 @@
-export const initialStudy = (id: string): Study => {
-  return {
-    _type: "study",
-    properties: {
-      study_name: "",
-      study_id: id,
-      created_by: "",
-      instructions: "",
-      post_url: "https://tuspl22-momentum.srv.mwn.de/api/v1",
-      empty_msg: "",
-      banner_url: "",
-      support_url: "",
-      support_email: "",
-      conditions: ["Control", "Treatment"],
-      cache: false,
-      ethics: "",
-      pls: "",
-    },
-    modules: [],
-  };
+export const initialProperties: Properties = {
+  _type: "properties",
+  study_name: "Study",
+  study_id: "enter_a_study_id_here",
+  created_by: "",
+  instructions: "",
+  post_url: "https://tuspl22-momentum.srv.mwn.de/api/v1",
+  empty_msg: "",
+  banner_url: "",
+  support_url: "",
+  support_email: "",
+  conditions: ["Control", "Treatment"],
+  cache: false,
+  ethics: "",
+  pls: "",
 };
+
 export const initialModule = (id: string): Module => {
   return {
     _type: "module",

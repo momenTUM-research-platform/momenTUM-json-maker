@@ -5,6 +5,7 @@ import { module } from "../schema/module";
 import { properties } from "../schema/properties";
 import { question } from "../schema/question";
 import { section } from "../schema/section";
+import { study } from "../schema/study";
 import { useStore } from "./state";
 
 export function Form({ id }: { id: string }) {
@@ -90,7 +91,8 @@ export function Form({ id }: { id: string }) {
   !showHidingLogic && hidingLogic.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
   // Maps Atoms to JSON Schema
   const schema: { [key in AtomVariants]: () => Object } = {
-    ["study"]: () => properties,
+    ["study"]: () => study,
+    ["properties"]: () => properties,
     ["module"]: () => module(conditions, questionIds, moduleIds),
     ["section"]: () => section,
     ["question"]: () => question(questionIds),
