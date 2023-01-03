@@ -8,12 +8,13 @@ import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error
 import Logo from "../assets/icon.png";
 import { Menu } from "./Menu";
+import { Settings } from "./Settings";
 export function Layout({ children }: { children: ReactElement }) {
   const { invertDirection, mode, invertMode } = useStore();
 
   return (
     <main className="max-h-screen overflow-hidden">
-      <header className="flex justify-between p-8 pb-6 shadow-md ">
+      <header className="flex justify-between p-8 pb-6 shadow-md relative">
         <div className="flex">
           <img
             src={Logo}
@@ -35,6 +36,7 @@ export function Layout({ children }: { children: ReactElement }) {
           </Action>
 
           <Menu />
+          <Settings />
           {/*
           
           <Action action={addApiKey}>Add API key</Action>

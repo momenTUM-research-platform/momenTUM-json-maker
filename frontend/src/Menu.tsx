@@ -64,7 +64,7 @@ export function Menu() {
     //   },
   ];
   return (
-    <Popover className="relative">
+    <Popover className="">
       {({ open }) => (
         <>
           <Popover.Button
@@ -88,7 +88,7 @@ export function Menu() {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className="absolute right-1/2 z-10 mt-3 w-screen max-w-md transform translate-x-20 px-2 sm:px-0 lg:max-w-3xl">
+            <Popover.Panel className="absolute right-28 z-10 mt-3 w-screen max-w-md transform translate-x-20 px-2 sm:px-0 lg:max-w-3xl">
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8 lg:grid-cols-2">
                   {actions.map((item) => (

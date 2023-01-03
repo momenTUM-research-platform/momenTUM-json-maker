@@ -4,7 +4,7 @@ import { graph } from "./graph";
 import { pvt } from "./pvt";
 import { survey } from "./survey";
 
-export const module = (conditions: string[]) => {
+export const module = (conditions: string[], questions: SchemaEnum[], modules: SchemaEnum[]) => {
   return {
     $id: "#/properties/modules/items",
     type: "object",
@@ -27,12 +27,7 @@ export const module = (conditions: string[]) => {
           {
             properties: {
               type: {
-                enum: ["info", "video", "audio"],
-              },
-              placeholder: {
-                type: "string",
-                title: "Not implemented yet",
-                description: "Something will be here in the future",
+                enum: ["info"],
               },
             },
           },
@@ -57,9 +52,9 @@ export const module = (conditions: string[]) => {
         type: "string",
         title: "Type",
         description:
-          "The type of the module. Accepted values are survey, info, video, and audio or reaction-time-test.",
+          "The type of the module. Accepted values are survey, info or reaction-time-test.",
         default: "survey",
-        enum: ["survey", "info", "video", "audio", "pvt"],
+        enum: ["survey", "info", "pvt"],
       },
       name: {
         $id: "#/properties/modules/items/properties/name",
@@ -88,7 +83,7 @@ export const module = (conditions: string[]) => {
         enum: conditions,
       },
       alerts: alerts,
-      graph: graph,
+      graph: graph(questions),
       unlock_after: {
         $id: "#/properties/modules/items/properties/unlock_after",
         type: "array",
@@ -100,7 +95,7 @@ export const module = (conditions: string[]) => {
           $id: "#/properties/modules/items/properties/unlock_after/items",
           type: "string",
           pattern: "^[a-z0-9_]+$",
-          enum: [""],
+          oneOf: modules.map((q) => ({ const: q.id, title: q.text })),
         },
       },
     },

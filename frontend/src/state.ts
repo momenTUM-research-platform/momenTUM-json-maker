@@ -17,7 +17,7 @@ import { alignNodes } from "./utils/alignNodes";
 import { hideAtoms } from "./utils/hideAtoms";
 import { deleteNode } from "./utils/deleteNode";
 import { study } from "../schema/study";
-import { isModule, isQuestion, isSection } from "./utils/typeGuards";
+import { isModule, isQuestion, isSection, isStudy } from "./utils/typeGuards";
 import {
   initialModule,
   initialQuestion,
@@ -39,6 +39,8 @@ export interface State {
   conditions: string[];
   modal: null | "download" | "upload" | "qr";
   permalink: string | null;
+  liveValidation: boolean;
+  showHidingLogic: boolean;
   invertDirection: () => void;
   invertMode: () => void;
   setAtom: (id: string, content: Study | Question | Module | Section) => void;
@@ -48,10 +50,16 @@ export interface State {
   addNewNode: (type: AtomVariants, parent: string) => void;
   deleteNode: (id: string) => void;
   setPermalink: (permalink: string) => void;
+  setLiveValidation: (value: boolean) => void;
+  setShowHidingLogic: (value: boolean) => void;
 }
 
 export const useStore = create<State>()((set, get) => ({
   permalink: null,
+  liveValidation: true,
+  showHidingLogic: false,
+  setLiveValidation: (value) => set({ liveValidation: value }),
+  setShowHidingLogic: (value) => set({ showHidingLogic: value }),
   conditions: ["*", "Treatment", "Control"],
   modal: null,
   validator: new Ajv().compile(study),
@@ -164,6 +172,10 @@ export const useStore = create<State>()((set, get) => ({
         }
         if (isQuestion(content) && content.text) {
           atom.title = content.text.length > 32 ? content.text.slice(0, 60) + "..." : content.text;
+        }
+        if (isStudy(content)) {
+          // @ts-ignore Because we are using the root node also as the properties node (which is not correct for the study), the properties fields are in the study object
+          state.conditions = ["*", ...content.conditions];
         }
       })
     ),

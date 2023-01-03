@@ -71,7 +71,7 @@ export const properties = {
       type: "string",
       title: "Post URL",
       description: "An endpoint to receive participant responses (POST data) from the app.",
-      default: "https://tuspl22-momentum.srv.mwn.de/post.php",
+      default: "https://tuspl22-momentum.srv.mwn.de/api/v1",
     },
     empty_msg: {
       $id: "#/properties/properties/properties/empty_msg",
@@ -106,17 +106,16 @@ export const properties = {
       title: "Support Email",
       description: "An email address that participants can contact for support with the study.",
       default: "",
+
       examples: ["hello@getschema.app"],
     },
     cache: {
       $id: "#/properties/properties/properties/cache",
       type: "boolean",
-      title:
-        "Cache Media? Indicates whether media elements will be cached for offline mode during study enrollment. Note: media should be optimised to reduce download times.",
+      title: "Cache Media?",
       description:
         "Indicates whether media elements will be cached for offline mode during study enrollment. Note: media should be optimised to reduce download times.",
-      default: false,
-      examples: [false],
+      default: true,
     },
     ethics: {
       $id: "#/properties/properties/properties/ethics",

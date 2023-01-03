@@ -1,0 +1,1121 @@
+{
+    "_id": {
+        "$oid": "63b32c1e6a39130343c1fa0e"
+    },
+    "_type": "study",
+    "timestamp": 1672686622734,
+    "properties": {
+        "study_name": "Hello this is the most advanced test study",
+        "study_id": "monster",
+        "created_by": "Constantin Goeldel",
+        "instructions": "<p>I'll try to show <b>everything</b> that can be done</p>",
+        "post_url": "https://tuspl22-momentum.srv.mwn.de/post.php",
+        "empty_msg": "Nothing left to do :(",
+        "banner_url": "https://files.slack.com/files-pri/T02H5SNFRSR-F04HL73LJ7K/grafik.png",
+        "support_url": "https://www.momentumresearch.eu/",
+        "support_email": "constantin.goeldel@tum.de",
+        "cache": true,
+        "ethics": "This study was approved by ethics body with approval #123456789",
+        "pls": "https://getschema.app/pls-file-link.pdf",
+        "conditions": [
+            "Control",
+            "Treatment",
+            "Researchers"
+        ]
+    },
+    "modules": [
+        {
+            "type": "survey",
+            "_type": "module",
+            "name": "Daily sleep diary",
+            "submit_text": "Submit",
+            "condition": "*",
+            "alerts": {
+                "title": "Good morning!",
+                "message": "Please fill out your daily sleep diary",
+                "start_offset": 0,
+                "duration": 24,
+                "times": [
+                    {
+                        "hours": 11,
+                        "minutes": 0
+                    }
+                ],
+                "random": false,
+                "random_interval": 0,
+                "sticky": true,
+                "sticky_label": "",
+                "timeout": false,
+                "timeout_after": 0
+            },
+            "graph": {
+                "display": true,
+                "variable": "",
+                "title": "",
+                "blurb": "",
+                "type": "bar",
+                "max_points": 10
+            },
+            "id": "Sleep Diary",
+            "unlock_after": [],
+            "sections": [
+                {
+                    "id": "FsQaZ2ftBNUu4gtM21M4J",
+                    "name": "Questions for sleep diary",
+                    "_type": "section",
+                    "shuffle": true,
+                    "questions": [
+                        {
+                            "type": "instruction",
+                            "id": "hSE7rsNlqwPLfPjexIJgk",
+                            "_type": "question",
+                            "text": "Here we will ask you about your last main sleep episode. This is usually but does not have to be the the previous night-time sleep episode. Please fill out the diary every morning after waking up.",
+                            "required": true,
+                            "rand_group": "",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "datetime",
+                            "id": "BtcFLqU9v0T07TxjICTwE",
+                            "_type": "question",
+                            "text": "When did you fall asleep yesterday?",
+                            "required": true,
+                            "rand_group": "",
+                            "subtype": "datetime",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "datetime",
+                            "id": "juDISNtklXpBK1EVpnHjj",
+                            "_type": "question",
+                            "text": "When did you wake up today?",
+                            "required": true,
+                            "rand_group": "",
+                            "subtype": "datetime",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "JNzZp-Z6iJS7291H2f1OU",
+                            "_type": "question",
+                            "text": "How would you rate your sleep quality today?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 4,
+                            "hint_left": "very good",
+                            "hint_right": "very bad",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "grbDZ4rA_QJzStWEM9HkY",
+                            "_type": "question",
+                            "text": "Did you use an alarm clock to wake up?",
+                            "required": true,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes",
+                                "no but something else woke me up (e.g. bed partner, pet, noise...)",
+                                "no"
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "BIRjLhE8QL_tuDQ5QPR9w",
+                            "_type": "question",
+                            "text": "Do you need to work today?",
+                            "required": false,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes and I can choose my start time flexibly",
+                                "yes but I cannot choose my start time",
+                                "no "
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "wwvhQUyE_UJHHAGIx1iug",
+                            "_type": "question",
+                            "text": "How alert/sleepy are you at the moment?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 10,
+                            "hint_left": "very alert",
+                            "hint_right": "extremely sleepy, can't keep awake",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        }
+                    ]
+                }
+            ],
+            "shuffle": false
+        },
+        {
+            "id": "Sleep Diary",
+            "type": "survey",
+            "name": "Survey",
+            "submit_text": "Submit",
+            "condition": "Researchers",
+            "alerts": {
+                "title": "Good morning!",
+                "message": "Please fill out your daily sleep diary",
+                "duration": 140,
+                "times": [
+                    {
+                        "hours": 8,
+                        "minutes": 30
+                    },
+                    {
+                        "hours": 10,
+                        "minutes": 50
+                    },
+                    {
+                        "hours": 23,
+                        "minutes": 59
+                    }
+                ],
+                "random": false,
+                "random_interval": 20,
+                "sticky": true,
+                "sticky_label": "",
+                "timeout": false,
+                "timeout_after": 10,
+                "start_offset": 1
+            },
+            "graph": {
+                "display": true,
+                "variable": "BtcFLqU9v0T07TxjICTwE",
+                "title": "Graph title that is very long indeeeeeeeeeeeeeeeeeed",
+                "blurb": "<h1>Can I put a headline here?</h1>",
+                "type": "line",
+                "max_points": 100
+            },
+            "unlock_after": [
+                "_jsbln8m4gsitnk8",
+                "e1753sbfnsrtm60c"
+            ],
+            "shuffle": false,
+            "_type": "module",
+            "sections": [
+                {
+                    "id": "FsQaZ2ftBNUu4gtM21M4J",
+                    "name": "Questions for sleep diary",
+                    "_type": "section",
+                    "shuffle": true,
+                    "questions": [
+                        {
+                            "type": "instruction",
+                            "id": "hSE7rsNlqwPLfPjexIJgk",
+                            "_type": "question",
+                            "text": "Here we will ask you about your last main sleep episode. This is usually but does not have to be the the previous night-time sleep episode. Please fill out the diary every morning after waking up.",
+                            "required": true,
+                            "rand_group": "",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "datetime",
+                            "id": "BtcFLqU9v0T07TxjICTwE",
+                            "_type": "question",
+                            "text": "When did you fall asleep yesterday?",
+                            "required": true,
+                            "rand_group": "",
+                            "subtype": "datetime",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "datetime",
+                            "id": "juDISNtklXpBK1EVpnHjj",
+                            "_type": "question",
+                            "text": "When did you wake up today?",
+                            "required": true,
+                            "rand_group": "",
+                            "subtype": "datetime",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "JNzZp-Z6iJS7291H2f1OU",
+                            "_type": "question",
+                            "text": "How would you rate your sleep quality today?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 4,
+                            "hint_left": "very good",
+                            "hint_right": "very bad",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "grbDZ4rA_QJzStWEM9HkY",
+                            "_type": "question",
+                            "text": "Did you use an alarm clock to wake up?",
+                            "required": true,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes",
+                                "no but something else woke me up (e.g. bed partner, pet, noise...)",
+                                "no"
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "BIRjLhE8QL_tuDQ5QPR9w",
+                            "_type": "question",
+                            "text": "Do you need to work today?",
+                            "required": false,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes and I can choose my start time flexibly",
+                                "yes but I cannot choose my start time",
+                                "no "
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "wwvhQUyE_UJHHAGIx1iug",
+                            "_type": "question",
+                            "text": "How alert/sleepy are you at the moment?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 10,
+                            "hint_left": "very alert",
+                            "hint_right": "extremely sleepy, can't keep awake",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        }
+                    ]
+                },
+                {
+                    "id": "FsQaZ2ftBNUu4gtM21M4J",
+                    "name": "Questions for sleep diary",
+                    "_type": "section",
+                    "shuffle": true,
+                    "questions": [
+                        {
+                            "type": "instruction",
+                            "id": "hSE7rsNlqwPLfPjexIJgk",
+                            "_type": "question",
+                            "text": "Here we will ask you about your last main sleep episode. This is usually but does not have to be the the previous night-time sleep episode. Please fill out the diary every morning after waking up.",
+                            "required": true,
+                            "rand_group": "",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "datetime",
+                            "id": "BtcFLqU9v0T07TxjICTwE",
+                            "_type": "question",
+                            "text": "When did you fall asleep yesterday?",
+                            "required": true,
+                            "rand_group": "",
+                            "subtype": "datetime",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "datetime",
+                            "id": "juDISNtklXpBK1EVpnHjj",
+                            "_type": "question",
+                            "text": "When did you wake up today?",
+                            "required": true,
+                            "rand_group": "",
+                            "subtype": "datetime",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "JNzZp-Z6iJS7291H2f1OU",
+                            "_type": "question",
+                            "text": "How would you rate your sleep quality today?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 4,
+                            "hint_left": "very good",
+                            "hint_right": "very bad",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "grbDZ4rA_QJzStWEM9HkY",
+                            "_type": "question",
+                            "text": "Did you use an alarm clock to wake up?",
+                            "required": true,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes",
+                                "no but something else woke me up (e.g. bed partner, pet, noise...)",
+                                "no"
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "BIRjLhE8QL_tuDQ5QPR9w",
+                            "_type": "question",
+                            "text": "Do you need to work today?",
+                            "required": false,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes and I can choose my start time flexibly",
+                                "yes but I cannot choose my start time",
+                                "no "
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "wwvhQUyE_UJHHAGIx1iug",
+                            "_type": "question",
+                            "text": "How alert/sleepy are you at the moment?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 10,
+                            "hint_left": "very alert",
+                            "hint_right": "extremely sleepy, can't keep awake",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "id": "hSE7rsNlqwPLfPjexIJgk",
+                            "text": "Here we will ask you about your last main sleep episode. This is usually but does not have to be the the previous night-time sleep episode. Please fill out the diary every morning after waking up.",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "instruction",
+                            "_type": "question"
+                        },
+                        {
+                            "id": "BtcFLqU9v0T07TxjICTwE",
+                            "text": "When did you fall asleep yesterday?",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "type": "datetime",
+                            "_type": "question",
+                            "rand_group": "",
+                            "subtype": "datetime"
+                        },
+                        {
+                            "type": "datetime",
+                            "id": "juDISNtklXpBK1EVpnHjj",
+                            "_type": "question",
+                            "text": "When did you wake up today?",
+                            "required": true,
+                            "rand_group": "",
+                            "subtype": "datetime",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "JNzZp-Z6iJS7291H2f1OU",
+                            "_type": "question",
+                            "text": "How would you rate your sleep quality today?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 4,
+                            "hint_left": "very good",
+                            "hint_right": "very bad",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "grbDZ4rA_QJzStWEM9HkY",
+                            "_type": "question",
+                            "text": "Did you use an alarm clock to wake up?",
+                            "required": true,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes",
+                                "no but something else woke me up (e.g. bed partner, pet, noise...)",
+                                "no"
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "multi",
+                            "id": "BIRjLhE8QL_tuDQ5QPR9w",
+                            "_type": "question",
+                            "text": "Do you need to work today?",
+                            "required": false,
+                            "rand_group": "",
+                            "radio": true,
+                            "modal": false,
+                            "options": [
+                                "yes and I can choose my start time flexibly",
+                                "yes but I cannot choose my start time",
+                                "no "
+                            ],
+                            "shuffle": false,
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "type": "slider",
+                            "id": "wwvhQUyE_UJHHAGIx1iug",
+                            "_type": "question",
+                            "text": "How alert/sleepy are you at the moment?",
+                            "required": true,
+                            "rand_group": "",
+                            "min": 1,
+                            "max": 10,
+                            "hint_left": "very alert",
+                            "hint_right": "extremely sleepy, can't keep awake",
+                            "hide_id": "",
+                            "hide_value": "",
+                            "hide_if": false
+                        },
+                        {
+                            "id": "6o8g3bp7yu_4zow6",
+                            "text": "",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        }
+                    ]
+                },
+                {
+                    "name": "Unshuffled Section. Question numbers should be unique and in order",
+                    "shuffle": false,
+                    "_type": "section",
+                    "id": "02hqf1t6rhjasy5z",
+                    "questions": [
+                        {
+                            "id": "l7bsczeuqn7bf7jr",
+                            "text": "1",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "A",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "vssre6y75cp7lzhy",
+                            "text": "1",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "A",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "jta11iism03ohhjt",
+                            "text": "1",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "A",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "q08603vqk9d3qkoa",
+                            "text": "2",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "B",
+                            "type": "instruction",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "blg_h9cxk0only62",
+                            "text": "2",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "B",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "vuvk9h3e3cbb1f7v",
+                            "text": "2",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "B",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "ri6k2mb9rpasoanm",
+                            "text": "3",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "gl0vop1uw44986ws",
+                            "text": "4",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        }
+                    ]
+                },
+                {
+                    "name": "All Question types",
+                    "shuffle": false,
+                    "_type": "section",
+                    "id": "7pb4f1afxwrglsvl",
+                    "questions": [
+                        {
+                            "id": "s2283siq21cv1t_v",
+                            "text": "Short Text",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "dfg5m2ibpzwb7omd",
+                            "text": "Long Text",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "long"
+                        },
+                        {
+                            "id": "65yv_m10zhbn2yz5",
+                            "text": "Numeric Text",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "numeric"
+                        },
+                        {
+                            "id": "hs1nm9jq63ss64yx",
+                            "text": "Instruction",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "instruction",
+                            "_type": "question",
+                            "subtype": "short"
+                        },
+                        {
+                            "id": "7o9qerc7l7cdk7av",
+                            "text": "Date",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "datetime",
+                            "_type": "question",
+                            "subtype": "date"
+                        },
+                        {
+                            "id": "g69cfivqi9in9hhl",
+                            "text": "Time",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "datetime",
+                            "_type": "question",
+                            "subtype": "time"
+                        },
+                        {
+                            "id": "17zkg90qlt_e6zhc",
+                            "text": "DateTime",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "datetime",
+                            "_type": "question",
+                            "subtype": "datetime"
+                        },
+                        {
+                            "id": "p3ob7j_823xgmatk",
+                            "text": "Multi Radio",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "multi",
+                            "options": [
+                                "First choice",
+                                "Second Choice",
+                                "Third Choice",
+                                "Fourth Choice",
+                                "Fifth choice"
+                            ],
+                            "_type": "question",
+                            "subtype": "short",
+                            "radio": true,
+                            "modal": false,
+                            "shuffle": true
+                        },
+                        {
+                            "id": "qj7j_jm140uyhsmb",
+                            "text": "Multi Checkbox",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "multi",
+                            "options": [
+                                "1",
+                                "2",
+                                "3",
+                                "4",
+                                "5"
+                            ],
+                            "_type": "question",
+                            "subtype": "short",
+                            "radio": false,
+                            "modal": false,
+                            "shuffle": true
+                        },
+                        {
+                            "id": "p7fq_ylykbuaax5_",
+                            "text": "Multi Radio Modal",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "multi",
+                            "options": [
+                                "1",
+                                "2",
+                                "3",
+                                "4",
+                                "5"
+                            ],
+                            "_type": "question",
+                            "subtype": "short",
+                            "radio": true,
+                            "modal": true,
+                            "shuffle": false
+                        },
+                        {
+                            "id": "nab8686br04b70si",
+                            "text": "Multi Checkbox Modal",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "multi",
+                            "options": [
+                                "1",
+                                "2",
+                                "3",
+                                "4",
+                                "5"
+                            ],
+                            "_type": "question",
+                            "subtype": "short",
+                            "radio": false,
+                            "modal": true,
+                            "shuffle": false
+                        },
+                        {
+                            "id": "hu0oeey52ev9a5y0",
+                            "text": "Slider",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "slider",
+                            "_type": "question",
+                            "subtype": "short",
+                            "min": -10,
+                            "max": 1000,
+                            "hint_left": "Big hint on the left side",
+                            "hint_right": "Huge hint on the right side is even larger than on the left side"
+                        },
+                        {
+                            "id": "0xiy8tt_2e8e7mbj",
+                            "text": "Video MP4",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "media",
+                            "subtype": "video",
+                            "_type": "question",
+                            "src": "https://ia601509.us.archive.org/10/items/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4",
+                            "thumb": "https://files.slack.com/files-pri/T02H5SNFRSR-F04HL73LJ7K/grafik.png"
+                        },
+                        {
+                            "id": "7nd_kl6co7mbcxt5",
+                            "text": "Video AVI",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "media",
+                            "subtype": "video",
+                            "_type": "question",
+                            "thumb": "https://files.slack.com/files-pri/T02H5SNFRSR-F04HL73LJ7K/grafik.png",
+                            "src": "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.avi"
+                        },
+                        {
+                            "id": "89bjl2hxmwtbzmuu",
+                            "text": "Video MPG",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "media",
+                            "subtype": "video",
+                            "_type": "question",
+                            "thumb": "https://files.slack.com/files-pri/T02H5SNFRSR-F04HL73LJ7K/grafik.png",
+                            "src": "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mpg"
+                        },
+                        {
+                            "id": "gjho6p6cr3b_7fe_",
+                            "text": "Audio M4A (Microsoft audio recorder)",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "media",
+                            "subtype": "audio",
+                            "_type": "question",
+                            "src": "https://1drv.ms/u/s!Ah7xZuQniLyjj-hTQBoTwSow8zQ0lw?e=P7enT4"
+                        },
+                        {
+                            "id": "s7_whrhfwb7gklk4",
+                            "text": "Audio MP3",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "media",
+                            "subtype": "audio",
+                            "_type": "question",
+                            "src": "https://file-examples.com/storage/feee4cd0b563b359f963e88/2017/11/file_example_MP3_700KB.mp3"
+                        },
+                        {
+                            "id": "s4mgeaywzi4o0ta4",
+                            "text": "Image PNG",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "media",
+                            "subtype": "image",
+                            "_type": "question",
+                            "src": "https://files.slack.com/files-pri/T02H5SNFRSR-F04HL73LJ7K/grafik.png"
+                        },
+                        {
+                            "id": "n093l8tswb9wvk01",
+                            "text": "Image JPG",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "media",
+                            "subtype": "image",
+                            "_type": "question",
+                            "src": "https://binaryfork.com/wp-content/uploads/2022/09/midjourney-the-god-of-an-empty-universe.jpg"
+                        },
+                        {
+                            "id": "m2rrw279ks19qc5w",
+                            "text": "YesNo",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "yesno",
+                            "_type": "question",
+                            "subtype": "short",
+                            "yes_text": "This is a fantastic Yes text",
+                            "no_text": "This is a less fantastic no text and primarily used to annoy you because it is so long. I promise I'm done now."
+                        }
+                    ]
+                },
+                {
+                    "name": "Branching",
+                    "shuffle": false,
+                    "_type": "section",
+                    "id": "4ut_t3svhor_uovj",
+                    "questions": [
+                        {
+                            "id": "_hxb_f3q_4mhmnfs",
+                            "text": "First  Question,  shown independent of others",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "yesno",
+                            "_type": "question",
+                            "subtype": "short",
+                            "yes_text": "Needs to be selected",
+                            "no_text": "If this is selected, nothing will be shown"
+                        },
+                        {
+                            "id": "ev26hw6dgly34j7z",
+                            "text": "Second Question that hinges on the first",
+                            "required": false,
+                            "hide_id": "_hxb_f3q_4mhmnfs",
+                            "hide_value": "Yes",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "multi",
+                            "options": [
+                                "Correct",
+                                "Incorrect"
+                            ],
+                            "_type": "question",
+                            "subtype": "short",
+                            "radio": true,
+                            "modal": false,
+                            "shuffle": false
+                        },
+                        {
+                            "id": "95p1f3op_9df_fiz",
+                            "text": "Third Question: Select a number > 50",
+                            "required": true,
+                            "hide_id": "ev26hw6dgly34j7z",
+                            "hide_value": "Correct",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "slider",
+                            "_type": "question",
+                            "subtype": "short",
+                            "min": 0,
+                            "max": 100,
+                            "hint_left": "Left",
+                            "hint_right": "Right"
+                        },
+                        {
+                            "id": "cbwrjq47i7at5rsl",
+                            "text": "If you see this, everything worked",
+                            "required": true,
+                            "hide_id": "95p1f3op_9df_fiz",
+                            "hide_value": ">50",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "instruction",
+                            "_type": "question",
+                            "subtype": "short"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "e1753sbfnsrtm60c",
+            "type": "info",
+            "name": "Info",
+            "submit_text": "Submit",
+            "condition": "*",
+            "alerts": {
+                "title": "Quick alert",
+                "message": "Hello",
+                "duration": 10,
+                "times": [
+                    {
+                        "hours": 8,
+                        "minutes": 30
+                    }
+                ],
+                "random": false,
+                "random_interval": 0,
+                "sticky": false,
+                "sticky_label": "",
+                "timeout": false,
+                "timeout_after": 0,
+                "start_offset": 0
+            },
+            "graph": {
+                "display": false
+            },
+            "unlock_after": [],
+            "_type": "module",
+            "sections": [],
+            "shuffle": false
+        },
+        {
+            "id": "_jsbln8m4gsitnk8",
+            "type": "pvt",
+            "name": "PVT",
+            "submit_text": "Submit",
+            "condition": "Control",
+            "alerts": {
+                "title": "Epic Reaction Time Test",
+                "message": "Do you have what it takes to react to this?",
+                "duration": 20,
+                "times": [
+                    {
+                        "hours": 8,
+                        "minutes": 30
+                    },
+                    {
+                        "hours": 14,
+                        "minutes": 31
+                    }
+                ],
+                "random": true,
+                "random_interval": 30,
+                "sticky": true,
+                "sticky_label": "Sticky Label FTW!!!!",
+                "timeout": false,
+                "timeout_after": 0,
+                "start_offset": 5
+            },
+            "graph": {
+                "display": false,
+                "variable": "none",
+                "title": "",
+                "blurb": "",
+                "type": "bar",
+                "max_points": 10
+            },
+            "unlock_after": [
+                "e1753sbfnsrtm60c"
+            ],
+            "_type": "module",
+            "sections": [],
+            "shuffle": false,
+            "trials": 9,
+            "min_waiting": 200,
+            "max_waiting": 1000,
+            "max_reaction": 2000,
+            "show": true,
+            "exit": true
+        }
+    ]
+}

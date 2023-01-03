@@ -1,4 +1,4 @@
-export const question = (questions: QuestionEnum[]) => {
+export const question = (questions: SchemaEnum[]) => {
   return {
     $id: "#/properties/modules/items/properties/sections/items/properties/questions/items",
     type: "object",
@@ -55,12 +55,12 @@ export const question = (questions: QuestionEnum[]) => {
       hide_if: {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_if",
         type: "boolean",
-        title:
-          "Hide or show if answer equals hide value? Indicates the branching behaviour. If true, the element will disappear if the value of the question equals hide_value. If false, the element will appear instead.",
+        title: "Hide or show if answer equals hide value? ",
         description:
           "Indicates the branching behaviour. If true, the element will disappear if the value of the question equals hide_value. If false, the element will appear instead.",
         default: false,
         examples: [true],
+        enumNames: ["Hide", "Show"],
       },
       rand_group: {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/rand_group",
@@ -83,8 +83,7 @@ export const question = (questions: QuestionEnum[]) => {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/type",
         type: "string",
         title: "Type",
-        description:
-          "The primary type of this question. Accepted values are instruction, datetime, multi, text, slider, video, audio, and yesno.",
+        description: "The primary type of this question. ",
         default: "instruction",
         enum: ["instruction", "datetime", "multi", "text", "slider", "media", "yesno"],
       },
@@ -102,14 +101,14 @@ export const question = (questions: QuestionEnum[]) => {
           {
             required: ["subtype"],
             properties: {
-              type: {
-                enum: ["text"],
-              },
               subtype: {
                 type: "string",
                 title: "Subtype",
-                description:
-                  "The specific type of text input for this field. Accepted values are short, long, and numeric.",
+                description: "The specific type of text input for this field.",
+                enum: ["short", "long", "numeric"],
+              },
+              type: {
+                enum: ["text"],
               },
             },
           },
