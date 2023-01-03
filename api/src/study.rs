@@ -184,7 +184,7 @@ pub enum Question {
         rand_group: Option<String>,
         subtype: String,
         src: String,
-        thumb: String,
+        thumb: Option<String>,
         hide_id: Option<String>,
         hide_value: Option<StringOrBool>,
         hide_if: Option<bool>,
@@ -222,4 +222,20 @@ pub enum Modules {
 pub enum GraphOrNoGraph {
     Graph(Graph),
     NoGraph(NoGraph),
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn deserialize_sleep_study() {
+        let json = include_str!("../../studies/sleep.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.created_by, "Anna Biller")
+    }
+    #[test]
+    fn deserialize_monster_study() {
+        let json = include_str!("../../studies/monster.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.created_by, "Constantin Goeldel")
+    }
 }

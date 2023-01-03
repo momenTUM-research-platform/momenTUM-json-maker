@@ -5,6 +5,7 @@
     "_type": "study",
     "timestamp": 1672686622734,
     "properties": {
+        "_type": "properties",
         "study_name": "Hello this is the most advanced test study",
         "study_id": "monster",
         "created_by": "Constantin Goeldel",
