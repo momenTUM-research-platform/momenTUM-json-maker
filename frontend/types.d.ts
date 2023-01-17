@@ -1,10 +1,10 @@
-declare type AtomVariants = "module" | "section" | "question" | "study";
+declare type AtomVariants = "module" | "section" | "question" | "study" | "properties";
 
 declare type Actions = "create" | "count" | "delete";
 
 declare type Mode = "graph" | "timeline";
 
-declare type Atoms = Map<string, Atom<Study | Question | Module | Section>>;
+declare type Atoms = Map<string, Atom<Study | Question | Module | Section | Properties>>;
 
 declare interface Atom<T> {
   parent: string | null;
@@ -47,6 +47,7 @@ declare interface Study {
 }
 
 declare interface Properties {
+  _type: "properties";
   study_id: string;
   study_name: string;
   instructions: string;

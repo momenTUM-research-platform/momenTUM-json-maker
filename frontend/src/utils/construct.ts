@@ -10,6 +10,12 @@ export function constructStudy(atoms: Atoms): Study {
         let node = atoms.get(id);
         if (node) {
           const copy = JSON.parse(JSON.stringify(node)); // Copy
+
+          if (node.content._type === "properties") {
+            // @ts-expect-error
+            result.properties = copy.content;
+            return;
+          }
           const children = appendChildren(copy);
           switch (result._type) {
             case "study": {

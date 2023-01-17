@@ -2,6 +2,7 @@ import { constructStudy } from "./construct";
 import { describe, expect, it } from "vitest";
 import { generateDictionary, validateStudy } from "./actions";
 import sleep_study from "../../../studies/sleep.json";
+import atoms_long from "../../../studies/atoms.json";
 import { useStore } from "../state";
 import { deconstructStudy } from "./deconstruct";
 
@@ -29,6 +30,18 @@ describe("Constructing a study from atoms", () => {
       _type: "study",
     };
     expect(constructedStudy).toEqual(study);
+  });
+
+  it.only("Creates advanced study from atoms", async () => {
+    const atoms = new Map(atoms_long);
+    const constructedStudy = constructStudy(atoms);
+    console.log(JSON.stringify(constructedStudy, null, 2));
+
+    expect(constructedStudy.modules.length).toBe(4);
+    expect(constructedStudy.modules[0].sections[0].questions.length).toBe(9);
+    expect(constructedStudy.modules[1].sections[0].questions.length).toBe(3);
+    expect(constructedStudy.modules[2].sections[0].questions.length).toBe(3);
+    expect(constructedStudy.modules[3].sections[0].questions.length).toBe(3);
   });
 });
 
