@@ -1,0 +1,885 @@
+[
+    [
+        "study",
+        {
+            "parent": null,
+            "subNodes": [
+                "properties",
+                "sleepdiary",
+                "xxycqbe5g3k99y2j",
+                "ze3rbpanob8cfnca",
+                "01jw89i6pfhwmuia"
+            ],
+            "type": "study",
+            "childType": "module",
+            "title": "Environmental effects on sleep",
+            "actions": [
+                "create"
+            ],
+            "hidden": false,
+            "content": {
+                "properties": {},
+                "modules": [],
+                "_type": "study"
+            }
+        }
+    ],
+    [
+        "properties",
+        {
+            "parent": "study",
+            "subNodes": null,
+            "type": "properties",
+            "childType": null,
+            "content": {
+                "study_name": "Binocular Integration in Melatonin Supression",
+                "study_id": "binintmel_113",
+                "created_by": "Maydel Fernandez-Alonso",
+                "instructions": "Remember to complete your daily sleep diary and log your food, caffeine and alcohol intake!",
+                "post_url": "https: //tuspl22-momentum.srv.mwn.de/post.php",
+                "empty_msg": "You have no pending surveys",
+                "banner_url": "https://getschema.app/img/schema_banner.png",
+                "support_url": "",
+                "support_email": "maydel.fernandez.alonso@tuebingen.mpg.de",
+                "cache": true,
+                "ethics": "This study was approved by the Ethics Commission of the TUM School of Medicine, approval number 2022-439-S-SR",
+                "pls": "",
+                "conditions": [],
+                "_type": "properties"
+            },
+            "title": "Properties",
+            "actions": [],
+            "hidden": false
+        }
+    ],
+    [
+        "sleepdiary",
+        {
+            "parent": "study",
+            "subNodes": [
+                "fsqaz2ftbnuu4gtm21m4j"
+            ],
+            "type": "module",
+            "childType": "section",
+            "content": {
+                "id": "Sleep Diary",
+                "type": "survey",
+                "name": "Daily sleep diary",
+                "submit_text": "Submit",
+                "condition": "*",
+                "alerts": {
+                    "title": "Good morning!",
+                    "message": "Time to fill out your daily sleep diary",
+                    "duration": 45,
+                    "times": [
+                        {
+                            "hours": 7,
+                            "minutes": 30
+                        }
+                    ],
+                    "random": false,
+                    "random_interval": 0,
+                    "sticky": false,
+                    "sticky_label": "",
+                    "timeout": false,
+                    "timeout_after": 0,
+                    "start_offset": 0
+                },
+                "graph": {
+                    "display": false,
+                    "variable": "",
+                    "title": "",
+                    "blurb": "",
+                    "type": "bar",
+                    "max_points": 10
+                },
+                "unlock_after": [],
+                "shuffle": false,
+                "_type": "module",
+                "sections": []
+            },
+            "title": "Daily sleep diary",
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "fsqaz2ftbnuu4gtm21m4j",
+        {
+            "parent": "sleepdiary",
+            "subNodes": [
+                "hse7rsnlqwplfpjexijgk",
+                "btcflqu9v0t07txjictwe",
+                "judisntklxpbk1evpnhjj",
+                "jnzzpz6ijs7291h2f1ou",
+                "grbdz4ra_qjzstwem9hky",
+                "birjlhe8ql_tudq5qpr9w",
+                "wwvhquye_ujhhagix1iug",
+                "cz5j6ziai02rgcxt",
+                "34d9feggkod4yxus"
+            ],
+            "type": "section",
+            "childType": "question",
+            "content": {
+                "name": "Sleep diary questions",
+                "shuffle": false,
+                "id": "fsqaz2ftbnuu4gtm21m4j",
+                "_type": "section",
+                "questions": []
+            },
+            "title": "Sleep diary questions",
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "hse7rsnlqwplfpjexijgk",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "content": {
+                "type": "instruction",
+                "id": "hSE7rsNlqwPLfPjexIJgk",
+                "_type": "question",
+                "text": "Here we will ask you about your last main sleep episode. This is usually but does not have to be the the previous night-time sleep episode. Please fill out the diary every morning after waking up.",
+                "required": true,
+                "rand_group": "",
+                "hide_id": "",
+                "hide_value": "",
+                "hide_if": false
+            },
+            "title": "Here we will ask you about your last main sleep episode. Thi...",
+            "actions": [
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "btcflqu9v0t07txjictwe",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "content": {
+                "id": "BtcFLqU9v0T07TxjICTwE",
+                "text": "At what time did you fall asleep?",
+                "required": true,
+                "hide_id": "",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "time"
+            },
+            "title": "At what time did you fall asleep?...",
+            "actions": [
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "judisntklxpbk1evpnhjj",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "content": {
+                "id": "juDISNtklXpBK1EVpnHjj",
+                "text": "At what time did you wake up today?",
+                "required": true,
+                "hide_id": "",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "time"
+            },
+            "title": "At what time did you wake up today?...",
+            "actions": [
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "jnzzpz6ijs7291h2f1ou",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "content": {
+                "type": "slider",
+                "id": "JNzZp-Z6iJS7291H2f1OU",
+                "_type": "question",
+                "text": "How would you rate your sleep quality today?",
+                "required": true,
+                "rand_group": "",
+                "min": 1,
+                "max": 4,
+                "hint_left": "very good",
+                "hint_right": "very bad",
+                "hide_id": "",
+                "hide_value": "",
+                "hide_if": false
+            },
+            "title": "How would you rate your sleep quality today?...",
+            "actions": [
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "grbdz4ra_qjzstwem9hky",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "content": {
+                "type": "multi",
+                "id": "grbDZ4rA_QJzStWEM9HkY",
+                "_type": "question",
+                "text": "Did you use an alarm clock to wake up?",
+                "required": true,
+                "rand_group": "",
+                "radio": true,
+                "modal": false,
+                "options": [
+                    "yes",
+                    "no but something else woke me up (e.g. bed partner, pet, noise...)",
+                    "no"
+                ],
+                "shuffle": false,
+                "hide_id": "",
+                "hide_value": "",
+                "hide_if": false
+            },
+            "title": "Did you use an alarm clock to wake up?...",
+            "actions": [
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "birjlhe8ql_tudq5qpr9w",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "content": {
+                "id": "BIRjLhE8QL_tuDQ5QPR9w",
+                "text": "Do you need to work or attend classes today?",
+                "required": false,
+                "hide_id": "",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "multi",
+                "options": [
+                    "yes and I can choose my start time flexibly",
+                    "yes and I cannot choose my start time",
+                    "no "
+                ],
+                "_type": "question",
+                "radio": true,
+                "modal": false,
+                "shuffle": false
+            },
+            "title": "Do you need to work or attend classes today?...",
+            "actions": [
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "wwvhquye_ujhhagix1iug",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "content": {
+                "id": "wwvhQUyE_UJHHAGIx1iug",
+                "text": "How alert/sleepy are you at the moment?",
+                "required": false,
+                "hide_id": "",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "slider",
+                "_type": "question",
+                "min": 1,
+                "max": 10,
+                "hint_left": "very sleepy, can't keep awake",
+                "hint_right": "very alert"
+            },
+            "title": "How alert/sleepy are you at the moment?...",
+            "actions": [
+                "delete"
+            ],
+            "hidden": false
+        }
+    ],
+    [
+        "cz5j6ziai02rgcxt",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "How many minutes did it took you to fall asleep?...",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "cz5j6ziai02rgcxt",
+                "text": "How many minutes did it took you to fall asleep?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "text",
+                "_type": "question",
+                "subtype": "numeric"
+            }
+        }
+    ],
+    [
+        "34d9feggkod4yxus",
+        {
+            "parent": "fsqaz2ftbnuu4gtm21m4j",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "How many times do you woke up during the night?...",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "34d9feggkod4yxus",
+                "text": "How many times do you woke up during the night?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "text",
+                "_type": "question",
+                "subtype": "numeric"
+            }
+        }
+    ],
+    [
+        "xxycqbe5g3k99y2j",
+        {
+            "parent": "study",
+            "subNodes": [
+                "dnywq1y9ju1gspuo"
+            ],
+            "type": "module",
+            "childType": "section",
+            "title": "Caffeine intake",
+            "hidden": false,
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "content": {
+                "id": "xxycqbe5g3k99y2j",
+                "type": "survey",
+                "name": "Caffeine intake",
+                "submit_text": "Submit",
+                "condition": "*",
+                "alerts": {
+                    "title": "Caffeine time?",
+                    "message": "Remember to log it!",
+                    "duration": 42,
+                    "times": [
+                        {
+                            "hours": 10,
+                            "minutes": 0
+                        }
+                    ],
+                    "random": false,
+                    "random_interval": 0,
+                    "sticky": true,
+                    "sticky_label": "",
+                    "timeout": false,
+                    "timeout_after": 0,
+                    "start_offset": 0
+                },
+                "graph": {
+                    "display": false
+                },
+                "unlock_after": [],
+                "shuffle": false,
+                "_type": "module",
+                "sections": []
+            }
+        }
+    ],
+    [
+        "ze3rbpanob8cfnca",
+        {
+            "parent": "study",
+            "subNodes": [
+                "oseo3q9g5ddu7km1"
+            ],
+            "type": "module",
+            "childType": "section",
+            "title": "Food intake",
+            "hidden": false,
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "content": {
+                "id": "ze3rbpanob8cfnca",
+                "type": "survey",
+                "name": "Food intake",
+                "submit_text": "Submit",
+                "condition": "*",
+                "alerts": {
+                    "title": "Meal time?",
+                    "message": "Remember to log it!",
+                    "duration": 42,
+                    "times": [
+                        {
+                            "hours": 9,
+                            "minutes": 0
+                        },
+                        {
+                            "hours": 12,
+                            "minutes": 30
+                        },
+                        {
+                            "hours": 19,
+                            "minutes": 0
+                        }
+                    ],
+                    "random": false,
+                    "random_interval": 0,
+                    "sticky": true,
+                    "timeout": false,
+                    "timeout_after": 0,
+                    "start_offset": 0
+                },
+                "graph": {
+                    "display": false
+                },
+                "unlock_after": [],
+                "shuffle": false,
+                "_type": "module",
+                "sections": []
+            }
+        }
+    ],
+    [
+        "oseo3q9g5ddu7km1",
+        {
+            "parent": "ze3rbpanob8cfnca",
+            "subNodes": [
+                "ir0vrn_o2s05qdhh",
+                "yzf2vohehw1ey9aq",
+                "l56kgf7wzfhh0bh4"
+            ],
+            "type": "section",
+            "childType": "question",
+            "title": "Meal questions",
+            "hidden": false,
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "content": {
+                "name": "Meal questions",
+                "shuffle": false,
+                "_type": "section",
+                "id": "oseo3q9g5ddu7km1",
+                "questions": []
+            }
+        }
+    ],
+    [
+        "ir0vrn_o2s05qdhh",
+        {
+            "parent": "oseo3q9g5ddu7km1",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "What meal did you have?",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "ir0vrn_o2s05qdhh",
+                "text": "What meal did you have?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "multi",
+                "options": [
+                    "breakfast",
+                    "lunch",
+                    "dinner",
+                    "snack"
+                ],
+                "_type": "question",
+                "subtype": "short",
+                "radio": true,
+                "modal": false,
+                "shuffle": false
+            }
+        }
+    ],
+    [
+        "yzf2vohehw1ey9aq",
+        {
+            "parent": "oseo3q9g5ddu7km1",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "At what time was it?",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "yzf2vohehw1ey9aq",
+                "text": "At what time was it?",
+                "required": false,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "time",
+                "min": 1,
+                "max": 4,
+                "hint_left": "low in calories",
+                "hint_right": "high in calories"
+            }
+        }
+    ],
+    [
+        "dnywq1y9ju1gspuo",
+        {
+            "parent": "xxycqbe5g3k99y2j",
+            "subNodes": [
+                "iffgi5221djovssx",
+                "b7b67zofvg9qkwpf",
+                "ck9ebevau_eqivxb"
+            ],
+            "type": "section",
+            "childType": "question",
+            "title": "Caffeine questions",
+            "hidden": false,
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "content": {
+                "name": "Caffeine questions",
+                "shuffle": false,
+                "_type": "section",
+                "id": "dnywq1y9ju1gspuo",
+                "questions": []
+            }
+        }
+    ],
+    [
+        "iffgi5221djovssx",
+        {
+            "parent": "dnywq1y9ju1gspuo",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "What caffeinated drink did you have?...",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "iffgi5221djovssx",
+                "text": "What caffeinated drink did you have?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "multi",
+                "options": [
+                    "Coffee",
+                    "Decaf coffee",
+                    "Black tea",
+                    "Green tea",
+                    "Cola drink",
+                    "Energy drink",
+                    "Chocolate",
+                    "Other"
+                ],
+                "_type": "question",
+                "subtype": "short",
+                "radio": true,
+                "modal": false,
+                "shuffle": false
+            }
+        }
+    ],
+    [
+        "01jw89i6pfhwmuia",
+        {
+            "parent": "study",
+            "subNodes": [
+                "vazim6vc8knl6dvg"
+            ],
+            "type": "module",
+            "childType": "section",
+            "title": "Alcohol drink",
+            "hidden": false,
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "content": {
+                "id": "01jw89i6pfhwmuia",
+                "type": "info",
+                "name": "Alcohol drink",
+                "submit_text": "Submit",
+                "condition": "*",
+                "alerts": {
+                    "title": "",
+                    "message": "",
+                    "duration": 44,
+                    "times": [],
+                    "random": false,
+                    "random_interval": 0,
+                    "sticky": true,
+                    "sticky_label": "",
+                    "timeout": false,
+                    "timeout_after": 0,
+                    "start_offset": 0
+                },
+                "graph": {
+                    "display": false
+                },
+                "unlock_after": [],
+                "_type": "module",
+                "sections": [],
+                "shuffle": false
+            }
+        }
+    ],
+    [
+        "b7b67zofvg9qkwpf",
+        {
+            "parent": "dnywq1y9ju1gspuo",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "At what time was it?",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "b7b67zofvg9qkwpf",
+                "text": "At what time was it?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "time"
+            }
+        }
+    ],
+    [
+        "ck9ebevau_eqivxb",
+        {
+            "parent": "dnywq1y9ju1gspuo",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "How many cups did you have?",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "ck9ebevau_eqivxb",
+                "text": "How many cups did you have?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "text",
+                "_type": "question",
+                "subtype": "numeric"
+            }
+        }
+    ],
+    [
+        "l56kgf7wzfhh0bh4",
+        {
+            "parent": "oseo3q9g5ddu7km1",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "How would you rate your meal in terms of calorific content?...",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "l56kgf7wzfhh0bh4",
+                "text": "How would you rate your meal in terms of calorific content?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "slider",
+                "subtype": "short",
+                "_type": "question",
+                "min": 1,
+                "max": 5,
+                "hint_left": "low in calories",
+                "hint_right": "high in calories"
+            }
+        }
+    ],
+    [
+        "vazim6vc8knl6dvg",
+        {
+            "parent": "01jw89i6pfhwmuia",
+            "subNodes": [
+                "53c9bzbsss626mm1",
+                "03seh31m_rw8kgrc",
+                "vh1n913n3qallytc"
+            ],
+            "type": "section",
+            "childType": "question",
+            "title": "Alcohol questions",
+            "hidden": false,
+            "actions": [
+                "create",
+                "delete"
+            ],
+            "content": {
+                "name": "Alcohol questions",
+                "shuffle": false,
+                "_type": "section",
+                "id": "vazim6vc8knl6dvg",
+                "questions": []
+            }
+        }
+    ],
+    [
+        "53c9bzbsss626mm1",
+        {
+            "parent": "vazim6vc8knl6dvg",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "How many units of alcohol did you have?...",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "53c9bzbsss626mm1",
+                "text": "How many units of alcohol did you have?",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "text",
+                "_type": "question",
+                "subtype": "numeric"
+            }
+        }
+    ],
+    [
+        "03seh31m_rw8kgrc",
+        {
+            "parent": "vazim6vc8knl6dvg",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "<small>For example: \n small glass of wine = 1.5 units <br>\n ...",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "03seh31m_rw8kgrc",
+                "text": "<small>For example: \n small glass of wine = 1.5 units <br>\n large glass of wine = 3 units <br>\n 500ml of low strength beer/cider = 2 units  <br>\n 500ml of high strength beer/cider = 3 units <br>\n single shot of spirit =  1 unit </small>",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "instruction",
+                "_type": "question",
+                "subtype": "short"
+            }
+        }
+    ],
+    [
+        "vh1n913n3qallytc",
+        {
+            "parent": "vazim6vc8knl6dvg",
+            "subNodes": null,
+            "type": "question",
+            "childType": null,
+            "title": "When did you have the drinks?",
+            "hidden": false,
+            "actions": [
+                "delete"
+            ],
+            "content": {
+                "id": "vh1n913n3qallytc",
+                "text": "When did you have the drinks?",
+                "required": false,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "datetime"
+            }
+        }
+    ]
+]

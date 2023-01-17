@@ -14,7 +14,7 @@ dist-ssr
 
 .parcel-cache
 
-
+log.txt
 
 # Editor directories and files
 .vscode/*
@@ -28,7 +28,6 @@ dist-ssr
 *.sw?
 .env
 
-yarn.lock 
 package-lock.json
 
 /data
@@ -38,3 +37,4 @@ package-lock.json
 
 /api/target
 
+frontend/pnpm-lock.yaml

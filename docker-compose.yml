@@ -1,33 +1,63 @@
 version: "3"
-volumes:
-  surveys:
-    driver: local
 services:
-  nginxmanager:
-    restart: on-failure
-    image: "jc21/nginx-proxy-manager:latest"
+  nginx:
+    image: "jwilder/nginx-proxy:latest"
+    container_name: "nginx"
+    volumes:
+      - "html:/usr/share/nginx/html"
+      - "dhparam:/etc/nginx/dhparam"
+      - "vhost:/etc/nginx/vhost.d"
+      - "certs:/etc/nginx/certs"
+      - "/run/docker.sock:/tmp/docker.sock:ro"
+    restart: "always"
+    networks:
+      - "net"
     ports:
       - "80:80"
-      - "81:81"
       - "443:443"
+  letsencrypt:
+    image: "jrcs/letsencrypt-nginx-proxy-companion:latest"
+    container_name: "letsencrypt-helper"
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-   
+      - "html:/usr/share/nginx/html"
+      - "dhparam:/etc/nginx/dhparam"
+      - "vhost:/etc/nginx/vhost.d"
+      - "certs:/etc/nginx/certs"
+      - "/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      NGINX_PROXY_CONTAINER: "nginx"
+      DEFAULT_EMAIL: "constantin.goeldel@tum.de"
+    restart: "always"
+    depends_on:
+      - "nginx"
+    networks:
+      - "net"
   web:
-    restart: on-failure
+    environment:
+      - VIRTUAL_HOST=tuspl22-momentum.srv.mwn.de
+      - LETSENCRYPT_HOST=tuspl22-momentum.srv.mwn.de
+    restart: always
     build: ./frontend
-    ports:
-      - "3000:3000"
-   
-  api:
-    build: ./api
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./api:/usr/src/api
+    networks:
+      - net
+
+  # api:
+  #   build: ./api
+  #   volumes:
+  #     - ./api:/usr/src/api
+  #   restart: always
+  #   networks:
+  #     - net
+  #   environment:
+  #     - VIRTUAL_HOST=tuspl22-momentum.srv.mwn.de/api/v1
+  #     - LETSENCRYPT_HOST=tuspl22-momentum.srv.mwn.de
 
 networks:
-  generator_network:
-    driver: host
+  net:
     external: true
+
+volumes:
+  certs:
+  html:
+  vhost:
+  dhparam:
