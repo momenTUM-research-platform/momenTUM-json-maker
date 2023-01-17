@@ -63,7 +63,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<(), Er
     if key.is_none() {
         return Err(Error::NoCorrespondingAPIKey);
     }
-    let key = key.unwrap();
+    let key = key.expect("Key should be present");
 
     // Create Redcap record, including module index for uniqueness
     let mut record: HashMap<String, Entry> = HashMap::from([

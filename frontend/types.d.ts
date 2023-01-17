@@ -1,10 +1,15 @@
-declare type AtomVariants = "module" | "section" | "question" | "study" | "properties";
+declare type AtomVariants = "study" | "module" | "section" | "question" | "properties";
 
-declare type Actions = "create" | "count" | "delete";
+declare type Actions = "create" | "delete";
 
 declare type Mode = "graph" | "timeline";
 
-declare type Atoms = Map<string, Atom<Study | Question | Module | Section | Properties>>;
+declare type Atoms = Map<string, Atom<Study | Properties | Question | Module | Section>>;
+
+declare interface SchemaEnum {
+  id: string;
+  text: string;
+}
 
 declare interface Atom<T> {
   parent: string | null;
@@ -39,7 +44,6 @@ declare interface Day {
 }
 declare interface Study {
   _type: "study";
-
   _id?: { $oid: string };
   timestamp?: number;
   properties: Properties;

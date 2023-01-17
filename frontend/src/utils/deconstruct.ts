@@ -1,63 +1,92 @@
-import { isStudy, isModule, isSection, isQuestion } from "./typeGuards";
+import { isProperties, isModule, isSection, isQuestion } from "./typeGuards";
 
 export function deconstructStudy(study: Study): Atoms {
   let atoms: Atoms = new Map();
 
   function extractChildren(object: Study | Question | Module | Section, parent: string | null) {
-    if (isStudy(object)) {
-      const atom: Atom<Study> = {
-        parent: parent,
-        subNodes: object.modules.map((m) => m.id),
-        type: "study",
-        childType: "module",
-        content: { ...object, _type: "study" },
-        title: "Properties",
-        actions: ["count", "create"],
-        hidden: false,
-      };
-      atoms.set("study", atom);
-      object.modules.forEach((child) => extractChildren(child, "study"));
-    } else if (isModule(object)) {
+    // @ts-ignore
+    const normalizeID = (id: string) => {
+      let n = id.toLowerCase();
+      n = n.replace(/[^a-z0-9_]/g, "");
+      return n;
+    };
+
+    if (isModule(object)) {
       const atom: Atom<Module> = {
         parent: parent,
-        subNodes: object.sections.map((s) => s.id),
-        type: "study",
-        childType: "module",
+        subNodes: object.sections.map((s) => normalizeID(s.id)),
+        type: "module",
+        childType: "section",
         content: { ...object, _type: "module" },
-        title: object.name,
-        actions: ["count", "create"],
+        title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
+
+        actions: ["create", "delete"],
         hidden: false,
       };
 
-      atoms.set(object.id, atom);
-      object.sections.forEach((child) => extractChildren(child, object.id));
+      atoms.set(normalizeID(object.id), atom);
+      object.sections.forEach((child) => extractChildren(child, normalizeID(object.id)));
     } else if (isSection(object)) {
       const atom: Atom<Section> = {
         parent: parent,
-        subNodes: object.questions.map((s) => s.id),
-        type: "study",
-        childType: "module",
+        subNodes: object.questions.map((s) => normalizeID(s.id)),
+        type: "section",
+        childType: "question",
         content: { ...object, _type: "section" },
-        title: object.name,
-        actions: ["count", "create"],
+        title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
+
+        actions: ["create", "delete"],
         hidden: false,
       };
 
-      atoms.set(object.id, atom);
-      object.questions.forEach((child) => extractChildren(child, object.id));
+      atoms.set(normalizeID(object.id), atom);
+      object.questions.forEach((child) => extractChildren(child, normalizeID(object.id)));
     } else if (isQuestion(object)) {
       const atom: Atom<Question> = {
         parent: parent,
         subNodes: null,
-        type: "study",
-        childType: "module",
+        type: "question",
+        childType: null,
         content: { ...object, _type: "question" },
-        title: object.text,
-        actions: ["count", "create"],
+        title: object.text.length > 32 ? object.text.slice(0, 60) + "..." : object.text,
+        actions: ["delete"],
         hidden: false,
       };
 
-      atoms.set(object.id, atom);
+      atoms.set(normalizeID(object.id), atom);
+    } else {
+      // Must be the top level study object
+      const study: Atom<Study> = {
+        parent: null,
+        subNodes: ["properties", ...object.modules.map((m) => normalizeID(m.id))],
+        type: "study",
+        childType: "module",
+        title: object.properties.study_name,
+        actions: ["create"],
+        hidden: false,
+        content: {
+          properties: {} as Properties, // Left empty until construction
+          modules: [],
+          _type: "study",
+        },
+      };
+      const properties: Atom<Properties> = {
+        parent: "study",
+        subNodes: null,
+        type: "properties",
+        childType: null,
+        content: {
+          ...object.properties,
+          _type: "properties",
+          study_id: normalizeID(object.properties.study_id),
+        },
+        title: "Properties",
+        actions: [],
+        hidden: false,
+      };
+      atoms.set("study", study);
+      atoms.set("properties", properties);
+      object.modules.forEach((child) => extractChildren(child, normalizeID("study")));
     }
   }
 

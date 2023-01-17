@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Study {
     pub _id: Option<ObjectId>,
+    pub _type: String,
     pub timestamp: Option<i64>, // time of upload
     pub properties: Properties,
     pub modules: Vec<Modules>,
@@ -11,6 +12,7 @@ pub struct Study {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Properties {
+    pub _type: String,
     pub study_id: String,
     pub study_name: String,
     pub instructions: String,
@@ -28,6 +30,7 @@ pub struct Properties {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Survey {
     pub r#type: String,
+    pub _type: String,
     pub name: String,
     pub submit_text: String,
     pub condition: String,
@@ -43,6 +46,7 @@ pub struct Survey {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Pvt {
     pub r#type: String,
+    pub _type: String,
     pub name: String,
     pub submit_text: String,
     pub condition: String,
@@ -93,7 +97,10 @@ pub struct NoGraph {
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Section {
+    pub id: String,
     pub name: String,
+    _type: String,
+
     pub shuffle: bool,
     pub questions: Vec<Question>,
 }
@@ -104,6 +111,7 @@ pub enum Question {
     #[serde(rename = "text")]
     Text {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -115,6 +123,7 @@ pub enum Question {
     #[serde(rename = "datetime")]
     Datetime {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -126,6 +135,7 @@ pub enum Question {
     #[serde(rename = "yesno")]
     YesNo {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -138,6 +148,7 @@ pub enum Question {
     #[serde(rename = "slider")]
     Slider {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -152,6 +163,7 @@ pub enum Question {
     #[serde(rename = "multi")]
     Multi {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -166,12 +178,13 @@ pub enum Question {
     #[serde(rename = "media")]
     Media {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
         subtype: String,
         src: String,
-        thumb: String,
+        thumb: Option<String>,
         hide_id: Option<String>,
         hide_value: Option<StringOrBool>,
         hide_if: Option<bool>,
@@ -179,6 +192,7 @@ pub enum Question {
     #[serde(rename = "instruction")]
     Instruction {
         id: String,
+        _type: String,
         text: String,
         required: bool,
         rand_group: Option<String>,
@@ -208,4 +222,20 @@ pub enum Modules {
 pub enum GraphOrNoGraph {
     Graph(Graph),
     NoGraph(NoGraph),
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn deserialize_sleep_study() {
+        let json = include_str!("../../studies/sleep.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.created_by, "Anna Biller")
+    }
+    #[test]
+    fn deserialize_monster_study() {
+        let json = include_str!("../../studies/monster.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.created_by, "Constantin Goeldel")
+    }
 }

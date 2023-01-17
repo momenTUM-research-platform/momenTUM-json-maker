@@ -67,7 +67,7 @@ export const alerts = {
       type: "array",
       title: "Scheduled times",
       description:
-        "The times that this module should be scheduled for each day. hours indicates the hours (24-hour time) and minutes indicates the minutes (so should be between 0 and 59).",
+        "The times that this module should be scheduled for each day. For example, if the module is scheduled for 3 days, and times is set to [{hours: 8, minutes: 30}, {hours: 12, minutes: 0}], then the module will be scheduled 6 times on 3 consecutive days.",
       default: [],
       examples: [
         [
@@ -91,8 +91,10 @@ export const alerts = {
             $id: "#/properties/modules/items/properties/alerts/properties/times/items/anyOf/0/properties/hours",
             type: "integer",
             title: "Hour",
-            description: "The hour the alert should be displayed.",
-            default: 0,
+            description: "The hour the alert should be displayed. ",
+            default: 8,
+            minimum: 0,
+            maximum: 23,
             examples: [8],
           },
           minutes: {
@@ -101,6 +103,8 @@ export const alerts = {
             title: "Minute",
             description: "The minute the alert should be displayed.",
             default: 0,
+            minimum: 0,
+            maximum: 59,
             examples: [30],
           },
         },
@@ -156,7 +160,7 @@ export const alerts = {
       type: "integer",
       title: "Timeout after",
       description:
-        "The number of milliseconds after a task is displayed that it will disappear from the list. timeout must be true for this to have any effect.",
+        "The number of milliseconds after a task is displayed that it will disappear from the list. Timeout must be true for this to have any effect.",
       default: 0,
       examples: [0],
     },

@@ -8,10 +8,9 @@ export function isSection(object: any): object is Section {
 export function isQuestion(object: any): object is Question {
   return object._type === "question";
 }
+export function isProperties(object: any): object is Study {
+  return object._type === "properties";
+}
 export function isStudy(object: any): object is Study {
   return object._type === "study";
 }
-
-// export function isPVT(object: any): object is PVT {
-//   return object._type === Atoms.Study
-// }

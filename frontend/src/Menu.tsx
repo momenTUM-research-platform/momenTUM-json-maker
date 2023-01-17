@@ -7,6 +7,7 @@ import {
   BookOpenIcon,
   CloudArrowDownIcon,
   CloudArrowUpIcon,
+  QrCodeIcon,
 } from "@heroicons/react/24/outline";
 import { download, load, save, saveDictionary, upload } from "./utils/actions";
 import { classNames } from "./Calendar";
@@ -48,6 +49,13 @@ export function Menu() {
       action: saveDictionary,
       icon: BookOpenIcon,
     },
+    {
+      name: "Show QR Code",
+      description:
+        "See the QR code for the study you are currently working on. You can scan this code with the Momentum app to participate in the study.",
+      action: () => setModal("qr"),
+      icon: QrCodeIcon,
+    },
     //   {
     //     name: "Reports",
     //     description: "Get detailed reports that will help you make more informed decisions",
@@ -56,7 +64,7 @@ export function Menu() {
     //   },
   ];
   return (
-    <Popover className="relative">
+    <Popover className="">
       {({ open }) => (
         <>
           <Popover.Button
@@ -80,7 +88,7 @@ export function Menu() {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className="absolute right-1/2 z-10 mt-3 w-screen max-w-md transform translate-x-20 px-2 sm:px-0 lg:max-w-3xl">
+            <Popover.Panel className="absolute right-28 z-10 mt-3 w-screen max-w-md transform translate-x-20 px-2 sm:px-0 lg:max-w-3xl">
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8 lg:grid-cols-2">
                   {actions.map((item) => (
@@ -100,10 +108,7 @@ export function Menu() {
                   ))}
                 </div>
                 <div className="bg-gray-50 p-5 sm:p-8">
-                  <a
-                    href="#"
-                    className="-m-3 flow-root rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-100"
-                  >
+                  <div className="-m-3 flow-root rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-100">
                     <span className="flex items-center">
                       <span className="text-base font-medium text-gray-900">Documentation</span>
                       <span className="ml-3 inline-flex items-center rounded-full bg-indigo-100 px-3 py-0.5 text-xs font-medium leading-5 text-main">
@@ -126,7 +131,7 @@ export function Menu() {
                         here.
                       </a>
                     </span>
-                  </a>
+                  </div>
                 </div>
               </div>
             </Popover.Panel>

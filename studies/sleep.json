@@ -1,8 +1,9 @@
 {
     "_type": "study",
     "properties": {
+        "_type": "properties",
         "study_name": "Environmental effects on sleep",
-        "study_id": "TUM_2022_env_trial01",
+        "study_id": "tum_2022_env_trial01",
         "created_by": "Anna Biller",
         "instructions": "This is a trial",
         "post_url": "https: //tuspl22-momentum.srv.mwn.de/post.php",
@@ -103,7 +104,6 @@
                             "type": "slider",
                             "_type": "question",
                             "rand_group": "",
-                            "subtype": "short",
                             "min": 1,
                             "max": 4,
                             "hint_left": "very good",
@@ -124,7 +124,6 @@
                             ],
                             "_type": "question",
                             "rand_group": "",
-                            "subtype": "short",
                             "modal": false,
                             "radio": true,
                             "shuffle": false
@@ -144,7 +143,6 @@
                             ],
                             "_type": "question",
                             "rand_group": "",
-                            "subtype": "short",
                             "radio": true,
                             "shuffle": false,
                             "modal": false
@@ -159,7 +157,6 @@
                             "type": "slider",
                             "_type": "question",
                             "rand_group": "",
-                            "subtype": "short",
                             "min": 1,
                             "max": 10,
                             "hint_left": "very alert",

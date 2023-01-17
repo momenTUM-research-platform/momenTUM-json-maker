@@ -72,7 +72,7 @@ async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy
     if study_id.ends_with(".json") {
         study_id = study_id.replace(".json", "");
     }
-    let filter = doc! { "$or": [ {"properties.study_id": &study_id}, {"_id": ObjectId::from_str(&study_id).unwrap_or(ObjectId::new())}]};
+    let filter = doc! { "$or": [ {"properties.study_id": &study_id}, {"_id": ObjectId::from_str(&study_id).unwrap_or_default()}]};
     let result = db
         .database(ACTIVE_DB)
         .collection::<Study>("studies")

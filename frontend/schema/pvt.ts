@@ -38,5 +38,5 @@ export const pvt = {
       title: "Enable exit from pvt?",
     },
   },
-  required: ["trials", "min_waiting", "max_waiting", "show", "max_reaction", "exit"],
+  required: ["trials", "min_waiting", "max_waiting", "max_reaction"],
 };

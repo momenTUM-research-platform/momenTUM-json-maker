@@ -35,7 +35,7 @@ export const survey = {
     shuffle: {
       $id: "#/properties/modules/items/properties/shuffle",
       type: "boolean",
-      title: "Shuffle modules?",
+      title: "Shuffle sections?",
       description:
         "Used for counterbalancing. If true, the order of the sections will be randomised every time the module is accessed.",
       default: false,
