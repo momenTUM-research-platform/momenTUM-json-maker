@@ -19,7 +19,6 @@ export function calcGraphFromAtoms(atoms: Atoms): [Node[], Edge[]] {
         position,
       });
     });
-    console.log(atom.subNodes);
     atom.subNodes?.forEach((sub, i) => {
       edges.push({
         id: id + "_->_" + sub,

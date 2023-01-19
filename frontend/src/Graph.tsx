@@ -10,19 +10,15 @@ import { hideAtoms } from "./utils/hideAtoms";
 
 function useGraph(): [Node[], Edge[]] {
   let { atoms, selectedNode, direction } = useStore();
-  console.time("useGraph");
   const visibleAtoms = useMemo(
     () => hideAtoms(selectedNode || "study", atoms),
     [selectedNode, atoms.size]
   );
-  console.timeLog("useGraph", "hideAtoms");
   let [nodes, edges] = useMemo(() => calcGraphFromAtoms(visibleAtoms), [visibleAtoms]);
-  console.timeLog("useGraph", "calcGraphFromAtoms");
   [nodes, edges] = useMemo(
     () => alignNodes(nodes, edges, direction),
     [nodes, edges, direction, visibleAtoms]
   );
-  console.timeEnd("useGraph");
   return [nodes, edges];
 }
 

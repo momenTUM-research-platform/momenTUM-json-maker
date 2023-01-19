@@ -18,7 +18,6 @@ export function Form({ id }: { id: string }) {
     const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
     const mIds: SchemaEnum[] = [];
     for (const [key, value] of atoms.entries()) {
-      console.log(atom?.type);
       if (value.content._type === "question") {
         qIds.push({ id: key, text: value.content.text });
       }

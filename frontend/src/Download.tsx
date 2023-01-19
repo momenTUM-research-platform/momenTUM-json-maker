@@ -51,7 +51,6 @@ export function Download({ close }: { close: () => void }) {
       () =>
         new Promise((resolve, reject) => {
           const atoms = deconstructStudy(study!);
-          console.log(atoms, study);
           setAtoms(atoms);
 
           resolve(null);
@@ -59,7 +58,6 @@ export function Download({ close }: { close: () => void }) {
     ];
     actions[step]()
       .then((result) => {
-        console.log("Finished step", step);
         if (step === 1) setStudy(result as Study);
         setStep(step + 1);
       })

@@ -166,6 +166,32 @@ async fn save_key(user: Result<User>, key: Json<Key>, db: Connection<DB>) -> Res
     Ok(())
 }
 
+#[post("/api/v1/redcap/<username>", data = "<study>")]
+async fn create_redcap_project(
+    db: Connection<DB>,
+    study: Json<Study>,
+    username: &str,
+) -> Result<&'static str> {
+    let study = study.0;
+    let api_key = redcap::create_project(&study).await?;
+    println!("Created project with API key {}", api_key.clone());
+    db.database(ACTIVE_DB)
+        .collection::<Key>("keys")
+        .replace_one(
+            doc! {"study_id":&study.properties.study_id},
+            Key {
+                study_id: study.properties.study_id.clone(),
+                api_key: api_key.clone(),
+            },
+            ReplaceOptions::builder().upsert(true).build(), // For true upsert, new key document will be inserted if not existing before => Only one key per study_id
+        )
+        .await?;
+    redcap::import_metadata(&study, api_key.clone()).await?;
+    redcap::import_user(username, api_key.clone()).await?;
+
+    Ok("Project successfully created. Go to https://tuspl22-redcap.srv.mwn.de/redcap/ to see it.")
+}
+
 #[post("/api/v1/user", data = "<new_user>")]
 async fn add_user(
     new_user: Json<User>,
@@ -224,7 +250,11 @@ impl Fairing for CORS {
 
 #[launch]
 fn rocket() -> _ {
+    dotenv::dotenv().ok();
     println!("The API is using the {ACTIVE_DB} database");
+
+    std::env::var("REDCAP_SUPER_API_TOKEN")
+        .expect("REDCAP_SUPER_API_TOKEN must be set for project creation");
     rocket::build()
         .register("/", catchers![catch_malformed_request])
         .attach(DB::init())
@@ -242,6 +272,7 @@ fn rocket() -> _ {
                 save_log,
                 save_key,
                 save_response,
+                create_redcap_project,
                 all_studies_of_study_id,
                 add_user
             ],

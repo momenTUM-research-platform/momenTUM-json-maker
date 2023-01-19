@@ -75,6 +75,5 @@ export function schedule(module: Module, properties: Properties): Occurence[] {
 
     return dateA.getTime() - dateB.getTime();
   });
-  console.log(events);
   return events;
 }

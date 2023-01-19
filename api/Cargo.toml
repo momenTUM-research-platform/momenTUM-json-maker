@@ -20,6 +20,8 @@ dotenv = "0.15.0"
 mongodb = "2.3.0"
 base64 = "0.13.0"
 sha2 = "0.10"
+serde-xml-rs = "0.6.0"
+rand = "0.8.5"
 
 
 [dependencies.rocket_db_pools]

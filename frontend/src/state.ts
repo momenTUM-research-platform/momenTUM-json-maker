@@ -23,7 +23,7 @@ export interface State {
   validator: ValidateFunction;
   atoms: Atoms;
   conditions: string[];
-  modal: null | "download" | "upload" | "qr";
+  modal: null | "download" | "upload" | "qr" | "redcap";
   permalink: string | null;
   liveValidation: boolean;
   showHidingLogic: boolean;
@@ -31,7 +31,7 @@ export interface State {
   invertMode: () => void;
   setAtom: (id: string, content: Properties | Question | Module | Section) => void;
   setAtoms: (atoms: Atoms) => void;
-  setModal: (value: null | "upload" | "download" | "qr") => void;
+  setModal: (value: null | "upload" | "download" | "qr" | "redcap") => void;
   saveAtoms: () => void;
   addNewNode: (type: AtomVariants, parent: string) => void;
   deleteNode: (id: string) => void;
@@ -94,7 +94,6 @@ export const useStore = create<State>()((set, get) => ({
   },
   addNewNode: (type, parent) => {
     const id = nanoid();
-    console.debug("Creating new node " + id + " of type " + type + " with parent " + parent);
 
     set(
       produce((state: State) => {
@@ -144,8 +143,6 @@ export const useStore = create<State>()((set, get) => ({
       })
     );
     get().selectedNode = id;
-
-    //  console.timeEnd("create");
   },
 
   setAtom: (id, content) =>
@@ -168,6 +165,7 @@ export const useStore = create<State>()((set, get) => ({
   setAtoms(atoms) {
     // Completely replace the atoms and recalculate the graph
     set({ atoms });
+    localStorage.setItem("atoms", JSON.stringify([...atoms]));
   },
   setModal(value) {
     set({ modal: value });
@@ -176,7 +174,6 @@ export const useStore = create<State>()((set, get) => ({
     set({ permalink });
   },
   saveAtoms: async () => {
-    console.log("saving to local storage");
     // Saving all atoms takes some time and we don't want it to block rendering changes to atoms
     localStorage.setItem("atoms", JSON.stringify([...get().atoms]));
   },

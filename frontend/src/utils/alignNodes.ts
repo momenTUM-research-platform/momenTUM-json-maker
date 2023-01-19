@@ -14,14 +14,11 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
     marginx: 100,
     marginy: 200,
   });
-  // state.atoms.forEach((a, id) => console.log(id, a.hidden));
+
   // Action nodes will be placed manually
   const nodesToPosition = nodes.filter(
     (n) => !(n.hidden || n.type === "create" || n.type === "delete")
   );
-
-  //console.log(nodesToPosition.map((a) => [a.id, a.hidden]));
-  //console.log(nodesToPosition.length);
 
   nodesToPosition.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });

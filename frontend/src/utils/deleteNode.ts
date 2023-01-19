@@ -14,7 +14,6 @@ export function deleteNode(
         const parentId = state.atoms.get(id)?.parent;
         const nodesToDelete = [id];
 
-        console.log(nodesToDelete);
         const recursivelyFindIdsOfSubNodes = (id: string) => {
           const { subNodes } = state.atoms.get(id)!;
           nodesToDelete.push(id + "_delete");

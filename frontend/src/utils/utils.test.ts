@@ -1,9 +1,10 @@
 import { constructStudy } from "./construct";
 import { describe, expect, it } from "vitest";
-import { download, generateDictionary, upload, validateStudy } from "./actions";
+import { download, upload, validateStudy } from "./actions";
 import sleep_study from "../../../studies/sleep.json";
 import atoms_long from "../../../studies/atoms.json";
 import monster_study from "../../../studies/monster.json";
+import maydel_study from "../../../studies/maydel.json";
 import { useStore } from "../state";
 import { deconstructStudy } from "./deconstruct";
 
@@ -55,7 +56,6 @@ describe("Constructing a study from atoms", () => {
     // @ts-ignore
     const atoms = new Map(atoms_long) as Atoms;
     const constructedStudy = constructStudy(atoms);
-    console.log(JSON.stringify(constructedStudy, null, 2));
 
     expect(constructedStudy.modules.length).toBe(4);
     expect(constructedStudy.modules[0].sections[0].questions.length).toBe(9);
@@ -103,6 +103,15 @@ describe("Deconstructing a study into atoms", () => {
     expect(atoms).toBeTypeOf("object");
     expect(atoms.size).toBe(11);
   });
+
+  it("Creates atoms from maydels study", () => {
+    const study = maydel_study as Study;
+    const atoms = deconstructStudy(study);
+    expect(atoms).toBeTypeOf("object");
+    expect(atoms.size).toBe(28);
+    expect(atoms.get("03seh31m_rw8kgrc")?.content._type).toBe("question");
+  });
+
   it("Deconstructs a study", () => {
     const study: Study = {
       _id: {
@@ -296,22 +305,5 @@ describe("Validate study", () => {
     const study: Study = sleep_study;
     expect(validateStudy(study)).toBe(true);
     expect(validateStudy(constructStudy(deconstructStudy(study)))).toBe(true);
-  });
-});
-
-describe("Generate Dictionary", () => {
-  it("Generates a dictionary from study", () => {
-    // @ts-ignore
-    const study: Study = sleep_study;
-    const dictionary = generateDictionary(study);
-    expect(dictionary)
-      .toEqual(`"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
-BtcFLqU9v0T07TxjICTwE,Sleep Diary,,text,When did you fall asleep yesterday?,,,,,,,,,,,,,
-juDISNtklXpBK1EVpnHjj,Sleep Diary,,text,When did you wake up today?,,,,,,,,,,,,,
-JNzZp-Z6iJS7291H2f1OU,Sleep Diary,,text,How would you rate your sleep quality today?,,,,,,,,,,,,,
-grbDZ4rA_QJzStWEM9HkY,Sleep Diary,,text,Did you use an alarm clock to wake up?,,,,,,,,,,,,,
-BIRjLhE8QL_tuDQ5QPR9w,Sleep Diary,,text,Do you need to work today?,,,,,,,,,,,,,
-wwvhQUyE_UJHHAGIx1iug,Sleep Diary,,text,How alert/sleepy are you at the moment?,,,,,,,,,,,,,
-`);
   });
 });
