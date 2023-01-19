@@ -71,7 +71,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     // Create Redcap record, including module index for uniqueness
     let mut record: HashMap<String, Entry> = HashMap::from([
         (
-            format!("field_record_id_{}", &res.module_index).to_string(),
+            format!("field_record_id").to_string(),
             Entry::Text(res.user_id.to_string()),
         ),
         (
@@ -236,12 +236,14 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
         match module {
             Modules::Info => continue,
             Modules::Survey(survey) => {
-                dictionary.push(MetaData::create(
-                    format!("record_id_{}", i),
-                    &survey.id,
-                    "text",
-                    "Record ID",
-                ));
+                if i == 0 {
+                    dictionary.push(MetaData::create(
+                        format!("record_id"),
+                        &survey.id,
+                        "text",
+                        "Record ID",
+                    ))
+                }
                 // dictionary.push(MetaData::create(
                 //     format!("participant_id_{}", i),
                 //     &survey.id,
