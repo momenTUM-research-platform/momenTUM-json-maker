@@ -80,7 +80,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
             Entry::Text("new".to_string()),
         ),
         (
-            "record_id".to_string(),
+            format!("participant_id_{}", &res.module_index),
             Entry::Text(res.user_id.to_string()),
         ),
         (
@@ -232,31 +232,30 @@ impl<'a> MetaData<'a> {
 pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
     let mut dictionary: Vec<MetaData> = Vec::new();
 
-    for module in study.modules.iter() {
+    for (i, module) in study.modules.iter().enumerate() {
         match module {
             Modules::Info => continue,
             Modules::Survey(survey) => {
-                let random_id = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
+                // dictionary.push(MetaData::create(
+                //     format!("record_id"),
+                //     &survey.id,
+                //     "text",
+                //     "Record ID",
+                // ));
                 dictionary.push(MetaData::create(
-                    format!("record_id_{}", random_id),
-                    &survey.id,
-                    "text",
-                    "Record ID",
-                ));
-                dictionary.push(MetaData::create(
-                    format!("participant_id_{}", random_id),
+                    format!("participant_id_{}", i),
                     &survey.id,
                     "text",
                     "Participant ID",
                 ));
                 dictionary.push(MetaData::create(
-                    format!("response_time_in_ms_{}", random_id),
+                    format!("response_time_in_ms_{}", i),
                     &survey.id,
                     "text",
                     "Response Time in Milliseconds",
                 ));
                 dictionary.push(MetaData::create(
-                    format!("response_time_{}", random_id),
+                    format!("response_time_{}", i),
                     &survey.id,
                     "text",
                     "Response Time",
