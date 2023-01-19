@@ -187,6 +187,7 @@ async fn create_redcap_project(
         )
         .await?;
     redcap::import_metadata(&study, api_key.clone()).await?;
+    redcap::enable_repeating_instruments(&study, api_key.clone()).await?;
     redcap::import_user(username, api_key.clone()).await?;
 
     Ok("Project successfully created. Go to https://tuspl22-redcap.srv.mwn.de/redcap/ to see it.")

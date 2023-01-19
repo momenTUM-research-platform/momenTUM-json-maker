@@ -2,13 +2,12 @@ use crate::study::{BasicQuestion, Modules, Question};
 use crate::Result;
 use crate::{error::Error, study::Study, Key, ACTIVE_DB, DB};
 use mongodb::bson::doc;
-use rand::distributions::{Alphanumeric, DistString};
 use rocket_db_pools::Connection;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(untagged)]
 enum Entry {
     Integer(i64),
@@ -72,23 +71,23 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     // Create Redcap record, including module index for uniqueness
     let mut record: HashMap<String, Entry> = HashMap::from([
         (
+            format!("field_record_id_{}", &res.module_index).to_string(),
+            Entry::Text(res.user_id.to_string()),
+        ),
+        (
             "redcap_repeat_instrument".to_string(),
-            Entry::Text(res.module_name.clone()),
+            Entry::Text(String::from("module_") + &res.module_name.clone()),
         ),
         (
             "redcap_repeat_instance".to_string(),
             Entry::Text("new".to_string()),
         ),
         (
-            format!("participant_id_{}", &res.module_index),
-            Entry::Text(res.user_id.to_string()),
-        ),
-        (
-            format!("response_time_in_ms_{}", &res.module_index),
+            format!("field_response_time_in_ms_{}", &res.module_index),
             Entry::Integer(res.response_time_in_ms),
         ),
         (
-            format!("response_time_{}", &res.module_index),
+            format!("field_response_time_{}", &res.module_index),
             Entry::Text(res.response_time.clone()),
         ),
     ]);
@@ -96,7 +95,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     if let Some(ref response) = res.responses {
         let response: HashMap<String, Entry> = serde_json::from_str(response.as_str())?;
         response.iter().for_each(|(k, v)| {
-            record.insert(format!("{}_{}", k, res.module_index), v.clone());
+            record.insert(format!("field_{}", k), v.clone());
         });
     };
 
@@ -108,6 +107,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
         .insert_one(&record, None)
         .await?;
 
+    println!("Record: {:#?}", record);
     let payload = Payload {
         token: key.api_key,
         content: "record".to_string(),
@@ -144,7 +144,7 @@ pub async fn create_project(study: &Study) -> Result<ApiKey> {
     let mut project: HashMap<&str, &str> = HashMap::new();
     project.insert("project_title", &study.properties.study_name);
     project.insert("purpose", "2"); // 2 = Research
-    project.insert("is_longitudinal", "0"); // 0 = No
+    project.insert("is_longitudinal", "1"); // 1 = Yes
     project.insert("surveys_enabled", "1"); // 1 = Yes
     project.insert("record_autonumbering_enabled", "0"); // 0 = No
     project.insert("project_notes", &study.properties.instructions);
@@ -180,7 +180,7 @@ pub async fn create_project(study: &Study) -> Result<ApiKey> {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct MetaData<'a> {
     field_name: String,
-    form_name: &'a str,
+    form_name: String,
     section_header: &'a str,
     field_type: &'a str,
     field_label: &'a str,
@@ -208,7 +208,7 @@ impl<'a> MetaData<'a> {
     ) -> Self {
         MetaData {
             field_name: String::from("field_") + &field_name, // field_name must not start with a number
-            form_name,
+            form_name: String::from("module_") + &form_name,
             section_header: "",
             field_type,
             field_label,
@@ -236,18 +236,18 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
         match module {
             Modules::Info => continue,
             Modules::Survey(survey) => {
-                // dictionary.push(MetaData::create(
-                //     format!("record_id"),
-                //     &survey.id,
-                //     "text",
-                //     "Record ID",
-                // ));
                 dictionary.push(MetaData::create(
-                    format!("participant_id_{}", i),
+                    format!("record_id_{}", i),
                     &survey.id,
                     "text",
-                    "Participant ID",
+                    "Record ID",
                 ));
+                // dictionary.push(MetaData::create(
+                //     format!("participant_id_{}", i),
+                //     &survey.id,
+                //     "text",
+                //     "Participant ID",
+                // ));
                 dictionary.push(MetaData::create(
                     format!("response_time_in_ms_{}", i),
                     &survey.id,
@@ -308,6 +308,54 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
         }
     }
 }
+#[derive(Debug, Serialize, Deserialize)]
+struct RepeatingInstrument {
+    form_name: String,
+    custom_form_label: String,
+}
+
+pub async fn enable_repeating_instruments(study: &Study, api_key: ApiKey) -> Result<()> {
+    let mut repeating_instruments: Vec<RepeatingInstrument> = Vec::new();
+    for module in study.modules.iter() {
+        match module {
+            Modules::Survey(survey) => {
+                repeating_instruments.push(RepeatingInstrument {
+                    form_name: format!("module_{}", survey.id.clone()),
+                    custom_form_label: String::new(),
+                });
+            }
+            _ => continue,
+        }
+    }
+    println!("{:#?}", repeating_instruments);
+
+    let payload = Payload {
+        token: api_key,
+        content: "repeatingFormsEvents".to_string(),
+        format: "json".to_string(),
+        r#type: "flat".to_string(),
+        data: serde_json::to_string(&repeating_instruments).unwrap(),
+    };
+
+    let response = reqwest::Client::new()
+        .post(REDCAP_API_URL)
+        .form(&payload)
+        .send()
+        .await?;
+    match response.status() {
+        reqwest::StatusCode::OK => Ok(()),
+        reqwest::StatusCode::FORBIDDEN => {
+            println!("Forbidden: {:#?}", response.text().await.unwrap());
+            Err(Error::RedcapAuthenication)
+        }
+        _ => {
+            let content = response.text().await.unwrap();
+            println!("Error: {content:#?}");
+            Err(Error::Redcap(content))
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct UserData<'a> {
     username: &'a str,
