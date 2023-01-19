@@ -217,6 +217,23 @@ pub enum Modules {
     Audio,
 }
 
+impl Modules {
+    pub fn get_id(&self) -> Option<String> {
+        match self {
+            Modules::Survey(survey) => Some(survey.id.clone()),
+            Modules::Pvt(pvt) => Some(pvt.id.clone()),
+            _ => None,
+        }
+    }
+    pub fn get_name(&self) -> Option<String> {
+        match self {
+            Modules::Survey(survey) => Some(survey.name.clone()),
+            Modules::Pvt(pvt) => Some(pvt.name.clone()),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GraphOrNoGraph {

@@ -2,10 +2,14 @@ use crate::study::{BasicQuestion, Modules, Question};
 use crate::Result;
 use crate::{error::Error, study::Study, Key, ACTIVE_DB, DB};
 use mongodb::bson::doc;
+use mongodb::bson::oid::ObjectId;
+use mongodb::options::FindOneOptions;
 use rocket_db_pools::Connection;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
+use std::str::FromStr;
+use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(untagged)]
@@ -57,6 +61,26 @@ pub struct Payload {
 const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
 
 pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
+    let filter = doc! { "$or": [ {"properties.study_id": &res.study_id}, {"_id": ObjectId::from_str(&res.study_id).unwrap_or_default()}]};
+
+    let study = db
+        .database(ACTIVE_DB)
+        .collection::<Study>("studies")
+        .find_one(
+            filter,
+            FindOneOptions::builder()
+                .sort(doc! { "timestamp": -1})
+                .show_record_id(true)
+                .build(),
+        )
+        .await?;
+
+    if study.is_none() {
+        return Err(Error::StudyNotFound);
+    }
+
+    let study = study.expect("Study should be present");
+
     // Get API key from DB
     let key = db
         .database(ACTIVE_DB)
@@ -68,6 +92,22 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     }
     let key = key.expect("Key should be present");
 
+    // Either the module name or the module id should be present
+    // This will be reduced to just the module id when https://github.com/momenTUM-research-platform/momenTUM-app/issues/79 is fixed.
+    // Then, the database lookup will not be neccessary anymore.
+    let module = study.modules.iter().find(|m| {
+        (m.get_name().is_some() && m.get_name().unwrap() == res.module_name)
+            || (m.get_id().is_some() && m.get_id().unwrap() == res.module_name)
+    });
+
+    if module.is_none() {
+        return Err(Error::StudyParsing(
+            "The module name does not correspond to a module id".to_string(),
+        ));
+    }
+
+    let module_id = module.unwrap().get_id().unwrap();
+
     // Create Redcap record, including module index for uniqueness
     let mut record: HashMap<String, Entry> = HashMap::from([
         (
@@ -76,7 +116,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
         ),
         (
             "redcap_repeat_instrument".to_string(),
-            Entry::Text(String::from("module_") + &res.module_name.clone()),
+            Entry::Text(String::from("module_") + &module_id),
         ),
         (
             "redcap_repeat_instance".to_string(),
