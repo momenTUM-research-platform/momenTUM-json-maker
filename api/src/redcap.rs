@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
 use std::str::FromStr;
-use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(untagged)]
@@ -142,9 +141,16 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     if let Some(entries) = res.entries.clone() {
         record.insert("entries".to_string(), Entry::Entries(entries));
     };
+
+    let mut record_including_raw = record.clone();
+    record_including_raw.insert(
+        String::from("raw"),
+        Entry::Text(serde_json::to_string(&res).unwrap()),
+    );
+
     db.database(ACTIVE_DB)
         .collection::<HashMap<String, Entry>>("responses")
-        .insert_one(&record, None)
+        .insert_one(&record_including_raw, None)
         .await?;
 
     println!("Record: {:#?}", record);
