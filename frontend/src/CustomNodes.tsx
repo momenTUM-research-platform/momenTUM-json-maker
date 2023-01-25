@@ -4,6 +4,8 @@ import { Handle, NodeProps, Position } from "reactflow";
 import { useStore } from "./state";
 import Plus from "../assets/plus";
 import Delete from "../assets/delete";
+import { ArrowDownIcon } from "@heroicons/react/20/solid";
+import { ArrowUpIcon } from "@heroicons/react/24/outline";
 
 export function NewNode({ data }: NodeProps<{ childType: AtomVariants; parent: string }>) {
   const { addNewNode, atoms } = useStore();
@@ -41,6 +43,36 @@ export function DeleteNode({ data }: NodeProps<{ parent: string }>) {
       onClick={() => deleteNode(data.parent)}
     >
       <Delete />
+    </div>
+  );
+}
+
+export function EarlierNode({ data }: NodeProps<{ id: string }>) {
+  const { atoms, moveNode } = useStore();
+  if (!atoms.get(data.id)) {
+    return <></>;
+  }
+  return (
+    <div
+      className={` bg-blue-600 hover:opacity-80 p-1 cursor-crosshair text-white rounded-2xl h-6 w-6`}
+      onClick={() => moveNode(data.id, "earlier")}
+    >
+      <ArrowUpIcon />
+    </div>
+  );
+}
+
+export function LaterNode({ data }: NodeProps<{ id: string }>) {
+  const { atoms, moveNode } = useStore();
+  if (!atoms.get(data.id)) {
+    return <></>;
+  }
+  return (
+    <div
+      className={` bg-blue-600 hover:opacity-80 p-1 cursor-crosshair text-white rounded-2xl h-6 w-6`}
+      onClick={() => moveNode(data.id, "later")}
+    >
+      <ArrowDownIcon />
     </div>
   );
 }

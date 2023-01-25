@@ -29,5 +29,6 @@ export function calcGraphFromAtoms(atoms: Atoms): [Node[], Edge[]] {
       });
     });
   });
+  console.log(nodes.filter((n) => n.type === "later").length);
   return [nodes, edges];
 }

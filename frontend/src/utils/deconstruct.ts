@@ -35,7 +35,7 @@ export function deconstructStudy(study: Study): Atoms {
         content: { ...object, _type: "section", questions: [] },
         title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
 
-        actions: ["create", "delete"],
+        actions: ["create", "delete", "earlier", "later"],
         hidden: false,
       };
 
@@ -49,7 +49,7 @@ export function deconstructStudy(study: Study): Atoms {
         childType: null,
         content: { ...object, _type: "question" },
         title: object.text.length > 32 ? object.text.slice(0, 60) + "..." : object.text,
-        actions: ["delete"],
+        actions: ["delete", "earlier", "later"],
         hidden: false,
       };
 

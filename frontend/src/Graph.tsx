@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import ReactFlow, { MiniMap, Controls, Background, Edge, Node } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
-import { NewNode, DeleteNode } from "./CustomNodes";
+import { NewNode, DeleteNode, EarlierNode, LaterNode } from "./CustomNodes";
 import { useStore } from "./state";
 import { alignNodes } from "./utils/alignNodes";
 import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
@@ -22,7 +22,7 @@ function useGraph(): [Node[], Edge[]] {
   return [nodes, edges];
 }
 
-const nodeTypes = { create: NewNode, delete: DeleteNode };
+const nodeTypes = { create: NewNode, delete: DeleteNode, earlier: EarlierNode, later: LaterNode };
 export function Graph() {
   const [nodes, edges] = useGraph();
 
@@ -35,7 +35,8 @@ export function Graph() {
       onNodeClick={(_, node) => {
         node.type !== "create" &&
           node.type !== "delete" &&
-          node.type !== "root" &&
+          node.type !== "earlier" &&
+          node.type !== "later" &&
           useStore.setState({ selectedNode: node.id });
       }}
       nodeTypes={nodeTypes}

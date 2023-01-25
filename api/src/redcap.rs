@@ -110,7 +110,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     // Create Redcap record, including module index for uniqueness
     let mut record: HashMap<String, Entry> = HashMap::from([
         (
-            format!("field_record_id").to_string(),
+            String::from("field_record_id"),
             Entry::Text(res.user_id.to_string()),
         ),
         (
@@ -254,7 +254,7 @@ impl<'a> MetaData<'a> {
     ) -> Self {
         MetaData {
             field_name: String::from("field_") + &field_name, // field_name must not start with a number
-            form_name: String::from("module_") + &form_name,
+            form_name: String::from("module_") + form_name,
             section_header: "",
             field_type,
             field_label,
@@ -284,7 +284,7 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
             Modules::Survey(survey) => {
                 if i == 0 {
                     dictionary.push(MetaData::create(
-                        format!("record_id"),
+                        "record_id".to_string(),
                         &survey.id,
                         "text",
                         "Record ID",
@@ -310,9 +310,8 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
                 ));
                 for section in survey.sections.iter() {
                     for question in section.questions.iter() {
-                        match question {
-                            Question::Instruction { .. } => continue, // Skip instruction questions
-                            _ => (),
+                        if let Question::Instruction { .. } = question {
+                            continue; // Skip instruction questions
                         }
 
                         let field = MetaData::create(

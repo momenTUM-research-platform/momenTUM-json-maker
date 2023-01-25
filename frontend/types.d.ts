@@ -1,6 +1,6 @@
 declare type AtomVariants = "study" | "module" | "section" | "question" | "properties";
 
-declare type Actions = "create" | "delete";
+declare type Actions = "create" | "delete" | "earlier" | "later";
 
 declare type Mode = "graph" | "timeline";
 

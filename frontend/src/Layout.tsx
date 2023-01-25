@@ -1,5 +1,5 @@
-import React, { ReactChildren, ReactElement } from "react";
-import { download, load, save, saveDictionary, upload, validate } from "./utils/actions";
+import React, { ReactElement } from "react";
+import { validate } from "./utils/actions";
 // Icons
 import Rotate from "../assets/rotate";
 import Calendar from "../assets/calendar";
