@@ -28,10 +28,5 @@ export ROCKET_PORT=8000
 cargo install --path . 
 echo "##" Building API done "##"
 
-git checkout main
-cd ../frontend
-pnpm i 
-pnpm run build --outDir dist
-
 api 
 
