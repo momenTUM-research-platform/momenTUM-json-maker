@@ -10,6 +10,7 @@ export function calcGraphFromAtoms(atoms: Atoms): [Node[], Edge[]] {
     nodes.push({ id, data: { label: atom.title }, hidden: atom.hidden, position });
     // Create a node for each action of an atom, like deleting or creating
     atom.actions.forEach((action) => {
+      action === "later" && console.log(action);
       nodes.push({
         id: id + "_" + action,
         type: action,

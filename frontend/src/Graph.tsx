@@ -1,20 +1,20 @@
 import React, { useMemo } from "react";
-import ReactFlow, { MiniMap, Controls, Background, Edge, Node } from "reactflow";
+import ReactFlow, { MiniMap, Controls, Background, Edge, Node, useReactFlow } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
 import { NewNode, DeleteNode, EarlierNode, LaterNode } from "./CustomNodes";
-import { useStore } from "./state";
+import { nodeTypes, useStore } from "./state";
 import { alignNodes } from "./utils/alignNodes";
 import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
 import { hideAtoms } from "./utils/hideAtoms";
 
 function useGraph(): [Node[], Edge[]] {
-  let { atoms, selectedNode, direction } = useStore();
+  let { atoms, selectedNode, direction, forceRedraw } = useStore();
   const visibleAtoms = useMemo(
     () => hideAtoms(selectedNode || "study", atoms),
-    [selectedNode, atoms.size]
+    [selectedNode, atoms.size, forceRedraw]
   );
-  let [nodes, edges] = useMemo(() => calcGraphFromAtoms(visibleAtoms), [visibleAtoms]);
+  let [nodes, edges] = useMemo(() => calcGraphFromAtoms(visibleAtoms), [visibleAtoms, direction]);
   [nodes, edges] = useMemo(
     () => alignNodes(nodes, edges, direction),
     [nodes, edges, direction, visibleAtoms]
@@ -22,7 +22,6 @@ function useGraph(): [Node[], Edge[]] {
   return [nodes, edges];
 }
 
-const nodeTypes = { create: NewNode, delete: DeleteNode, earlier: EarlierNode, later: LaterNode };
 export function Graph() {
   const [nodes, edges] = useGraph();
 

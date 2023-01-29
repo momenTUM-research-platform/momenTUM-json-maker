@@ -12,13 +12,20 @@ import {
   initialSection,
   initialProperties,
 } from "./utils/initialValues";
+import { DeleteNode, EarlierNode, LaterNode, NewNode } from "./CustomNodes";
 // Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
 const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
+export const nodeTypes = {
+  create: NewNode,
+  delete: DeleteNode,
+  earlier: EarlierNode,
+  later: LaterNode,
+};
 
 export interface State {
   selectedNode: string | null; // ID of the currently selected Node
   mode: Mode;
-
+  forceRedraw: number;
   direction: "TB" | "LR";
   validator: ValidateFunction;
   atoms: Atoms;
@@ -44,6 +51,7 @@ export interface State {
 }
 
 export const useStore = create<State>()((set, get) => ({
+  forceRedraw: 0, // This is a hack to force a redraw of the graph. Just increment this when the graph needs to be redrawn.
   permalink: null,
   editableIds: false,
   liveValidation: true,
@@ -190,7 +198,6 @@ export const useStore = create<State>()((set, get) => ({
       produce((state: State) => {
         // It's assertion hell down here
         const parent_id = state.atoms.get(id)!.parent;
-        const parent = state.atoms.get(parent_id!)!;
         const siblings = state.atoms.get(parent_id!)!.subNodes!;
         const index = siblings.indexOf(id);
         if (direction === "earlier" && index > 0) {
@@ -201,6 +208,7 @@ export const useStore = create<State>()((set, get) => ({
           siblings.splice(index, 1);
           siblings.splice(index + 1, 0, id);
         }
+        state.forceRedraw += 1;
       })
     );
   },

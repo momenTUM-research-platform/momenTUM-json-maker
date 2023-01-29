@@ -133,6 +133,7 @@ export function Settings() {
                         aria-describedby="editable-ids-description"
                         name="editable-ids"
                         type="checkbox"
+                        readOnly
                         checked={editableIds}
                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
