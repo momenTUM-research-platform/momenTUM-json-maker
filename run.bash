@@ -28,6 +28,7 @@ git checkout main # Bild the production version
 pnpm i 
 pnpm run build --outDir dist    
 
+cd ../api 
 
 api 
 
