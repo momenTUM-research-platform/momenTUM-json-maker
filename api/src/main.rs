@@ -62,6 +62,22 @@ async fn assets(path: PathBuf) -> Option<NamedFile> {
     }
 }
 
+#[get("/preview")]
+async fn preview() -> Option<NamedFile> {
+    let path = Path::new(relative!("../frontend/dist-preview/")).join("index.html");
+    NamedFile::open(path).await.ok()
+}
+
+#[get("/preview/<path..>")]
+async fn preview_assets(path: PathBuf) -> Option<NamedFile> {
+    let path = Path::new(relative!("../frontend/dist-preview/")).join(path);
+    if path.is_file() {
+        NamedFile::open(path).await.ok()
+    } else {
+        None
+    }
+}
+
 #[get("/api/v1/status")]
 fn status() -> &'static str {
     "The V1 API is live!"
@@ -275,7 +291,9 @@ fn rocket() -> _ {
                 save_response,
                 create_redcap_project,
                 all_studies_of_study_id,
-                add_user
+                add_user,
+                preview,
+                preview_assets
             ],
         )
 }
