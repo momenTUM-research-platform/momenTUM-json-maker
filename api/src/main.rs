@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate rocket;
 
+pub extern crate lazy_static;
+
+
 use mongodb::options::ReplaceOptions;
 use mongodb::{
     bson::{doc, oid::ObjectId, DateTime},
@@ -47,7 +50,7 @@ pub struct Key {
 }
 
 #[get("/")]
-async fn index() -> Option<NamedFile> {
+pub async fn index() -> Option<NamedFile> {
     let path = Path::new(relative!("../frontend/dist/")).join("index.html");
     NamedFile::open(path).await.ok()
 }
@@ -223,7 +226,7 @@ impl Fairing for CORS {
 }
 
 #[launch]
-fn rocket() -> _ {
+pub fn rocket() -> _ {
     println!("The API is using the {ACTIVE_DB} database");
     rocket::build()
         .register("/", catchers![catch_malformed_request])
