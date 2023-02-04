@@ -1,13 +1,13 @@
 import { Toaster } from "react-hot-toast";
 
 import { useEffect, useState } from "react";
-import { Form } from "./Form";
-import { Graph } from "./Graph";
-import { Layout } from "./Layout";
+import { Form } from "./renderers/Form";
+import { Graph } from "./renderers/Graph";
+import { Layout } from "./renderers/Layout";
 import { useStore } from "./state";
 import Drag from "../assets/drag";
-import { Calendar } from "./Calendar";
-import { Modal } from "./Modal";
+import { Calendar } from "./renderers/Calendar";
+import { Modal } from "./renderers/controllers/Modal";
 
 export const API_URL =
   process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";

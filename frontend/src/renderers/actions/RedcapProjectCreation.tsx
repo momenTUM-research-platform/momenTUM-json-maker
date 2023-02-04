@@ -1,64 +1,54 @@
 import { Dialog } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { resolve } from "path";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
-import { classNames } from "./Calendar";
-import { useStore } from "./state";
-import { download, upload, validateStudy } from "./utils/actions";
-import { constructStudy } from "./utils/construct";
-import { deconstructStudy } from "./utils/deconstruct";
+import { classNames } from "../Calendar";
+import { useStore } from "../../state";
+import { createRedcapProject, validateStudy } from "../../services/actions";
+import { constructStudy } from "../../utils/construct";
 
 const steps = [
   {
-    name: "Enter Study ID",
-    description: "You can download a study by entering its ID or permalink",
-  },
-  {
-    name: "Download",
-    description: "Fetching the study from the server...",
+    name: "Authentication",
+    description: "Provide your RedCap username",
   },
   {
     name: "Verification",
     description: "Quick check that the study is correct",
   },
+  {
+    name: "Creation",
+    description: "Creating your project in RedCap",
+  },
   { name: "Finished", description: "Everything worked as expected" },
 ];
-export function Download({ close }: { close: () => void }) {
+export function RedCap({ close }: { close: () => void }) {
   const [step, setStep] = useState(-1);
-  const [studyId, setStudyId] = useState<string | null>(null);
-  const [study, setStudy] = useState<Study | null>(null);
-  const { setAtoms } = useStore();
+  const [username, setUsername] = useState<null | string>(null);
+  const { atoms, setModal } = useStore();
+  const study: Study = useMemo(() => constructStudy(atoms), []);
   useEffect(() => {
     if (step < 0 || step > 3) return;
     const actions = [
-      //  Check study ID
+      // Check username
       () =>
         new Promise((resolve, reject) => {
-          if (studyId) {
+          if (username) {
             resolve(null);
-          } else reject("You need to enter a study ID");
+          } else reject("You need to enter a username");
         }),
-      // Download
-      () => download(studyId!),
       // Validate
       () =>
         new Promise((resolve, reject) =>
           validateStudy(study) ? resolve(null) : reject("Study is invalid")
         ),
-      // Set atoms
-      () =>
-        new Promise((resolve, reject) => {
-          const atoms = deconstructStudy(study!);
-          setAtoms(atoms);
-
-          resolve(null);
-        }),
+      // Upload
+      () => createRedcapProject(username!, study),
+      // Finished
+      () => new Promise((resolve, reject) => resolve(null)),
     ];
     actions[step]()
       .then((result) => {
-        if (step === 1) setStudy(result as Study);
         setStep(step + 1);
       })
       .catch((e) => toast.error(e));
@@ -71,23 +61,23 @@ export function Download({ close }: { close: () => void }) {
       </div>
       <div className="mt-3 mb-2 text-center sm:mt-5">
         <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-          Download Study
+          Create RedCap Project
         </Dialog.Title>
       </div>
       {step === -1 ? (
         <div>
-          <label htmlFor="study_id" className="block text-sm font-medium text-gray-700">
-            Study ID
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            RedCap Username{" "}
           </label>
           <div className=" flex gap-2 mt-1">
             <input
               type="text"
-              name="study_id"
-              id="study_id"
+              name="username"
+              id="username"
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="some_random_id"
-              aria-describedby="study_id"
-              onChange={(e) => setStudyId(e.target.value)}
+              placeholder="Username"
+              aria-describedby="username"
+              onChange={(e) => setUsername(e.target.value)}
             />
             <button
               type="button"
@@ -98,7 +88,8 @@ export function Download({ close }: { close: () => void }) {
             </button>
           </div>
           <p className="mt-2 text-sm text-gray-500">
-            You can download a study by entering its ID or permalink.
+            Please enter your RedCap username. It must exist in RedCap already. If you don't have
+            one, contact Manuel.
           </p>
         </div>
       ) : (
@@ -175,25 +166,27 @@ export function Download({ close }: { close: () => void }) {
           </ol>
         </nav>
       )}
-      <div className="mt-5 sm:mt-6">
-        {step < 3 ? (
-          <button
-            type="button"
+
+      {step === 4 ? (
+        <div className="mt-5 sm:mt-6">
+          <a
+            href="https://tuspl22-redcap.srv.mwn.de/redcap/index.php?action=myprojects"
             className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
-            onClick={() => setStep(-1)}
           >
-            Enter a different study ID
-          </button>
-        ) : (
+            Visit RedCap
+          </a>
+        </div>
+      ) : (
+        <div className="mt-5 sm:mt-6">
           <button
             type="button"
             className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
             onClick={close}
           >
-            Close
+            Go back to editor
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

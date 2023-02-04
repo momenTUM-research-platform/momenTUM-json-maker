@@ -8,8 +8,8 @@ import {
 } from "@heroicons/react/20/solid";
 import { Menu, Transition } from "@headlessui/react";
 import dayjs from "dayjs";
-import { useStore } from "./state";
-import { useTimeline } from "./utils/useTimeline";
+import { useStore } from "../state";
+import { useTimeline } from "../utils/useTimeline";
 
 export function classNames(...classes: (boolean | null | undefined | string)[]) {
   return classes.filter(Boolean).join(" ");

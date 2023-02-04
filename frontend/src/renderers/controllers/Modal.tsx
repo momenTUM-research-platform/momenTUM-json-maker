@@ -1,10 +1,10 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useStore } from "./state";
-import { Upload } from "./Upload";
-import { Download } from "./Download";
-import { QR } from "./QR";
+import { useStore } from "../../state";
+import { Upload } from "../actions/Upload";
+import { Download } from "../actions/Download";
+import { QR } from "../QR";
 import { Fragment } from "react";
-import { RedCap } from "./RedcapProjectCreation";
+import { RedCap } from "../actions/RedcapProjectCreation";
 
 export function Modal() {
   const { modal, setModal } = useStore();

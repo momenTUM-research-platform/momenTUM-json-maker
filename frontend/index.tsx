@@ -3,7 +3,7 @@ import "./index.css";
 import App from "./src/App";
 import React from "react";
 import { enableMapSet } from "immer";
-import { dragFix } from "./src/utils/dragFix";
+import { dragFix } from "./src/helpers/dragFix";
 // @ts-nocheck
 // Fix for firefox dragging bug https://stackoverflow.com/questions/11656061/why-is-event-clientx-incorrectly-showing-as-0-in-firefox-for-dragend-event/63365865#63365865
 if (

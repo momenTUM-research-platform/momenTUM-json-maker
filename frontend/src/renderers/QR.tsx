@@ -2,8 +2,8 @@ import { Dialog } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import QRCode from "react-qr-code";
 import { useMemo, useState } from "react";
-import { useStore } from "./state";
-import { constructStudy } from "./utils/construct";
+import { useStore } from "../state";
+import { constructStudy } from "../utils/construct";
 
 export function QR({ close }: { close: () => void }) {
   const { permalink, atoms } = useStore();

@@ -1,8 +1,8 @@
 import { NodeProps } from "reactflow";
 
-import { useStore } from "./state";
-import Plus from "../assets/plus";
-import Delete from "../assets/delete";
+import { useStore } from "../state";
+import Plus from "../../assets/plus";
+import Delete from "../../assets/delete";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import { ArrowUpIcon } from "@heroicons/react/24/outline";
 

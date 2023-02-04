@@ -1,32 +1,12 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useStore } from "../state";
-import { schedule } from "./scheduler";
-import { isModule } from "./typeGuards";
+import { calculateTimelineFromAtoms } from "./calculatorsFromAtoms";
 
-function calcTimelineFromAtoms(atoms: Atoms, properties: Properties): Days {
-  const FORECAST_LENGTH = 1000; // days
-  const currentDate = dayjs();
-  let days: Days = Array.from({ length: FORECAST_LENGTH }, (_) => []); // Create an array of arrays of length 1000
-  atoms.forEach((atom, id) => {
-    const content = atom.content;
-    if (!isModule(content)) {
-      return;
-    }
-    // Get schedules occurances of module
-    const events = schedule(content, properties);
-    events
-      .filter((event) => event.module === id)
-      .forEach((event) => {
-        const eventDate = dayjs(event.timestamp);
-        const offsetFromToday = dayjs(event.timestamp).diff(currentDate, "days");
-        days[offsetFromToday].push(event);
-      });
-  });
-
-  return days;
-}
-
+/**
+ * Uses timeline to return Days, setDate and Days[]
+ * @returns Array
+ */
 export function useTimeline(): [
   dayjs.Dayjs,
   React.Dispatch<React.SetStateAction<dayjs.Dayjs>>,
@@ -36,13 +16,13 @@ export function useTimeline(): [
   const { atoms } = useStore();
   const [days, setDays] = useState<Days>(
     // @ts-ignore
-    calcTimelineFromAtoms(atoms, atoms.get("properties")!.content)
+    calculateTimelineFromAtoms(atoms, atoms.get("properties")!.content)
   );
   const [visibleDays, setVisibleDays] = useState<Day[]>([]);
 
   useEffect(() => {
     // @ts-ignore
-    const events = calcTimelineFromAtoms(atoms, atoms.get("properties")!.content);
+    const events = calculateTimelineFromAtoms(atoms, atoms.get("properties")!.content);
     setDays(events);
     let visibleDays: Day[] = [];
     const offsetFromToday = date.diff(dayjs(), "day");

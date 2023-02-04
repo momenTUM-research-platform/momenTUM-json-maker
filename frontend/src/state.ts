@@ -5,14 +5,14 @@ import produce from "immer";
 import Ajv, { ValidateFunction } from "ajv";
 import { deleteNode } from "./utils/deleteNode";
 import { study } from "../schema/study";
-import { isModule, isQuestion, isSection, isProperties } from "./utils/typeGuards";
+import { isModule, isQuestion, isSection, isProperties } from "./types/guards";
 import {
   initialModule,
   initialQuestion,
   initialSection,
   initialProperties,
-} from "./utils/initialValues";
-import { DeleteNode, EarlierNode, LaterNode, NewNode } from "./CustomNodes";
+} from "./helpers/initialValues";
+import { DeleteNode, EarlierNode, LaterNode, NewNode } from "./renderers/CustomNodes";
 // Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
 const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
 export const nodeTypes = {

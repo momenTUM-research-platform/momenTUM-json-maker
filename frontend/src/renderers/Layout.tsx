@@ -1,12 +1,12 @@
 import React, { ReactElement } from "react";
-import { validate } from "./utils/actions";
+import { validate } from "../services/actions";
 // Icons
-import Rotate from "../assets/rotate";
-import Calendar from "../assets/calendar";
-import { useStore } from "./state";
+import Rotate from "../../assets/rotate";
+import Calendar from "../../assets/calendar";
+import { useStore } from "../state";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error
-import Logo from "../assets/icon.png";
+import Logo from "../../assets/icon.png";
 import { Menu } from "./Menu";
 import { Settings } from "./Settings";
 export function Layout({ children }: { children: ReactElement }) {

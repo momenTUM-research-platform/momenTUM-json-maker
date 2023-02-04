@@ -2,8 +2,8 @@ import toast from "react-hot-toast";
 import { API_URL } from "../App";
 import { useStore } from "../state";
 import { DefinedError } from "ajv";
-import { constructStudy } from "./construct";
-import { deconstructStudy } from "./deconstruct";
+import { constructStudy } from "../utils/construct";
+import { deconstructStudy } from "../utils/deconstruct";
 
 export function validateStudy(study: any): study is Study {
   const { validator } = useStore.getState();

@@ -1,12 +1,12 @@
 import FormComponent from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
 import { useMemo, useState } from "react";
-import { module } from "../schema/module";
-import { properties } from "../schema/properties";
-import { question } from "../schema/question";
-import { section } from "../schema/section";
-import { study } from "../schema/study";
-import { useStore } from "./state";
+import { module } from "../../schema/module";
+import { properties } from "../../schema/properties";
+import { question } from "../../schema/question";
+import { section } from "../../schema/section";
+import { study } from "../../schema/study";
+import { useStore } from "../state";
 
 export function Form({ id }: { id: string }) {
   const { atoms, setAtom, conditions, saveAtoms, showHidingLogic, liveValidation, editableIds } =

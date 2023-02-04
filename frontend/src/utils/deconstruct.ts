@@ -1,4 +1,4 @@
-import { isProperties, isModule, isSection, isQuestion } from "./typeGuards";
+import { isProperties, isModule, isSection, isQuestion } from "../types/guards";
 
 export function deconstructStudy(study: Study): Atoms {
   let atoms: Atoms = new Map();

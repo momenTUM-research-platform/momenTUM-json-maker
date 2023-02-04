@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { classNames } from "./Calendar";
-import { useStore } from "./state";
+import { useStore } from "../state";
 export function Settings() {
   const {
     setShowHidingLogic,

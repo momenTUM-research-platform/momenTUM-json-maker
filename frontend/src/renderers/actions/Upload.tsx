@@ -3,10 +3,10 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import { resolve } from "path";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
-import { classNames } from "./Calendar";
-import { useStore } from "./state";
-import { upload, validateStudy } from "./utils/actions";
-import { constructStudy } from "./utils/construct";
+import { classNames } from "../Calendar";
+import { useStore } from "../../state";
+import { upload, validateStudy } from "../../services/actions";
+import { constructStudy } from "../../utils/construct";
 
 const steps = [
   {

@@ -11,7 +11,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "tsc": "tsc",
-    "vitest": "vitest"
+    "vitest": "vitest",
+    "ptest": "playwright test && playwright show-report",
+    "pltest": "playwright test",
+    "report": "playwright show-report"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -28,6 +31,7 @@
     "@types/dagre": "^0.7.48",
     "ajv": "^8.11.2",
     "autoprefixer": "^10.4.12",
+    "cypress": "^12.5.1",
     "dagre": "^0.8.5",
     "dayjs": "^1.11.4",
     "immer": "^9.0.15",
@@ -43,6 +47,7 @@
     "zustand": "^4.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.30.0",
     "@types/node": "^18.11.9",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
