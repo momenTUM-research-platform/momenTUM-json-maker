@@ -32,7 +32,7 @@ function App() {
         </section>
         <section
           draggable={true}
-          onDrag={(e) => {
+          onDragEnd={(e) => {
             e.preventDefault();
             setDistribution(e.clientX / window.innerWidth);
           }}
