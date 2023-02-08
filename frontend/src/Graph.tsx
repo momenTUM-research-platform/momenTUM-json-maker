@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import ReactFlow, { MiniMap, Controls, Background, Edge, Node, useReactFlow } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
-import { NewNode, DeleteNode, EarlierNode, LaterNode } from "./CustomNodes";
 import { nodeTypes, useStore } from "./state";
 import { alignNodes } from "./utils/alignNodes";
 import { calcGraphFromAtoms } from "./utils/calcGraphFromAtoms";
