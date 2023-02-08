@@ -10,7 +10,7 @@ export const properties = {
       study_id: "3ZDOGAH",
       created_by: "Adrian Shatte",
       instructions: "This is a demo study showing the features of schema",
-      post_url: "https://tuspl22-momentum.srv.mwn.de/post.php",
+      post_url: "https://make.momentumresearch.eu/api/v1/response",
       empty_msg: "You're all up to date",
       banner_url: "https://getschema.app/img/schema_banner.png",
       support_url: "https://getschema.app",

@@ -47,7 +47,6 @@ export function Upload({ close }: { close: () => void }) {
     ];
     actions[step]()
       .then((result) => {
-        console.log("Finished step", step);
         if (step === 2) setPermalink(result as string);
         setStep(step + 1);
       })

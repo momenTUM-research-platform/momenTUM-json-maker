@@ -2,7 +2,6 @@ import { isStudy } from "./typeGuards";
 
 export function constructStudy(atoms: Atoms): Study {
   const start = JSON.parse(JSON.stringify(atoms.get("study"))) as Atom<Study>;
-  console.log(start.content);
   let study = appendChildren(start);
   return study;
 
@@ -12,7 +11,7 @@ export function constructStudy(atoms: Atoms): Study {
       result.properties = atoms.get("properties")!.content as Properties;
     }
 
-    // After instatiation, recursively append children
+    // After instantiation, recursively append children
     atom.subNodes &&
       atom.subNodes.forEach((id) => {
         let node = atoms.get(id);
@@ -28,7 +27,7 @@ export function constructStudy(atoms: Atoms): Study {
           // @ts-ignore
           const type: AtomVariants = atom.content._type;
           switch (type) {
-            case "properties": {
+            case "study": {
               //@ts-expect-error
               result.modules.push(children);
               break;

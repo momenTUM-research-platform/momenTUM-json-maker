@@ -9,7 +9,7 @@ import {
   CloudArrowUpIcon,
   QrCodeIcon,
 } from "@heroicons/react/24/outline";
-import { download, load, save, saveDictionary, upload } from "./utils/actions";
+import { load, save } from "./utils/actions";
 import { classNames } from "./Calendar";
 import { useStore } from "./state";
 
@@ -43,10 +43,10 @@ export function Menu() {
       icon: CloudArrowDownIcon,
     },
     {
-      name: "Generate Redcap Dictionary",
+      name: "Create Redcap Project",
       description:
-        "Generate a representation of your study that enables Redcap to store the responses from your participants.",
-      action: saveDictionary,
+        "Automagically creates a project in Redcap with your study and stores the responses from your participants in it.",
+      action: () => setModal("redcap"),
       icon: BookOpenIcon,
     },
     {

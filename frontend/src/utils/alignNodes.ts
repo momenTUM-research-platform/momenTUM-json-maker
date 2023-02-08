@@ -14,14 +14,18 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
     marginx: 100,
     marginy: 200,
   });
-  // state.atoms.forEach((a, id) => console.log(id, a.hidden));
+
   // Action nodes will be placed manually
   const nodesToPosition = nodes.filter(
-    (n) => !(n.hidden || n.type === "create" || n.type === "delete")
+    (n) =>
+      !(
+        n.hidden ||
+        n.type === "create" ||
+        n.type === "delete" ||
+        n.type === "earlier" ||
+        n.type === "later"
+      )
   );
-
-  //console.log(nodesToPosition.map((a) => [a.id, a.hidden]));
-  //console.log(nodesToPosition.length);
 
   nodesToPosition.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -65,6 +69,26 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
 
       node.position = {
         x: parent.position.x + 135,
+        y: parent.position.y - 10,
+      };
+    });
+
+  nodes
+    .filter((n) => n.type === "earlier")
+    .forEach((node) => {
+      const parent = nodes.find((n) => n.id === node.id.slice(0, -8))!; // removing _earlier from the id to gain parent
+      node.position = {
+        x: parent.position.x + 50,
+        y: parent.position.y - 10,
+      };
+    });
+
+  nodes
+    .filter((n) => n.type === "later")
+    .forEach((node) => {
+      const parent = nodes.find((n) => n.id === node.id.slice(0, -6))!; // removing _later from the id to gain parent
+      node.position = {
+        x: parent.position.x + 90,
         y: parent.position.y - 10,
       };
     });

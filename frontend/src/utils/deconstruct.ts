@@ -17,7 +17,7 @@ export function deconstructStudy(study: Study): Atoms {
         subNodes: object.sections.map((s) => normalizeID(s.id)),
         type: "module",
         childType: "section",
-        content: { ...object, _type: "module" },
+        content: { ...object, _type: "module", sections: [] },
         title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
 
         actions: ["create", "delete"],
@@ -32,10 +32,10 @@ export function deconstructStudy(study: Study): Atoms {
         subNodes: object.questions.map((s) => normalizeID(s.id)),
         type: "section",
         childType: "question",
-        content: { ...object, _type: "section" },
+        content: { ...object, _type: "section", questions: [] },
         title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
 
-        actions: ["create", "delete"],
+        actions: ["create", "delete", "earlier", "later"],
         hidden: false,
       };
 
@@ -49,7 +49,7 @@ export function deconstructStudy(study: Study): Atoms {
         childType: null,
         content: { ...object, _type: "question" },
         title: object.text.length > 32 ? object.text.slice(0, 60) + "..." : object.text,
-        actions: ["delete"],
+        actions: ["delete", "earlier", "later"],
         hidden: false,
       };
 

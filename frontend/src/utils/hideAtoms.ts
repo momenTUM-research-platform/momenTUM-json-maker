@@ -40,7 +40,6 @@ export function hideAtoms(selectedNode: string, atoms: Atoms): Atoms {
   recursivelyFindIdsOfParentNodes(focus);
 
   nodesToShow.forEach((a) => hideAtom(atomsCopy, a, false));
-  //  console.table(atoms);
   return atomsCopy;
 }
 

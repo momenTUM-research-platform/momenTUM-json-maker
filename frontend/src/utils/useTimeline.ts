@@ -41,7 +41,6 @@ export function useTimeline(): [
   const [visibleDays, setVisibleDays] = useState<Day[]>([]);
 
   useEffect(() => {
-    console.log("Running");
     // @ts-ignore
     const events = calcTimelineFromAtoms(atoms, atoms.get("properties")!.content);
     setDays(events);

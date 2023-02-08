@@ -10,7 +10,7 @@
         "study_id": "monster",
         "created_by": "Constantin Goeldel",
         "instructions": "<p>I'll try to show <b>everything</b> that can be done</p>",
-        "post_url": "https://tuspl22-momentum.srv.mwn.de/post.php",
+        "post_url": "https://make.momentumresearch.eu/api/v1/response",
         "empty_msg": "Nothing left to do :(",
         "banner_url": "https://files.slack.com/files-pri/T02H5SNFRSR-F04HL73LJ7K/grafik.png",
         "support_url": "https://www.momentumresearch.eu/",

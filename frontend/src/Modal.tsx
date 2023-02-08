@@ -1,10 +1,10 @@
-import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/24/outline";
 import { useStore } from "./state";
 import { Upload } from "./Upload";
 import { Download } from "./Download";
 import { QR } from "./QR";
+import { Fragment } from "react";
+import { RedCap } from "./RedcapProjectCreation";
 
 export function Modal() {
   const { modal, setModal } = useStore();
@@ -14,6 +14,7 @@ export function Modal() {
     upload: <Upload close={() => setModal(null)} />,
     download: <Download close={() => setModal(null)} />,
     qr: <QR close={() => setModal(null)} />,
+    redcap: <RedCap close={() => setModal(null)} />,
   };
 
   return (

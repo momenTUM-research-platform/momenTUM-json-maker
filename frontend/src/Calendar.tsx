@@ -30,8 +30,6 @@ export function Calendar() {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [date, setDate, days] = useTimeline();
 
-  console.log(days);
-
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
       <header className="flex items-center justify-between border-b border-gray-200 py-4 px-6 lg:flex-none">

@@ -217,6 +217,23 @@ pub enum Modules {
     Audio,
 }
 
+impl Modules {
+    pub fn get_id(&self) -> Option<String> {
+        match self {
+            Modules::Survey(survey) => Some(survey.id.clone()),
+            Modules::Pvt(pvt) => Some(pvt.id.clone()),
+            _ => None,
+        }
+    }
+    pub fn get_name(&self) -> Option<String> {
+        match self {
+            Modules::Survey(survey) => Some(survey.name.clone()),
+            Modules::Pvt(pvt) => Some(pvt.name.clone()),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GraphOrNoGraph {
@@ -237,5 +254,41 @@ mod test {
         let json = include_str!("../../studies/monster.json");
         let study: super::Study = serde_json::from_str(json).unwrap();
         assert_eq!(study.properties.created_by, "Constantin Goeldel")
+    }
+}
+
+pub trait BasicQuestion {
+    fn get_id(&self) -> &str;
+    fn get_text(&self) -> &str;
+    fn get_response_data_type(&self) -> &str;
+}
+
+// Implement the trait for the enum
+impl BasicQuestion for Question {
+    fn get_id(&self) -> &str {
+        match self {
+            Question::Text { id, .. } => id,
+            Question::Datetime { id, .. } => id,
+            Question::YesNo { id, .. } => id,
+            Question::Slider { id, .. } => id,
+            Question::Multi { id, .. } => id,
+            Question::Media { id, .. } => id,
+            Question::Instruction { id, .. } => id,
+        }
+    }
+
+    fn get_text(&self) -> &str {
+        match self {
+            Question::Text { text, .. } => text,
+            Question::Datetime { text, .. } => text,
+            Question::YesNo { text, .. } => text,
+            Question::Slider { text, .. } => text,
+            Question::Multi { text, .. } => text,
+            Question::Media { text, .. } => text,
+            Question::Instruction { text, .. } => text,
+        }
+    }
+    fn get_response_data_type(&self) -> &str {
+        "text"
     }
 }

@@ -4,7 +4,14 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { classNames } from "./Calendar";
 import { useStore } from "./state";
 export function Settings() {
-  const { setShowHidingLogic, showHidingLogic, liveValidation, setLiveValidation } = useStore();
+  const {
+    setShowHidingLogic,
+    showHidingLogic,
+    liveValidation,
+    setLiveValidation,
+    editableIds,
+    setIdsEditable,
+  } = useStore();
   return (
     <Menu as="div" className=" inline-block text-left">
       <div>
@@ -99,7 +106,7 @@ export function Settings() {
                 </a>
               )}
             </Menu.Item>
-            {/* <Menu.Item>
+            <Menu.Item>
               {({ active }) => (
                 <a
                   className={classNames(
@@ -107,21 +114,26 @@ export function Settings() {
                     "block px-4 py-2 text-sm"
                   )}
                 >
-                  <div className="relative flex items-start py-4">
+                  <div
+                    onClick={() => setIdsEditable(!editableIds)}
+                    className="relative flex items-start py-4"
+                  >
                     <div className="min-w-0 flex-1 text-sm">
-                      <label htmlFor="candidates" className="font-medium text-gray-700">
-                        Candidates
+                      <label htmlFor="editable-ids" className="font-medium text-gray-700">
+                        Editable IDs
                       </label>
-                      <p id="candidates-description" className="text-gray-500">
-                        Get notified when a candidate applies for a job.
+                      <p id="editable-ids-description" className="text-gray-500">
+                        Show option to manually edit the IDs of modules. Improves discoverability in
+                        RedCap but you'll have to comply with their strict character limitations.
                       </p>
                     </div>
                     <div className="ml-3 flex h-5 items-center">
                       <input
-                        id="candidates"
-                        aria-describedby="candidates-description"
-                        name="candidates"
+                        id="editable-ids"
+                        aria-describedby="editable-ids-description"
+                        name="editable-ids"
                         type="checkbox"
+                        checked={editableIds}
                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
                     </div>
@@ -129,7 +141,6 @@ export function Settings() {
                 </a>
               )}
             </Menu.Item>
-            */}
           </div>
         </Menu.Items>
       </Transition>

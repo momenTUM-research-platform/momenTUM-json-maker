@@ -32,7 +32,6 @@ function App() {
         </section>
         <section
           draggable={true}
-          onClick={() => console.log("Clicked")}
           onDrag={(e) => {
             e.preventDefault();
             setDistribution(e.clientX / window.innerWidth);
