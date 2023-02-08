@@ -1,4 +1,4 @@
-use crate::study::{BasicQuestion, Modules, Question};
+use crate::study::{BasicQuestion, Modules};
 use crate::Result;
 use crate::{error::Error, study::Study, Key, ACTIVE_DB, DB};
 use mongodb::bson::doc;
@@ -134,7 +134,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     if let Some(ref response) = res.responses {
         let response: HashMap<String, Entry> = serde_json::from_str(response.as_str())?;
         response.iter().for_each(|(k, v)| {
-            record.insert(format!("field_{}", k), v.clone());
+            record.insert(format!("field_{k}"), v.clone());
         });
     };
 
@@ -153,7 +153,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
         .insert_one(&record_including_raw, None)
         .await?;
 
-    println!("Record: {:#?}", record);
+    println!("Record: {record:#?}");
     let payload = Payload {
         token: key.api_key,
         content: "record".to_string(),
@@ -297,22 +297,22 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
                 //     "Participant ID",
                 // ));
                 dictionary.push(MetaData::create(
-                    format!("response_time_in_ms_{}", i),
+                    format!("response_time_in_ms_{i}"),
                     &survey.id,
                     "text",
                     "Response Time in Milliseconds",
                 ));
                 dictionary.push(MetaData::create(
-                    format!("response_time_{}", i),
+                    format!("response_time_{i}"),
                     &survey.id,
                     "text",
                     "Response Time",
                 ));
                 for section in survey.sections.iter() {
                     for question in section.questions.iter() {
-                        if let Question::Instruction { .. } = question {
-                            continue; // Skip instruction questions
-                        }
+                        // if let Question::Instruction { .. } = question {
+                        //     continue; // Skip instruction questions
+                        // }
 
                         let field = MetaData::create(
                             question.get_id().to_string(),
@@ -327,7 +327,7 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
             _ => continue, // not implemented for other
         }
     }
-    println!("{:#?}", dictionary);
+    println!("{dictionary:#?}");
 
     let payload = Payload {
         token: api_key,
@@ -374,7 +374,7 @@ pub async fn enable_repeating_instruments(study: &Study, api_key: ApiKey) -> Res
             _ => continue,
         }
     }
-    println!("{:#?}", repeating_instruments);
+    println!("{repeating_instruments:#?}");
 
     let payload = Payload {
         token: api_key,

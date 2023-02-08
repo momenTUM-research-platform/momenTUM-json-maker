@@ -289,8 +289,6 @@ impl BasicQuestion for Question {
         }
     }
     fn get_response_data_type(&self) -> &str {
-        match self {
-            _ => "text",
-        }
+        "text"
     }
 }
