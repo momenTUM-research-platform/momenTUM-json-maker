@@ -13,6 +13,9 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
     rankdir: direction,
     marginx: 100,
     marginy: 200,
+    compound: true,
+    ranker: "tight-tree",
+    nodesep: 70,
   });
 
   // Action nodes will be placed manually
@@ -79,7 +82,7 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
       const parent = nodes.find((n) => n.id === node.id.slice(0, -8))!; // removing _earlier from the id to gain parent
       node.position = {
         x: parent.position.x + 50,
-        y: parent.position.y - 10,
+        y: parent.position.y - 25,
       };
     });
 
@@ -89,7 +92,7 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
       const parent = nodes.find((n) => n.id === node.id.slice(0, -6))!; // removing _later from the id to gain parent
       node.position = {
         x: parent.position.x + 90,
-        y: parent.position.y - 10,
+        y: parent.position.y - 25,
       };
     });
   return [nodes, edges];

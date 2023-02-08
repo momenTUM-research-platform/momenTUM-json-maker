@@ -1,5 +1,4 @@
-import React from "react";
-import { Handle, NodeProps, Position } from "reactflow";
+import { NodeProps } from "reactflow";
 
 import { useStore } from "./state";
 import Plus from "../assets/plus";
@@ -47,30 +46,30 @@ export function DeleteNode({ data }: NodeProps<{ parent: string }>) {
   );
 }
 
-export function EarlierNode({ data }: NodeProps<{ id: string }>) {
+export function EarlierNode({ data }: NodeProps<{ parent: string }>) {
   const { atoms, moveNode } = useStore();
-  if (!atoms.get(data.id)) {
+  if (!atoms.get(data.parent)) {
     return <></>;
   }
   return (
     <div
-      className={` bg-blue-600 hover:opacity-80 p-1 cursor-crosshair text-white rounded-2xl h-6 w-6`}
-      onClick={() => moveNode(data.id, "earlier")}
+      className={` bg-blue-600 cursor-cell hover:opacity-80 p-2 fade  rounded-lg h-8 w-8 text-white`}
+      onClick={() => moveNode(data.parent, "earlier")}
     >
       <ArrowUpIcon />
     </div>
   );
 }
 
-export function LaterNode({ data }: NodeProps<{ id: string }>) {
+export function LaterNode({ data }: NodeProps<{ parent: string }>) {
   const { atoms, moveNode } = useStore();
-  if (!atoms.get(data.id)) {
+  if (!atoms.get(data.parent)) {
     return <></>;
   }
   return (
     <div
-      className={` bg-blue-600 hover:opacity-80 p-1 cursor-crosshair text-white rounded-2xl h-6 w-6`}
-      onClick={() => moveNode(data.id, "later")}
+      className={` bg-blue-600 cursor-cell hover:opacity-80 p-2 fade  rounded-lg h-8 w-8 text-white`}
+      onClick={() => moveNode(data.parent, "later")}
     >
       <ArrowDownIcon />
     </div>
