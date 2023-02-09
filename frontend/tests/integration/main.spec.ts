@@ -1,33 +1,47 @@
 import { test, expect, type Page } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("https://demo.playwright.dev/todomvc");
+  await page.goto("http://localhost:3000");
 });
 
-test.describe("Download button", () => {
-
-  test("should display the correct text", async ({ page }) => {
-    await page.locator(".todo-list li .toggle").first().check();
-    await expect(
-      page.getByRole("button", { name: "Clear completed" })
-    ).toBeVisible();
-  });
-
-  test("should remove completed items when clicked", async ({ page }) => {
-    const todoItems = page.getByTestId("todo-item");
-    await todoItems.nth(1).getByRole("checkbox").check();
-    await page.getByRole("button", { name: "Clear completed" }).click();
-    await expect(todoItems).toHaveCount(2);
-    await expect(todoItems).toHaveText([TODO_ITEMS[0], TODO_ITEMS[2]]);
-  });
-
-  test("should be hidden when there are no items that are completed", async ({
+test.describe("Action button", () => {
+  test("should open actions and view the option to save study", async ({
     page,
   }) => {
-    await page.locator(".todo-list li .toggle").first().check();
-    await page.getByRole("button", { name: "Clear completed" }).click();
-    await expect(
-      page.getByRole("button", { name: "Clear completed" })
-    ).toBeHidden();
+    // Start waiting for download before clicking. Note no await.
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Actions" }).click();
+    await page.isVisible("text='Save Study'");
+    await page.isVisible(
+      "text='Save your study on your computer in a JSON file.'"
+    );
+
+    await page.getByText("Save Study").click();
+    const download = await downloadPromise;
+    // Wait for the download process to complete
+    console.log(await download.path());
+  });
+
+  test("should open actions and view the option to load study", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: "Actions" }).click();
+    await page.isVisible("text='Load Study'");
+    await page.isVisible(
+      "text='Load a study from a JSON file on your computer.'"
+    );
+    const [fileChooser] = await Promise.all([
+      // It is important to call waitForEvent before click to set up waiting.
+
+      page.waitForEvent("filechooser"),
+      // Opens the file chooser.
+      page.getByText("Load Study").click(),
+    ]);
+    await fileChooser.setFiles(["./tests//uploads/test.json"]);
+    const locator = page.locator('main');
+    await expect(locator.last()).toHaveText('Upload failed!', {
+      timeout: 9000,
+      
+    });
   });
 });

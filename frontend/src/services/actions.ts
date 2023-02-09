@@ -13,7 +13,8 @@ export function validateStudy(study: any): study is Study {
 
   toast.error(
     errors.reduce(
-      (acc, e) => acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
+      (acc, e) =>
+        acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
       ""
     ) || "Unknown error"
   );
@@ -38,6 +39,7 @@ export function load() {
   const { setAtoms } = useStore.getState();
   const input = document.createElement("input");
   input.type = "file";
+  let state = false;
   input.onchange = (e) => {
     // @ts-ignore
     const file = e.target.files![0];
@@ -47,11 +49,19 @@ export function load() {
       const deconstructed = deconstructStudy(data);
       const rebuild = constructStudy(deconstructed);
       if (validateStudy(rebuild)) {
+        state = true;
         setAtoms(deconstructed);
       }
     };
     reader.readAsText(file);
+    if (state) {
+      toast.success("Upload completed!");
+    } else {
+      toast.error("Upload failed!");
+    }
   };
+
+  
   input.click();
 }
 
