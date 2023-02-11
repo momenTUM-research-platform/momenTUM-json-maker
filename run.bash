@@ -1,4 +1,6 @@
 # Run this file with bash run.bash >& log.txt to capture all outputs
+
+# NGINX config based on: https://www.digitalocean.com/community/tools/nginx?domains.0.server.domain=tuspl22-momentum.srv.mwn.de&domains.0.server.redirectSubdomains=false&domains.0.php.php=false&domains.0.reverseProxy.reverseProxy=true&domains.0.reverseProxy.proxyPass=http%3A%2F%2F127.0.0.1%3A8000&domains.0.routing.root=false&global.docker.dockerfile=true&global.docker.dockerCompose=true
  
 # exit when any command fails
 set -e
