@@ -2,7 +2,7 @@
 //!
 //! It encompasses technical documentation for the API and frontend of the study designer.
 //!
-//! Examples of using the API can be found here: https://documenter.getpostman.com/view/13190321/2s8Z6zzBti
+//! Examples of using the API can be found here: <https://documenter.getpostman.com/view/13190321/2s8Z6zzBti>
 //!
 //! # Frontend
 //!
@@ -262,6 +262,58 @@
 //! 4. Enable repeating instruments, so that we can add multiple instances of the same instrument to a single record (Often modules are done once per day).
 //! 5. Then we add the specified user as a project admin, so that they can access the project.
 //!
+//! # Redbot
+//!
+//! RedBot instance for Telegram Bot
+//!
+//! Available at <https://tuspl22-sleeptalker.srv.mwn.de>
+//!
+//! Username: momentum, the password is strikingly similar :)
+//!
+//! Hosted via Dockerfile and docker-compose, tracked in this repo in the redbot directory
+//!
+//!
+//! All data is stored in the `redbot` docker volume
+//!
+//!
+//! Networking via [Nginx-Proxy-Manager](https://nginxproxymanager.com/), which also provides the SSL-certificate and user authentication. To access the web interface, visit `tuspl22-sleeptalker.srv.mwn.de:81` and ask Constantin Goeldel for the email and password.
+//!
+//! Dockerfile
+//!
+//! ```
+//! FROM nodered/node-red
+//!
+//! RUN npm install node-red-contrib-chatbot --unsafe-perm --no-update-notifier --no-fund --only=production
+//! RUN npm install node-red-contrib-chatbot-mission-control --unsafe-perm --no-update-notifier --no-fund --only=production
+//!
+//! ```
+//!
+//! docker-compose
+//! ```
+//! version: "3"
+//! services:
+//!   nginxmanager:
+//!     image: "jc21/nginx-proxy-manager:latest"
+//!     restart: unless-stopped
+//!     ports:
+//!       - "80:80"
+//!       - "81:81"
+//!       - "443:443"
+//!     volumes:
+//!       - ./data:/data
+//!       - ./letsencrypt:/etc/letsencrypt
+//!   redbot:
+//!     container_name: redbot
+//!     build: .
+//!     volumes:
+//!       - redbot:/data
+//!
+//! volumes:
+//!   redbot:
+//!     external: true
+//!
+//! ```
+//!![image](https://user-images.githubusercontent.com/67916925/177830661-8f145d70-1790-4f66-a912-9b1ef31d770a.png)
 
 #[macro_use]
 extern crate rocket;
