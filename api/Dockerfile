@@ -19,7 +19,6 @@ RUN cargo build --release --bin designer
 FROM debian:bullseye-slim AS runtime
 WORKDIR app
 
-# ENV REDCAP_SUPER_API_TOKEN=32DC6AA9821F36940A86DC936A8D1FDC483111948E776BA6FB3E2230F88D9CD9
 ENV ROCKET_ADDRESS=0.0.0.0
 ENV ROCKET_PORT=8000
 COPY --from=builder /app/target/release/designer /usr/local/bin
