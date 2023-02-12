@@ -270,14 +270,12 @@ use mongodb::{
     options::FindOneOptions,
 };
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::fs::{relative, NamedFile};
 use rocket::futures::stream::TryStreamExt;
 use rocket::http::Header;
 use rocket::Request;
 use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use study::Study;
 
@@ -307,38 +305,6 @@ pub const ACTIVE_DB: &str = "momenTUM";
 pub struct Key {
     pub study_id: String,
     pub api_key: String,
-}
-
-#[get("/")]
-async fn index() -> Option<NamedFile> {
-    let path = Path::new(relative!("../frontend/dist/")).join("index.html");
-    NamedFile::open(path).await.ok()
-}
-
-#[get("/<path..>")]
-async fn assets(path: PathBuf) -> Option<NamedFile> {
-    let path = Path::new(relative!("../frontend/dist/")).join(path);
-    if path.is_file() {
-        NamedFile::open(path).await.ok()
-    } else {
-        None
-    }
-}
-
-#[get("/preview")]
-async fn preview() -> Option<NamedFile> {
-    let path = Path::new(relative!("../frontend/dist-preview/")).join("index.html");
-    NamedFile::open(path).await.ok()
-}
-
-#[get("/preview/<path..>")]
-async fn preview_assets(path: PathBuf) -> Option<NamedFile> {
-    let path = Path::new(relative!("../frontend/dist-preview/")).join(path);
-    if path.is_file() {
-        NamedFile::open(path).await.ok()
-    } else {
-        None
-    }
 }
 
 #[get("/api/v1/status")]
@@ -532,8 +498,6 @@ fn rocket() -> _ {
         .mount(
             "/",
             routes![
-                index,
-                assets,
                 status,
                 get_study_by_post,
                 create_study,
@@ -544,8 +508,6 @@ fn rocket() -> _ {
                 create_redcap_project,
                 all_studies_of_study_id,
                 add_user,
-                preview,
-                preview_assets
             ],
         )
 }
