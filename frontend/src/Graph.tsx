@@ -9,11 +9,14 @@ import { hideAtoms } from "./utils/hideAtoms";
 
 function useGraph(): [Node[], Edge[]] {
   let { atoms, selectedNode, direction, forceRedraw } = useStore();
+
   const visibleAtoms = useMemo(
     () => hideAtoms(selectedNode || "study", atoms),
     [selectedNode, atoms.size, forceRedraw]
   );
+
   let [nodes, edges] = useMemo(() => calcGraphFromAtoms(visibleAtoms), [visibleAtoms, direction]);
+
   [nodes, edges] = useMemo(
     () => alignNodes(nodes, edges, direction),
     [nodes, edges, direction, visibleAtoms]

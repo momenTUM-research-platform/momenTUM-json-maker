@@ -58,24 +58,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "api"
-version = "0.2.0"
-dependencies = [
- "base64",
- "dotenv",
- "mongodb",
- "rand",
- "reqwest",
- "rocket",
- "rocket_db_pools",
- "serde",
- "serde-xml-rs",
- "serde_json",
- "sha2",
- "thiserror",
-]
-
-[[package]]
 name = "async-stream"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -337,6 +319,24 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "designer"
+version = "0.2.0"
+dependencies = [
+ "base64",
+ "dotenv",
+ "mongodb",
+ "rand",
+ "reqwest",
+ "rocket",
+ "rocket_db_pools",
+ "serde",
+ "serde-xml-rs",
+ "serde_json",
+ "sha2",
+ "thiserror",
 ]
 
 [[package]]

@@ -1,0 +1,9 @@
+{
+	email mail@momentumresearch.eu
+	acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+localhost {
+	reverse_proxy /api/* localhost:3000
+	file_server
+}
