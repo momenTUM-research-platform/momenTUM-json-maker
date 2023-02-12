@@ -116,10 +116,10 @@ export function Menu() {
                       </span>
                     </span>
                     <span className="mt-1 block text-sm text-gray-500">
-                      Access to the API documentation and guides{" "}
+                      Access to the documentation and guides{" "}
                       <a
                         className="text-main underline "
-                        href="https://documenter.getpostman.com/view/13190321/2s8Z6zzBti"
+                        href="https://make.momentumresearch.eu/api/docs/designer/index.html"
                       >
                         here.
                       </a>{" "}

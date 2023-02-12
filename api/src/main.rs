@@ -2,6 +2,8 @@
 //!
 //! It encompasses technical documentation for the API and frontend of the study designer.
 //!
+//! Examples of using the API can be found here: https://documenter.getpostman.com/view/13190321/2s8Z6zzBti
+//!
 //! # Frontend
 //!
 //! The frontend is written in React and Typescript and is located in the `frontend` folder.
