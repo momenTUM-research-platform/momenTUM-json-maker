@@ -270,12 +270,14 @@ use mongodb::{
     options::FindOneOptions,
 };
 use rocket::fairing::{Fairing, Info, Kind};
+use rocket::fs::NamedFile;
 use rocket::futures::stream::TryStreamExt;
 use rocket::http::Header;
 use rocket::Request;
 use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use study::Study;
 
@@ -305,6 +307,17 @@ pub const ACTIVE_DB: &str = "momenTUM";
 pub struct Key {
     pub study_id: String,
     pub api_key: String,
+}
+
+#[get("/api/docs/<path..>")]
+async fn docs_assets(path: PathBuf) -> Option<NamedFile> {
+    println!("/docs/{}", path.display());
+    let path = Path::new("/docs/").join(path);
+    if path.is_file() {
+        NamedFile::open(path).await.ok()
+    } else {
+        None
+    }
 }
 
 #[get("/api/v1/status")]
@@ -508,6 +521,7 @@ fn rocket() -> _ {
                 create_redcap_project,
                 all_studies_of_study_id,
                 add_user,
+                docs_assets
             ],
         )
 }
