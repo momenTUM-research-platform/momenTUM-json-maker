@@ -14,15 +14,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - caddy_data:/data
     restart: unless-stopped
-  web:
-    restart: unless-stopped
-    build: ./frontend
-    networks:
-      - caddy
-    labels:
-      caddy: localhost
-      caddy.handle_path: /
-      caddy.handle_path.0_reverse_proxy: "{{upstreams}}"
   api:
     build: ./api
     volumes:
@@ -33,7 +24,19 @@ services:
     labels:
       caddy: localhost
       caddy.handle_path: /api/*
-      caddy.handle_path.0_reverse_proxy: "{{upstreams}}"
+      caddy.handle_path.0_rewrite: "* /api{uri}"
+      caddy.handle_path.1_reverse_proxy: "{{upstreams 8000}}"
+  web:
+    restart: unless-stopped
+    build: ./frontend
+    networks:
+      - caddy
+    ports:
+      - 3000:3000
+    labels:
+      caddy: localhost
+      caddy.handle_path: /*
+      caddy.handle_path.0_reverse_proxy: "{{upstreams 3000}}"
 
 volumes:
   caddy_data:

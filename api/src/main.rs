@@ -376,12 +376,17 @@ async fn get_study_by_post(db: Connection<DB>, study_id: String) -> PotentialStu
 
 #[get("/api/v1/studies")]
 async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
-    let cursor = db
+    let mut cursor = db
         .database(ACTIVE_DB)
         .collection::<Study>("studies")
         .find(doc! {}, None)
         .await?;
-    let studies = cursor.try_collect::<Vec<Study>>().await?;
+    let mut studies = Vec::new();
+    while cursor.advance().await? {
+        if let Ok(study) = cursor.deserialize_current() {
+            studies.push(study);
+        }
+    }
     Ok(Json(studies))
 }
 
