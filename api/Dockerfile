@@ -1,12 +1,30 @@
-FROM rust:1.63.0
+# Leveraging the pre-built Docker images with 
+# cargo-chef and the Rust toolchain
+FROM lukemathwalker/cargo-chef:latest-rust-1.59.0 AS chef
+WORKDIR app
 
-WORKDIR /usr/src/api
+FROM chef AS planner
 COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
+FROM chef AS builder 
+COPY --from=planner /app/recipe.json recipe.json
+# Build dependencies - this is the caching Docker layer!
+RUN cargo chef cook --release --recipe-path recipe.json
+# Build application
+COPY . .
+RUN cargo build --release --bin designer
+
+# We do not need the Rust toolchain to run the binary!
+FROM debian:bullseye-slim AS runtime
+WORKDIR app
+
+# ENV REDCAP_SUPER_API_TOKEN=32DC6AA9821F36940A86DC936A8D1FDC483111948E776BA6FB3E2230F88D9CD9
 ENV ROCKET_ADDRESS=0.0.0.0
 ENV ROCKET_PORT=8000
+COPY --from=builder /app/target/release/designer /usr/local/bin
+COPY --from=builder /app/Rocket.toml /
+COPY --from=builder /app/.env /
+ENTRYPOINT ["/usr/local/bin/designer"]
 
-RUN cargo install --path .
-EXPOSE 8000
 
-CMD ["api"]

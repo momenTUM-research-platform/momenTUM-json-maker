@@ -16,6 +16,8 @@ To run automatically, install Docker and run:
 docker compose up --build -d
 ```
 
+Docker will eat up all your disk space with build cache, so you might want to clean it up from time to time. To do so, run `docker system prune` and confirm with `y`.
+
 To run manually, install dependencies and run:
 
 ```

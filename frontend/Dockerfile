@@ -1,4 +1,4 @@
-FROM node:16-bullseye
+FROM node:18
 
 WORKDIR /usr/src/app
 
@@ -14,5 +14,5 @@ EXPOSE 3000
 
 RUN npm run build
 
-CMD [ "npm", "run", "serve" ]
+CMD npm run preview -- --port 3000
 
