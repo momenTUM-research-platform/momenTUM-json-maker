@@ -18,6 +18,7 @@ RUN cargo build --release --bin designer
 
 # We do not need the Rust toolchain to run the binary!
 FROM debian:bullseye-slim AS runtime
+RUN apt-get update
 WORKDIR app
 
 ENV ROCKET_ADDRESS=0.0.0.0
