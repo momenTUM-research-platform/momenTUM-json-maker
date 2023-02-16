@@ -49,6 +49,7 @@ pub enum Error {
 
 impl<'r> Responder<'r, 'static> for Error {
     fn respond_to(self, req: &'r Request<'_>) -> response::Result<'static> {
+        println!("Returning error: {self}");
         match self {
             Error::StudyNotFound => response::status::NotFound(self.to_string()).respond_to(req),
             Error::AuthMalformed(_) => {
