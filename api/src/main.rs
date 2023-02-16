@@ -365,7 +365,6 @@ pub struct Key {
 
 #[get("/api/docs/<path..>")]
 async fn docs_assets(path: PathBuf) -> Option<NamedFile> {
-    println!("/docs/{}", path.display());
     let path = Path::new("/docs/").join(path);
     if path.is_file() {
         NamedFile::open(path).await.ok()
