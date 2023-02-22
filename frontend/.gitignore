@@ -3,4 +3,5 @@ node_modules/
 /playwright-report/
 /playwright/.cache/
 
+/react--ct/tests-examples/
 /tests-examples/

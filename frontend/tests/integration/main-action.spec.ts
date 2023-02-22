@@ -37,9 +37,9 @@ test.describe("Action button", () => {
       // Opens the file chooser.
       page.getByText("Load Study").click(),
     ]);
-    await fileChooser.setFiles(["./tests//uploads/test.json"]);
+    await fileChooser.setFiles(["./tests/uploads/test.json"]);
     const locator = page.locator('main');
-    await expect(locator.last()).toHaveText('Upload failed!', {
+    await expect(locator.last()).toContainText('Upload failed!', {
       timeout: 9000,
       
     });

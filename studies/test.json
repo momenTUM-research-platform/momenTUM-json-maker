@@ -1,6 +1,166 @@
 {
   "modules": [
     {
+      "name": "Sticky with no offset",
+      "type": "info",
+      "uuid": "Sticky-with-no-offset",
+      "graph": { "display": false },
+      "alerts": {
+        "times": [{ "hours": 0, "minutes": 0 }],
+        "title": "Sticky with no offset",
+        "random": false,
+        "sticky": true,
+        "message": "Tap to open the app",
+        "timeout": false,
+        "duration": 1,
+        "start_offset": 0,
+        "sticky_label": "Start here",
+        "timeout_after": 0,
+        "random_interval": 0
+      },
+      "shuffle": false,
+      "sections": [
+        {
+          "name": "Welcome",
+          "shuffle": false,
+          "questions": [
+            {
+              "id": "instruction-0",
+              "text": "Welcome! This study will show you our features. Have fun!",
+              "type": "instruction",
+              "hide_id": "",
+              "hide_if": true,
+              "required": false,
+              "hide_value": ""
+            }
+          ]
+        }
+      ],
+      "condition": "*",
+      "submit_text": "Submit",
+      "unlock_after": []
+    },
+    {
+      "name": "Sticky with 3 days offset",
+      "type": "info",
+      "uuid": "Sticky-with-offset",
+      "graph": { "display": false },
+      "alerts": {
+        "times": [{ "hours": 0, "minutes": 0 }],
+        "title": "Welcome to the study",
+        "random": false,
+        "sticky": true,
+        "message": "Tap to open the app",
+        "timeout": false,
+        "duration": 1,
+        "start_offset": 3,
+        "sticky_label": "Start here",
+        "timeout_after": 0,
+        "random_interval": 0
+      },
+      "shuffle": false,
+      "sections": [
+        {
+          "name": "Welcome",
+          "shuffle": false,
+          "questions": [
+            {
+              "id": "instruction-0",
+              "text": "Welcome! This study will show you our features. Have fun!",
+              "type": "instruction",
+              "hide_id": "",
+              "hide_if": true,
+              "required": false,
+              "hide_value": ""
+            }
+          ]
+        }
+      ],
+      "condition": "*",
+      "submit_text": "Submit",
+      "unlock_after": []
+    },
+    {
+      "name": "Not Sticky with no offset",
+      "type": "info",
+      "uuid": "Not-Sticky-with-no-offset",
+      "graph": { "display": false },
+      "alerts": {
+        "times": [{ "hours": 0, "minutes": 0 }],
+        "title": "Welcome to the study",
+        "random": false,
+        "sticky": false,
+        "message": "Tap to open the app",
+        "timeout": false,
+        "duration": 1,
+        "start_offset": 0,
+        "sticky_label": "Start here",
+        "timeout_after": 0,
+        "random_interval": 0
+      },
+      "shuffle": false,
+      "sections": [
+        {
+          "name": "Welcome",
+          "shuffle": false,
+          "questions": [
+            {
+              "id": "instruction-0",
+              "text": "Welcome! This study will show you our features. Have fun!",
+              "type": "instruction",
+              "hide_id": "",
+              "hide_if": true,
+              "required": false,
+              "hide_value": ""
+            }
+          ]
+        }
+      ],
+      "condition": "*",
+      "submit_text": "Submit",
+      "unlock_after": []
+    },
+    {
+      "name": "Not Sticky with 3 days offset",
+      "type": "info",
+      "uuid": "Not-Sticky-with-offset",
+      "graph": { "display": false },
+      "alerts": {
+        "times": [{ "hours": 0, "minutes": 0 }],
+        "title": "Welcome to the study",
+        "random": false,
+        "sticky": false,
+        "message": "Tap to open the app",
+        "timeout": false,
+        "duration": 1,
+        "start_offset": 3,
+        "sticky_label": "Start here",
+        "timeout_after": 0,
+        "random_interval": 0
+      },
+      "shuffle": false,
+      "sections": [
+        {
+          "name": "Welcome",
+          "shuffle": false,
+          "questions": [
+            {
+              "id": "instruction-0",
+              "text": "Welcome! This study will show you our features. Have fun!",
+              "type": "instruction",
+              "hide_id": "",
+              "hide_if": true,
+              "required": false,
+              "hide_value": ""
+            }
+          ]
+        }
+      ],
+      "condition": "*",
+      "submit_text": "Submit",
+      "unlock_after": []
+    },
+    {
       "name": "Welcome",
       "type": "info",
       "uuid": "welcome",
