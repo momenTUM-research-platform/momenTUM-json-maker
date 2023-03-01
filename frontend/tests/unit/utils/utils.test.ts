@@ -1,12 +1,12 @@
-import { constructStudy } from "./construct";
+import { constructStudy } from "../../../src/utils/construct";
 import { describe, expect, it } from "vitest";
-import { download, upload, validateStudy } from "../services/actions";
-import sleep_study from "../../../studies/sleep.json";
-import atoms_long from "../../../studies/atoms.json";
-import monster_study from "../../../studies/monster.json";
-import maydel_study from "../../../studies/maydel.json";
-import { useStore } from "../state";
-import { deconstructStudy } from "./deconstruct";
+import { download, upload, validateStudy } from "../../../src/services/actions";
+import sleep_study from "../../../../studies/sleep.json";
+import atoms_long from "../../../../studies/atoms.json";
+import monster_study from "../../../../studies/monster.json";
+import maydel_study from "../../../../studies/maydel.json";
+import { useStore } from "../../../src/state";
+import { deconstructStudy } from "../../../src/utils/deconstruct";
 
 describe("Example studies", () => {
   it("Validates example studies", () => {

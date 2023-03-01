@@ -1,3 +1,5 @@
+/** https://dev.to/davipon/test-svelte-component-using-vitest-playwright-3o2o */
+
 /**
  * @type {import('vite').UserConfig}
  */
@@ -7,6 +9,14 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => ({
   plugins: [react(), tsconfigPaths()],
+  test: {
+    // Jest like globals
+    globals: true,
+    environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.ts'],
+    // Extend jest-dom matchers
+    setupFiles: ['./setupTest.js']
+  },
   build: {
     rollupOptions: {
       plugins: [
