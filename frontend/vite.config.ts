@@ -12,10 +12,8 @@ export default defineConfig(({ mode }) => ({
   test: {
     // Jest like globals
     globals: true,
-    environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.ts'],
-    // Extend jest-dom matchers
-    setupFiles: ['./setupTest.js']
+    environment: "jsdom",
+    include: ["**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
   },
   build: {
     rollupOptions: {

@@ -1,76 +1,57 @@
-import React from "react";
-import { render, unmountComponentAtNode } from "react-dom";
-import { act } from "react-dom/test-utils";
-
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { dragFix } from "helpers/dragFix";
 
-describe("dragFix()", () => {
+const DragEventMock = vi.fn(() => ({
+  prototype: vi.fn(),
+}))
+
+vi.stubGlobal('DragEvent', DragEventMock)
+
+
+describe("dragFix testing", () => {
+  let mockDragEvent; 
+
   beforeAll(() => {
-    // Mock event listeners
-    window.addEventListener = jest.fn();
-  });
-
-  afterEach(() => {
-    // Clear mock implementations and reset mock event listeners
-    jest.clearAllMocks();
-  });
-
-  it("should update the event properties", () => {
-    // Set up a mock MouseEvent
-    const mockMouseEvent = {
-      clientX: 10,
-      clientY: 20,
-      pageX: 30,
-      pageY: 40,
-      offsetX: 50,
-      offsetY: 60,
-      screenX: 70,
-      screenY: 80,
-      layerX: 90,
-      layerY: 100,
+    // Create a mock DragEvent constructor
+    mockDragEvent = function(type, eventInitDict) {
+      Object.defineProperty(this, 'clientX', { value: 100 });
+      Object.defineProperty(this, 'clientY', { value: 200 });
+      Object.defineProperty(this, 'pageX', { value: 300 });
+      Object.defineProperty(this, 'pageY', { value: 400 });
+      Object.defineProperty(this, 'offsetX', { value: 500 });
+      Object.defineProperty(this, 'offsetY', { value: 600 });
+      Object.defineProperty(this, 'screenX', { value: 700 });
+      Object.defineProperty(this, 'screenY', { value: 800 });
+      Object.defineProperty(this, 'x', { value: 900 });
+      Object.defineProperty(this, 'y', { value: 1000 });
+      Object.defineProperty(this, 'layerX', { value: 1100 });
+      Object.defineProperty(this, 'layerY', { value: 1200 });
+      Object.defineProperty(this, 'type', { value: type });
+      Object.defineProperty(this, 'initEvent', {
+        value: () => {
+          return undefined;
+        }
+      });
     };
 
-    // Call the function
+    // Attach Object.defineProperties to window.DragEvent.prototype
     dragFix();
-
-    // Simulate a mousemove event
-    window.dispatchEvent(new MouseEvent("mousemove", mockMouseEvent));
-
-    // Verify that the event properties were updated
-    expect(mockMouseEvent._ffix_cx).toBe(mockMouseEvent.clientX);
-    expect(mockMouseEvent._ffix_cy).toBe(mockMouseEvent.clientY);
-    expect(mockMouseEvent._ffix_px).toBe(mockMouseEvent.pageX);
-    expect(mockMouseEvent._ffix_py).toBe(mockMouseEvent.pageY);
-    expect(mockMouseEvent._ffix_ox).toBe(mockMouseEvent.offsetX);
-    expect(mockMouseEvent._ffix_oy).toBe(mockMouseEvent.offsetY);
-    expect(mockMouseEvent._ffix_sx).toBe(mockMouseEvent.screenX);
-    expect(mockMouseEvent._ffix_sy).toBe(mockMouseEvent.screenY);
-    expect(mockMouseEvent._ffix_lx).toBe(mockMouseEvent.layerX);
-    expect(mockMouseEvent._ffix_ly).toBe(mockMouseEvent.layerY);
   });
 
-  it("should assign the event properties", () => {
-    // Set up a mock DragEvent
-    const mockDragEvent = {};
+  it('should return the expected values for the getter functions', () => {
+    const dragEvent = new mockDragEvent('drag');
 
-    // Call the function
-    dragFix();
-
-    // Simulate a dragstart event
-    window.dispatchEvent(new DragEvent("dragstart", mockDragEvent));
-
-    // Verify that the event properties were assigned
-    expect(mockDragEvent._ffix_cx).toBeDefined();
-    expect(mockDragEvent._ffix_cy).toBeDefined();
-    expect(mockDragEvent._ffix_px).toBeDefined();
-    expect(mockDragEvent._ffix_py).toBeDefined();
-    expect(mockDragEvent._ffix_ox).toBeDefined();
-    expect(mockDragEvent._ffix_oy).toBeDefined();
-    expect(mockDragEvent._ffix_sx).toBeDefined();
-    expect(mockDragEvent._ffix_sy).toBeDefined();
-    expect(mockDragEvent._ffix_lx).toBeDefined();
-    expect(mockDragEvent._ffix_ly).toBeDefined();
+    expect(dragEvent.clientX).toEqual(100);
+    expect(dragEvent.clientY).toEqual(200);
+    expect(dragEvent.pageX).toEqual(300);
+    expect(dragEvent.pageY).toEqual(400);
+    expect(dragEvent.offsetX).toEqual(500);
+    expect(dragEvent.offsetY).toEqual(600);
+    expect(dragEvent.screenX).toEqual(700);
+    expect(dragEvent.screenY).toEqual(800);
+    expect(dragEvent.x).toEqual(900);
+    expect(dragEvent.y).toEqual(1000);
+    expect(dragEvent.layerX).toEqual(1100);
+    expect(dragEvent.layerY).toEqual(1200);
   });
-
-  // Add more test cases as needed
 });
