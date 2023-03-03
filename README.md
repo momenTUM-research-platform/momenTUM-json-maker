@@ -1,5 +1,7 @@
 # MomenTUM survey designer
 
+![](architecture.png)
+
 This is a survey designer for the MomenTUM project. It is a web application that allows users to create surveys and export them as JSON files. The JSON files can then be imported into the MomenTUM app.
 
 Documentation is provided [here](https://localhost/api/docs/designer/index.html).

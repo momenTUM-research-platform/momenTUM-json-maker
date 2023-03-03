@@ -31,7 +31,11 @@ pub struct Log {
     pub timestamp: String,
     pub timestamp_in_ms: i64,
 }
-
+/// Structure of a response from the app
+///
+/// Sent by the app as a POST request with form-data body. Deserialized by Rocket.
+///
+/// data_type: "survey_response"
 #[derive(Serialize, FromForm)]
 pub struct Response {
     pub data_type: String,
@@ -39,6 +43,7 @@ pub struct Response {
     pub study_id: String,
     pub module_index: i32,
     pub platform: String,
+    pub module_id: String,
 
     pub module_name: String,
     pub responses: Option<String>, // JSON of type HashMap<String, Response>
@@ -48,6 +53,9 @@ pub struct Response {
     pub alert_time: String,
 }
 
+/// Structure of the request body as sent to REDCap
+///
+/// Most data is serialized in the `data` field.
 #[derive(Serialize, Deserialize)]
 pub struct Payload {
     token: String,
@@ -79,7 +87,6 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     }
 
     let study = study.expect("Study should be present");
-
     // Get API key from DB
     let key = db
         .database(ACTIVE_DB)

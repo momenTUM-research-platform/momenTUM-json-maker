@@ -215,6 +215,10 @@
 //! pub struct DB(mongodb::Client);
 //! ```
 //!
+//! To access the database in development, you can use MongoDB compass, which is a GUI for MongoDB.
+//! Once installed, you can connect to the database by using the following connection string: url = "mongodb://tuspl22-redcap-db.srv.mwn.de/momenTUM?retryWrites=true&w=majority".
+//! Make sure to be connected to the TUM VPN.
+//!
 //! Lastly, we have the study itself, which is parsed from the request body and validated by Rocket.
 //! In this case, we want the guard to return us a `Result`, which is a fundamental type in Rust and can either be `Ok` or `Err`.
 //!
@@ -347,6 +351,9 @@ mod users;
 type Result<T> = std::result::Result<T, Error>;
 type PotentialStudy = Result<Json<Study>>;
 
+/// Automatic database connection using the connection string in Rocket.toml
+///
+/// https://rocket.rs/v0.5-rc/guide/state/#databases
 #[derive(Database)]
 #[database("mongodb")]
 pub struct DB(mongodb::Client);
@@ -452,6 +459,12 @@ async fn create_study(
     Ok(result.inserted_id.to_string())
 }
 
+/// Defining an API route for the app response submission
+///
+/// The route is defined as a POST request to /api/v1/response
+/// Data contained in the request body is deserialized into a Response struct -> Verification is included
+///
+/// By including the Connection<DB> parameter, the database connection is automatically injected into the function
 #[post("/api/v1/response", data = "<submission>")]
 async fn save_response(submission: Form<Response>, db: Connection<DB>) -> Result<()> {
     import_response(db, submission.into_inner()).await
