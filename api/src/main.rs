@@ -171,6 +171,8 @@
 //!
 //!  # API
 //!
+//! ![API](https://github.com/momenTUM-research-platform/momenTUM-json-maker/blob/main/architecture.png?raw=true)
+//!
 //! The API is written in [Rust](https://www.rust-lang.org/), using the [Rocket](https://rocket.rs/) web framework and a [MongoDB](https://www.mongodb.com/) database.
 //! I chose this stack because Rust enables us to write fast, correct code, and Rocket is a very easy to use web framework.
 //! The main benefit of using Rust is its strict type system (even stricter than TypeScript),

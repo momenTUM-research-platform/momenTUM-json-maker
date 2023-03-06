@@ -6,6 +6,7 @@ use mongodb::bson::oid::ObjectId;
 use mongodb::options::FindOneOptions;
 use rocket_db_pools::Connection;
 use serde::{Deserialize, Serialize};
+use sha2::digest::typenum::Mod;
 use std::collections::HashMap;
 use std::env;
 use std::str::FromStr;
@@ -36,6 +37,8 @@ pub struct Log {
 /// Sent by the app as a POST request with form-data body. Deserialized by Rocket.
 ///
 /// data_type: "survey_response"
+///
+/// Entries: Contains the responses from the PVT in milliseconds
 #[derive(Serialize, FromForm)]
 pub struct Response {
     pub data_type: String,
@@ -68,25 +71,6 @@ pub struct Payload {
 const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
 
 pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
-    let filter = doc! { "$or": [ {"properties.study_id": &res.study_id}, {"_id": ObjectId::from_str(&res.study_id).unwrap_or_default()}]};
-
-    let study = db
-        .database(ACTIVE_DB)
-        .collection::<Study>("studies")
-        .find_one(
-            filter,
-            FindOneOptions::builder()
-                .sort(doc! { "timestamp": -1})
-                .show_record_id(true)
-                .build(),
-        )
-        .await?;
-
-    if study.is_none() {
-        return Err(Error::StudyNotFound);
-    }
-
-    let study = study.expect("Study should be present");
     // Get API key from DB
     let key = db
         .database(ACTIVE_DB)
@@ -98,22 +82,6 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     }
     let key = key.expect("Key should be present");
 
-    // Either the module name or the module id should be present
-    // This will be reduced to just the module id when https://github.com/momenTUM-research-platform/momenTUM-app/issues/79 is fixed.
-    // Then, the database lookup will not be neccessary anymore.
-    let module = study.modules.iter().find(|m| {
-        (m.get_name().is_some() && m.get_name().unwrap() == res.module_name)
-            || (m.get_id().is_some() && m.get_id().unwrap() == res.module_name)
-    });
-
-    if module.is_none() {
-        return Err(Error::StudyParsing(
-            "The module name does not correspond to a module id".to_string(),
-        ));
-    }
-
-    let module_id = module.unwrap().get_id().unwrap();
-
     // Create Redcap record, including module index for uniqueness
     let mut record: HashMap<String, Entry> = HashMap::from([
         (
@@ -122,7 +90,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
         ),
         (
             "redcap_repeat_instrument".to_string(),
-            Entry::Text(String::from("module_") + &module_id),
+            Entry::Text(String::from("module_") + &res.module_id),
         ),
         (
             "redcap_repeat_instance".to_string(),
@@ -146,7 +114,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     };
 
     if let Some(entries) = res.entries.clone() {
-        record.insert("entries".to_string(), Entry::Entries(entries));
+        record.insert(res.module_id.to_string(), Entry::Entries(entries));
     };
 
     let mut record_including_raw = record.clone();
@@ -191,6 +159,9 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
 
 pub type ApiKey = String;
 
+/// Create Redcap project for a study
+///
+/// Automated by using the super API token
 pub async fn create_project(study: &Study) -> Result<ApiKey> {
     let super_api_token = env::var("REDCAP_SUPER_API_TOKEN").unwrap();
 
@@ -281,13 +252,45 @@ impl<'a> MetaData<'a> {
         }
     }
 }
-// https://tuspl22-redcap.srv.mwn.de/redcap/api/help/index.php?content=imp_metadata
+
+/// Metadata = Fields of the study in Redcap
+///
+/// https://tuspl22-redcap.srv.mwn.de/redcap/api/help/index.php?content=imp_metadata
 pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
     let mut dictionary: Vec<MetaData> = Vec::new();
 
     for (i, module) in study.modules.iter().enumerate() {
         match module {
             Modules::Info => continue,
+            Modules::Pvt(pvt) => {
+                if i == 0 {
+                    dictionary.push(MetaData::create(
+                        "record_id".to_string(),
+                        &pvt.id,
+                        "text",
+                        "Record ID",
+                    ))
+                }
+                dictionary.push(MetaData::create(
+                    format!("participant_id_{}", i),
+                    &pvt.id,
+                    "text",
+                    "Participant ID",
+                ));
+                dictionary.push(MetaData::create(
+                    format!("response_time_in_ms_{}", i),
+                    &pvt.id,
+                    "text",
+                    "Response Time in Milliseconds",
+                ));
+                dictionary.push(MetaData::create(
+                    format!("response_time_{}", i),
+                    &pvt.id,
+                    "text",
+                    "Response Time",
+                ));
+                dictionary.push(MetaData::create(pvt.id.clone(), &pvt.id, "text", "PVT"));
+            }
             Modules::Survey(survey) => {
                 if i == 0 {
                     dictionary.push(MetaData::create(
