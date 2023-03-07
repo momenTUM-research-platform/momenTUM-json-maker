@@ -4,10 +4,25 @@ import { useStore } from "../state";
 import { DefinedError } from "ajv";
 import { constructStudy } from "./construct";
 import { deconstructStudy } from "./deconstruct";
+import Ajv, { ValidateFunction } from "ajv";
+import { study as study_schema } from "../../schema/study";
 
 export function validateStudy(study: any): study is Study {
-  const { validator } = useStore.getState();
+  const { conditions, atoms } = useStore.getState();
+  const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
+  const mIds: SchemaEnum[] = [];
+  for (const [key, value] of atoms.entries()) {
+    if (value.content._type === "question") {
+      qIds.push({ id: key, text: value.content.text });
+    }
+    if (value.content._type === "module") {
+      mIds.push({ id: key, text: value.content.name });
+    }
+  }
+  const schema = study_schema(conditions, qIds, mIds);
+  const validator = new Ajv().compile(schema);
   const valid = validator(study);
+  console.log(study, validator);
   if (valid) return true;
   const errors = validator.errors as DefinedError[];
 
