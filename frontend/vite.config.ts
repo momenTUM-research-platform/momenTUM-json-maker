@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => ({
   test: {
     // Jest like globals
     globals: true,
-    environment: "jsdom",
+    environment: 'jsdom',
+    setupFiles: './tests/setup.ts',
     include: ["**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
   },
   build: {
