@@ -2,8 +2,8 @@
 describe("test the form", () => {
   it("enters the properties", () => {
     cy.visit("http://localhost:3000/")
-    cy.contains("Name").click().type("Test")
-    cy.contains("ID").click().type("A") // auto generate
+    cy.contains("MomenTUM-JSON-Maker")
+    cy.contains("Actions").click().type("A") // auto generate
     cy.contains("Created by").click().type("Me")
     cy.contains("Instructions").click().type("A")
     cy.get('#form_properties_post_url').should("have.value", "https://make.momentumresearch.eu/api/v1/response")

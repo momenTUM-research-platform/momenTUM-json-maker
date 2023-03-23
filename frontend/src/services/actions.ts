@@ -4,6 +4,7 @@ import { useStore } from "../state";
 import { DefinedError } from "ajv";
 import { constructStudy } from "../utils/construct";
 import { deconstructStudy } from "../utils/deconstruct";
+import fetch from 'cross-fetch';
 
 export function validateStudy(study: any): study is Study {
   const { validator } = useStore.getState();
