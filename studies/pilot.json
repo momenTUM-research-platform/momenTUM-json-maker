@@ -1,0 +1,164 @@
+{
+    "properties": {
+        "study_name": "acticut",
+        "study_id": "acticut_v1",
+        "created_by": "Maydel Fernandez-Alonso",
+        "instructions": "Remember to complete your daily sleep diary and wear log. Take the ActiWatch off when you receive an alert to do so, and remember to log it!",
+        "post_url": "https://tuspl22-momentum.srv.mwn.de/api/v1",
+        "empty_msg": "You have no pending surveys",
+        "banner_url": "https://img.freepik.com/free-vector/realistic-fitness-tracker-concept_52683-38272.jpg",
+        "support_url": "https://www.tscnlab.org/",
+        "support_email": "maydel.fernandez.alonso@tuebingen",
+        "cache": false,
+        "ethics": "Pilot study",
+        "pls": "https://www.tscnlab.org/",
+        "conditions": [],
+        "_type": "properties"
+    },
+    "modules": [
+        {
+            "id": "generalinfo",
+            "type": "survey",
+            "name": "general info",
+            "submit_text": "Submit",
+            "condition": "*",
+            "alerts": {
+                "title": "General info",
+                "message": "We need your participant ID",
+                "duration": 1,
+                "times": [
+                    {
+                        "hours": 18,
+                        "minutes": 0
+                    }
+                ],
+                "random": false,
+                "random_interval": 0,
+                "sticky": false,
+                "sticky_label": "general info",
+                "timeout": false,
+                "timeout_after": 0,
+                "start_offset": 0
+            },
+            "graph": {
+                "display": false
+            },
+            "unlock_after": [],
+            "shuffle": false,
+            "_type": "module",
+            "sections": [
+                {
+                    "name": "generalquestions",
+                    "shuffle": false,
+                    "_type": "section",
+                    "id": "swkdehfwsob6lrwf",
+                    "questions": [
+                        {
+                            "id": "participant_id",
+                            "text": "What is your participant ID?",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "text",
+                            "_type": "question",
+                            "subtype": "short"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "wearlog",
+            "type": "survey",
+            "name": "wear log",
+            "submit_text": "Submit",
+            "condition": "*",
+            "alerts": {
+                "title": "Wear LOG",
+                "message": "Remember to log your watch wear!",
+                "duration": 20,
+                "times": [
+                    {
+                        "hours": 18,
+                        "minutes": 30
+                    }
+                ],
+                "random": false,
+                "random_interval": 0,
+                "sticky": true,
+                "sticky_label": "logs",
+                "timeout": false,
+                "timeout_after": 0,
+                "start_offset": 0
+            },
+            "graph": {
+                "display": false
+            },
+            "unlock_after": [],
+            "shuffle": false,
+            "_type": "module",
+            "sections": [
+                {
+                    "name": "logquestions",
+                    "shuffle": false,
+                    "_type": "section",
+                    "id": "2t7bdygqy3zuah_j",
+                    "questions": [
+                        {
+                            "id": "wear_category",
+                            "text": "Please select a category:",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "multi",
+                            "options": [
+                                "Off-wrist under the sun",
+                                "Off-wrist under electrical light",
+                                "On the wrist and covered",
+                                "On the wrist and over the sleeve",
+                                "On the wrist, over the sleeve and covered",
+                                "Off-wrist, before sleep in the bedroom",
+                                "Off-wrist, after wake-up in the bedroom",
+                                "Off-wrist and device in motion (e.g. inside pocket/bag/car)"
+                            ],
+                            "_type": "question",
+                            "subtype": "short",
+                            "radio": true,
+                            "modal": false,
+                            "shuffle": false
+                        },
+                        {
+                            "id": "wear_startitme",
+                            "text": "Start time:",
+                            "required": true,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "datetime",
+                            "_type": "question",
+                            "subtype": "datetime"
+                        },
+                        {
+                            "id": "wear_endtime",
+                            "text": "End time:",
+                            "required": false,
+                            "hide_id": "none",
+                            "hide_value": "",
+                            "hide_if": false,
+                            "rand_group": "",
+                            "type": "datetime",
+                            "_type": "question",
+                            "subtype": "time"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "_type": "study"
+}

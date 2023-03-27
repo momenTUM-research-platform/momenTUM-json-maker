@@ -241,22 +241,6 @@ pub enum GraphOrNoGraph {
     NoGraph(NoGraph),
 }
 
-#[cfg(test)]
-mod test {
-    #[test]
-    fn deserialize_sleep_study() {
-        let json = include_str!("../../studies/sleep.json");
-        let study: super::Study = serde_json::from_str(json).unwrap();
-        assert_eq!(study.properties.created_by, "Anna Biller")
-    }
-    #[test]
-    fn deserialize_monster_study() {
-        let json = include_str!("../../studies/monster.json");
-        let study: super::Study = serde_json::from_str(json).unwrap();
-        assert_eq!(study.properties.created_by, "Constantin Goeldel")
-    }
-}
-
 pub trait BasicQuestion {
     fn get_id(&self) -> &str;
     fn get_text(&self) -> &str;
@@ -290,5 +274,51 @@ impl BasicQuestion for Question {
     }
     fn get_response_data_type(&self) -> &str {
         "text"
+    }
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn deserialize_sleep_study() {
+        let json = include_str!("../../studies/sleep.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.created_by, "Anna Biller")
+    }
+    #[test]
+    fn deserialize_monster_study() {
+        let json = include_str!("../../studies/monster.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.created_by, "Constantin Goeldel")
+    }
+
+    #[test]
+    fn deserialize_pilot_study() {
+        let json = include_str!("../../studies/pilot.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.study_id, "acticut_v1")
+    }
+    #[test]
+    fn deserialize_alert() {
+        let json = r#"{
+            "title": "Wear LOG",
+            "message": "Remember to log your watch wear!",
+            "duration": 20,
+            "times": [
+                {
+                    "hours": 18,
+                    "minutes": 30
+                }
+            ],
+            "random": false,
+            "random_interval": 0,
+            "sticky": true,
+            "sticky_label": "logs",
+            "timeout": false,
+            "timeout_after": 0,
+            "start_offset": 0
+        }"#;
+        let alert: super::Alert = serde_json::from_str(json).unwrap();
+        assert_eq!(alert.title, "Wear LOG")
     }
 }
