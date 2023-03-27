@@ -91,7 +91,15 @@ export function Form({ id }: { id: string }) {
   !showHidingLogic && hidingLogic.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
   // Maps Atoms to JSON Schema
   const schema: { [key in AtomVariants]: () => Object } = {
-    ["study"]: () => study,
+    ["study"]: () => {
+      return {
+        $id: "#",
+        type: "object",
+        title: "Study",
+        description:
+          "This is the entrypoint to the Study Designer. Please start by clicking on properties or on the green '+' symbol",
+      };
+    },
     ["properties"]: () => properties,
     ["module"]: () => module(conditions, questionIds, moduleIds),
     ["section"]: () => section,
