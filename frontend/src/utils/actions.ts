@@ -22,8 +22,9 @@ export function validateStudy(study: any): study is Study {
   let true_conditions = ["*"];
   try {
     const c = study.properties.conditions;
-    if (c) true_conditions = c;
+    if (c) true_conditions.push(...c);
   } finally {
+    console.log(true_conditions);
     const schema = study_schema(true_conditions, qIds, mIds);
 
     const validator = new Ajv().compile(schema);
