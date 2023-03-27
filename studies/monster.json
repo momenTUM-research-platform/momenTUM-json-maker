@@ -26,7 +26,7 @@
     },
     "modules": [
         {
-            "id": "Sleep Diary",
+            "id": "sleep_diary",
             "type": "survey",
             "name": "Survey",
             "submit_text": "Submit",
