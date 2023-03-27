@@ -29,9 +29,10 @@ export const alerts = {
     "message",
     "duration",
     "times",
-    "random", // TODO: conditionally diplay random interval depending on random
+    "random", // TODO: conditionally display random interval depending on random
     "random_interval",
     "sticky", // Same for sticky label
+    "sticky_label",
     "timeout",
     "timeout_after",
     "start_offset",
