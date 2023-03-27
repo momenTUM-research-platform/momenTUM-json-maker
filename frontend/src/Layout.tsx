@@ -21,7 +21,7 @@ export function Layout({ children }: { children: ReactElement }) {
             alt="MomenTUM logo: A brain with a question mark"
             className="w-10 h-10 "
           />
-          <h1 className="text-xl p-2">MomenTUM-JSON-Maker</h1>
+          <h1 className="text-xl p-2">MomenTUM Study Designer</h1>
         </div>
         <div className="flex justif">
           <Action action={invertDirection}>
