@@ -2,9 +2,7 @@ import create from "zustand";
 
 import { customAlphabet } from "nanoid";
 import produce from "immer";
-import Ajv, { ValidateFunction } from "ajv";
 import { deleteNode } from "./utils/deleteNode";
-import { study } from "../schema/study";
 import { isModule, isQuestion, isSection, isProperties } from "./utils/typeGuards";
 import {
   initialModule,
@@ -27,7 +25,6 @@ export interface State {
   mode: Mode;
   forceRedraw: number;
   direction: "TB" | "LR";
-  validator: ValidateFunction;
   atoms: Atoms;
   conditions: string[];
   modal: null | "download" | "upload" | "qr" | "redcap";
@@ -61,7 +58,6 @@ export const useStore = create<State>()((set, get) => ({
   setIdsEditable: (value) => set({ editableIds: value }),
   conditions: ["*", "Treatment", "Control"],
   modal: null,
-  validator: new Ajv().compile(study),
   direction: "LR",
   mode: "graph",
   atoms: new Map([

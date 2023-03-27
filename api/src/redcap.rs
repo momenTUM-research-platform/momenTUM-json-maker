@@ -261,7 +261,6 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
 
     for (i, module) in study.modules.iter().enumerate() {
         match module {
-            Modules::Info => continue,
             Modules::Pvt(pvt) => {
                 if i == 0 {
                     dictionary.push(MetaData::create(

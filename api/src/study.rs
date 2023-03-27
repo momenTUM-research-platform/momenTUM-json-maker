@@ -209,11 +209,14 @@ pub enum StringOrBool {
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
+/// Enumeration of all the different modules.
+/// https://serde.rs/enum-representations.html
+///
+/// Info modules are treated as surveys, because they are a strict subset.
 pub enum Modules {
-    Survey(Survey),
     Pvt(Pvt),
-    Info, // These three are not yet implemented
-    Video,
+    Survey(Survey),
+    Video, // These three are not yet implemented
     Audio,
 }
 
@@ -319,6 +322,33 @@ mod test {
             "start_offset": 0
         }"#;
         let alert: super::Alert = serde_json::from_str(json).unwrap();
-        assert_eq!(alert.title, "Wear LOG")
+        assert_eq!(alert.title, "Wear LOG");
+    }
+    #[test]
+    fn test_pvt() {
+        let json = include_str!("../../studies/monster.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        let pvt = &study.modules[2];
+        match pvt {
+            super::Modules::Pvt(pvt) => {
+                assert_eq!(pvt.min_waiting, 200);
+                assert!(pvt.max_waiting > 200);
+                assert!(pvt.max_reaction > pvt.max_waiting);
+            }
+            _ => panic!("Expected a pvt module"),
+        }
+    }
+
+    #[test]
+    fn test_survey() {
+        let json = include_str!("../../studies/monster.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        let survey = &study.modules[0];
+        match survey {
+            super::Modules::Survey(survey) => {
+                assert_eq!(survey.sections.len(), 4);
+            }
+            _ => panic!("Expected a survey module"),
+        }
     }
 }
