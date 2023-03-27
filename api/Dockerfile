@@ -17,9 +17,8 @@ RUN cargo doc --no-deps
 RUN cargo build --release --bin designer
 
 # We do not need the Rust toolchain to run the binary!
-FROM debian:bullseye-slim AS runtime
-RUN apt-get update 
-RUN apt-get install curl -y
+FROM alpine:latest AS runtime
+RUN apk add curl
 WORKDIR app
 
 ENV ROCKET_ADDRESS=0.0.0.0
