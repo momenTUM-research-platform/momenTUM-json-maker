@@ -19,20 +19,27 @@ export function validateStudy(study: any): study is Study {
       mIds.push({ id: key, text: value.content.name });
     }
   }
-  const schema = study_schema(conditions, qIds, mIds);
-  const validator = new Ajv().compile(schema);
-  const valid = validator(study);
-  console.log(study, validator);
-  if (valid) return true;
-  const errors = validator.errors as DefinedError[];
+  let true_conditions = ["*"];
+  try {
+    const c = study.properties.conditions;
+    if (c) true_conditions = c;
+  } finally {
+    const schema = study_schema(true_conditions, qIds, mIds);
 
-  toast.error(
-    errors.reduce(
-      (acc, e) => acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
-      ""
-    ) || "Unknown error"
-  );
-  return false;
+    const validator = new Ajv().compile(schema);
+    const valid = validator(study);
+    console.log(study, validator);
+    if (valid) return true;
+    const errors = validator.errors as DefinedError[];
+
+    toast.error(
+      errors.reduce(
+        (acc, e) => acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
+        ""
+      ) || "Unknown error"
+    );
+    return false;
+  }
 }
 export function validate() {
   const { atoms } = useStore.getState();
@@ -61,9 +68,8 @@ export function load() {
       const data = JSON.parse(reader.result as string);
       const deconstructed = deconstructStudy(data);
       const rebuild = constructStudy(deconstructed);
-      if (validateStudy(rebuild)) {
-        setAtoms(deconstructed);
-      }
+      validateStudy(rebuild); // Validate the study, and show errors if any, but don't stop loading as this is a user action
+      setAtoms(deconstructed);
     };
     reader.readAsText(file);
   };
