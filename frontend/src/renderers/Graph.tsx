@@ -4,8 +4,8 @@ import ReactFlow, { MiniMap, Controls, Background, Edge, Node, useReactFlow } fr
 import "reactflow/dist/style.css";
 import { useStore, nodeTypes } from '../state';
 import { hideAtoms } from '../utils/hideAtoms';
-import { calcGraphFromAtoms } from '../utils/calcGraphFromAtoms';
 import { alignNodes } from '../utils/alignNodes';
+import { calculateGraphFromAtoms } from '../utils/calculatorsFromAtoms';
 
 
 function useGraph(): [Node[], Edge[]] {
@@ -16,7 +16,7 @@ function useGraph(): [Node[], Edge[]] {
     [selectedNode, atoms.size, forceRedraw]
   );
 
-  let [nodes, edges] = useMemo(() => calcGraphFromAtoms(visibleAtoms), [visibleAtoms, direction]);
+  let [nodes, edges] = useMemo(() => calculateGraphFromAtoms(visibleAtoms), [visibleAtoms, direction]);
 
   [nodes, edges] = useMemo(
     () => alignNodes(nodes, edges, direction),
