@@ -8,6 +8,15 @@ use rocket::{
 use rocket_db_pools::Connection;
 use serde::{Deserialize, Serialize};
 use sha2::Digest;
+
+/// Authenticated user has email and password_hash
+///
+/// https://rocket.rs/v0.5-rc/guide/requests/#request-guards
+///
+/// By implementing FromRequest, we can use this struct as a request guard.
+/// From the request, we can extract the Authorization header, which is a base64 encoded string of the email and password.
+/// We then compare the password hash in the database with the hash of the password provided in the Authorization header.
+/// If they match, we return the user struct, which contains the email and password hash.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct User {
     pub email: String,

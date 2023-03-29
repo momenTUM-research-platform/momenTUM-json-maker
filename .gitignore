@@ -39,3 +39,4 @@ package-lock.json
 /api/target
 
 frontend/pnpm-lock.yaml
+frontend/playwright-report/

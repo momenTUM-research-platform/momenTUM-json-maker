@@ -209,11 +209,14 @@ pub enum StringOrBool {
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
+/// Enumeration of all the different modules.
+/// https://serde.rs/enum-representations.html
+///
+/// Info modules are treated as surveys, because they are a strict subset.
 pub enum Modules {
-    Survey(Survey),
     Pvt(Pvt),
-    Info, // These three are not yet implemented
-    Video,
+    Survey(Survey),
+    Video, // These three are not yet implemented
     Audio,
 }
 
@@ -241,6 +244,42 @@ pub enum GraphOrNoGraph {
     NoGraph(NoGraph),
 }
 
+pub trait BasicQuestion {
+    fn get_id(&self) -> &str;
+    fn get_text(&self) -> &str;
+    fn get_response_data_type(&self) -> &str;
+}
+
+// Implement the trait for the enum
+impl BasicQuestion for Question {
+    fn get_id(&self) -> &str {
+        match self {
+            Question::Text { id, .. } => id,
+            Question::Datetime { id, .. } => id,
+            Question::YesNo { id, .. } => id,
+            Question::Slider { id, .. } => id,
+            Question::Multi { id, .. } => id,
+            Question::Media { id, .. } => id,
+            Question::Instruction { id, .. } => id,
+        }
+    }
+
+    fn get_text(&self) -> &str {
+        match self {
+            Question::Text { text, .. } => text,
+            Question::Datetime { text, .. } => text,
+            Question::YesNo { text, .. } => text,
+            Question::Slider { text, .. } => text,
+            Question::Multi { text, .. } => text,
+            Question::Media { text, .. } => text,
+            Question::Instruction { text, .. } => text,
+        }
+    }
+    fn get_response_data_type(&self) -> &str {
+        "text"
+    }
+}
+
 #[cfg(test)]
 mod test {
     #[test]
@@ -254,6 +293,63 @@ mod test {
         let json = include_str!("../../studies/monster.json");
         let study: super::Study = serde_json::from_str(json).unwrap();
         assert_eq!(study.properties.created_by, "Constantin Goeldel")
+    }
+
+    #[test]
+    fn deserialize_pilot_study() {
+        let json = include_str!("../../studies/pilot.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        assert_eq!(study.properties.study_id, "acticut_v1")
+    }
+    #[test]
+    fn deserialize_alert() {
+        let json = r#"{
+            "title": "Wear LOG",
+            "message": "Remember to log your watch wear!",
+            "duration": 20,
+            "times": [
+                {
+                    "hours": 18,
+                    "minutes": 30
+                }
+            ],
+            "random": false,
+            "random_interval": 0,
+            "sticky": true,
+            "sticky_label": "logs",
+            "timeout": false,
+            "timeout_after": 0,
+            "start_offset": 0
+        }"#;
+        let alert: super::Alert = serde_json::from_str(json).unwrap();
+        assert_eq!(alert.title, "Wear LOG");
+    }
+    #[test]
+    fn test_pvt() {
+        let json = include_str!("../../studies/monster.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        let pvt = &study.modules[2];
+        match pvt {
+            super::Modules::Pvt(pvt) => {
+                assert_eq!(pvt.min_waiting, 200);
+                assert!(pvt.max_waiting > 200);
+                assert!(pvt.max_reaction > pvt.max_waiting);
+            }
+            _ => panic!("Expected a pvt module"),
+        }
+    }
+
+    #[test]
+    fn test_survey() {
+        let json = include_str!("../../studies/monster.json");
+        let study: super::Study = serde_json::from_str(json).unwrap();
+        let survey = &study.modules[0];
+        match survey {
+            super::Modules::Survey(survey) => {
+                assert_eq!(survey.sections.len(), 4);
+            }
+            _ => panic!("Expected a survey module"),
+        }
     }
 }
 

@@ -2,19 +2,22 @@ import React, { useMemo } from "react";
 import ReactFlow, { MiniMap, Controls, Background, Edge, Node, useReactFlow } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
-import { NewNode, DeleteNode, EarlierNode, LaterNode } from "./CustomNodes";
-import { nodeTypes, useStore } from "../state";
-import { alignNodes } from "../utils/alignNodes";
-import { calculateGraphFromAtoms } from "../utils/calculatorsFromAtoms";
-import { hideAtoms } from "../utils/hideAtoms";
+import { useStore, nodeTypes } from '../state';
+import { hideAtoms } from '../utils/hideAtoms';
+import { calcGraphFromAtoms } from '../utils/calcGraphFromAtoms';
+import { alignNodes } from '../utils/alignNodes';
+
 
 function useGraph(): [Node[], Edge[]] {
   let { atoms, selectedNode, direction, forceRedraw } = useStore();
+
   const visibleAtoms = useMemo(
     () => hideAtoms(selectedNode || "study", atoms),
     [selectedNode, atoms.size, forceRedraw]
   );
-  let [nodes, edges] = useMemo(() => calculateGraphFromAtoms(visibleAtoms), [visibleAtoms, direction]);
+
+  let [nodes, edges] = useMemo(() => calcGraphFromAtoms(visibleAtoms), [visibleAtoms, direction]);
+
   [nodes, edges] = useMemo(
     () => alignNodes(nodes, edges, direction),
     [nodes, edges, direction, visibleAtoms]

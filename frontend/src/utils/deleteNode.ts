@@ -29,8 +29,10 @@ export function deleteNode(
 
         nodesToDelete.forEach((n) => state.atoms.delete(n));
 
+  
         if (parentId) {
           const parent = state.atoms.get(parentId)!;
+          state.selectedNode = parentId;
           state.atoms.set(parentId, {
             ...parent,
             subNodes: parent.subNodes!.filter((s) => s !== id),

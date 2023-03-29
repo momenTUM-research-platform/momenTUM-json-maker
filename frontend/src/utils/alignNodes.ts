@@ -15,6 +15,7 @@ export function alignNodes(nodes: Node[], edges: Edge[], direction: string): [No
     marginy: 200,
     compound: true,
     ranker: "tight-tree",
+    nodesep: 70,
   });
 
   // Action nodes will be placed manually

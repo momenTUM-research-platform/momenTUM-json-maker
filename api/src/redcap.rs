@@ -6,6 +6,7 @@ use mongodb::bson::oid::ObjectId;
 use mongodb::options::FindOneOptions;
 use rocket_db_pools::Connection;
 use serde::{Deserialize, Serialize};
+use sha2::digest::typenum::Mod;
 use std::collections::HashMap;
 use std::env;
 use std::str::FromStr;
@@ -31,7 +32,13 @@ pub struct Log {
     pub timestamp: String,
     pub timestamp_in_ms: i64,
 }
-
+/// Structure of a response from the app
+///
+/// Sent by the app as a POST request with form-data body. Deserialized by Rocket.
+///
+/// data_type: "survey_response"
+///
+/// Entries: Contains the responses from the PVT in milliseconds
 #[derive(Serialize, FromForm)]
 pub struct Response {
     pub data_type: String,
@@ -39,6 +46,7 @@ pub struct Response {
     pub study_id: String,
     pub module_index: i32,
     pub platform: String,
+    pub module_id: String,
 
     pub module_name: String,
     pub responses: Option<String>, // JSON of type HashMap<String, Response>
@@ -48,6 +56,9 @@ pub struct Response {
     pub alert_time: String,
 }
 
+/// Structure of the request body as sent to REDCap
+///
+/// Most data is serialized in the `data` field.
 #[derive(Serialize, Deserialize)]
 pub struct Payload {
     token: String,
@@ -60,26 +71,6 @@ pub struct Payload {
 const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
 
 pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
-    let filter = doc! { "$or": [ {"properties.study_id": &res.study_id}, {"_id": ObjectId::from_str(&res.study_id).unwrap_or_default()}]};
-
-    let study = db
-        .database(ACTIVE_DB)
-        .collection::<Study>("studies")
-        .find_one(
-            filter,
-            FindOneOptions::builder()
-                .sort(doc! { "timestamp": -1})
-                .show_record_id(true)
-                .build(),
-        )
-        .await?;
-
-    if study.is_none() {
-        return Err(Error::StudyNotFound);
-    }
-
-    let study = study.expect("Study should be present");
-
     // Get API key from DB
     let key = db
         .database(ACTIVE_DB)
@@ -115,7 +106,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
         ),
         (
             "redcap_repeat_instrument".to_string(),
-            Entry::Text(String::from("module_") + &module_id),
+            Entry::Text(String::from("module_") + &res.module_id),
         ),
         (
             "redcap_repeat_instance".to_string(),
@@ -139,7 +130,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     };
 
     if let Some(entries) = res.entries.clone() {
-        record.insert("entries".to_string(), Entry::Entries(entries));
+        record.insert(res.module_id.to_string(), Entry::Entries(entries));
     };
 
     let mut record_including_raw = record.clone();
@@ -184,6 +175,9 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
 
 pub type ApiKey = String;
 
+/// Create Redcap project for a study
+///
+/// Automated by using the super API token
 pub async fn create_project(study: &Study) -> Result<ApiKey> {
     let super_api_token = env::var("REDCAP_SUPER_API_TOKEN").unwrap();
 
@@ -274,13 +268,44 @@ impl<'a> MetaData<'a> {
         }
     }
 }
-// https://tuspl22-redcap.srv.mwn.de/redcap/api/help/index.php?content=imp_metadata
+
+/// Metadata = Fields of the study in Redcap
+///
+/// https://tuspl22-redcap.srv.mwn.de/redcap/api/help/index.php?content=imp_metadata
 pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
     let mut dictionary: Vec<MetaData> = Vec::new();
 
     for (i, module) in study.modules.iter().enumerate() {
         match module {
-            Modules::Info => continue,
+            Modules::Pvt(pvt) => {
+                if i == 0 {
+                    dictionary.push(MetaData::create(
+                        "record_id".to_string(),
+                        &pvt.id,
+                        "text",
+                        "Record ID",
+                    ))
+                }
+                dictionary.push(MetaData::create(
+                    format!("participant_id_{}", i),
+                    &pvt.id,
+                    "text",
+                    "Participant ID",
+                ));
+                dictionary.push(MetaData::create(
+                    format!("response_time_in_ms_{}", i),
+                    &pvt.id,
+                    "text",
+                    "Response Time in Milliseconds",
+                ));
+                dictionary.push(MetaData::create(
+                    format!("response_time_{}", i),
+                    &pvt.id,
+                    "text",
+                    "Response Time",
+                ));
+                dictionary.push(MetaData::create(pvt.id.clone(), &pvt.id, "text", "PVT"));
+            }
             Modules::Survey(survey) => {
                 if i == 0 {
                     dictionary.push(MetaData::create(
