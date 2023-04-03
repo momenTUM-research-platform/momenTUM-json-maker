@@ -33,7 +33,8 @@ FROM rust:latest
 
 WORKDIR /usr/src/designer
 COPY . .
-
+ENV ROCKET_ADDRESS=0.0.0.0
+ENV ROCKET_PORT=8000
 RUN cargo install --path .
 
 CMD ["designer"]
