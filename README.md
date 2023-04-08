@@ -2,11 +2,16 @@
 
 ## Development
 
+## Development
+
 To run automatically, install Docker and run:
 
 ```
-docker compose up --build -d
+docker network create caddy
+docker compose -f docker-compose.local.yml  up --build
+
 ```
+
 
 To run manually, install dependencies and run:
 
