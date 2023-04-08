@@ -37,6 +37,7 @@ package-lock.json
 # Added by cargo
 
 /api/target
+*git .env
 
 frontend/pnpm-lock.yaml
 frontend/playwright-report/
