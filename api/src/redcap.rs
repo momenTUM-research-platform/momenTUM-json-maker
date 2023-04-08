@@ -82,22 +82,6 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     }
     let key = key.expect("Key should be present");
 
-    // Either the module name or the module id should be present
-    // This will be reduced to just the module id when https://github.com/momenTUM-research-platform/momenTUM-app/issues/79 is fixed.
-    // Then, the database lookup will not be neccessary anymore.
-    let module = study.modules.iter().find(|m| {
-        (m.get_name().is_some() && m.get_name().unwrap() == res.module_name)
-            || (m.get_id().is_some() && m.get_id().unwrap() == res.module_name)
-    });
-
-    if module.is_none() {
-        return Err(Error::StudyParsing(
-            "The module name does not correspond to a module id".to_string(),
-        ));
-    }
-
-    let module_id = module.unwrap().get_id().unwrap();
-
     // Create Redcap record, including module index for uniqueness
     let mut record: HashMap<String, Entry> = HashMap::from([
         (

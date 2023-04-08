@@ -2,24 +2,58 @@ import toast from "react-hot-toast";
 import { API_URL } from "../App";
 import { useStore } from "../state";
 import { DefinedError } from "ajv";
+import Ajv, { ValidateFunction } from "ajv";
 import { constructStudy } from "../utils/construct";
 import { deconstructStudy } from "../utils/deconstruct";
-import fetch from 'cross-fetch';
+import fetch from "cross-fetch";
+import { study as study_schema } from "../../schema/study";
 
 export function validateStudy(study: any): study is Study {
-  const { validator } = useStore.getState();
-  const valid = validator(study);
-  if (valid) return true;
-  const errors = validator.errors as DefinedError[];
+  const { conditions, atoms } = useStore.getState();
+  const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
+  const mIds: SchemaEnum[] = [];
+  for (const [key, value] of atoms.entries()) {
+    if (value.content._type === "question") {
+      qIds.push({ id: key, text: value.content.text });
+    }
+    if (value.content._type === "module") {
+      mIds.push({ id: key, text: value.content.name });
+    }
+  }
+  let true_conditions = ["*"];
+  try {
+    const c = study.properties.conditions;
+    if (c) true_conditions.push(...c);
+  } finally {
+    console.log(true_conditions);
+    const schema = study_schema(true_conditions, qIds, mIds);
+    try {
+      const validator = new Ajv().compile(schema);
+      const valid = validator(study);
+      console.log(study, validator);
+      if (valid) return true;
+      const errors = validator.errors as DefinedError[];
 
-  toast.error(
-    errors.reduce(
-      (acc, e) =>
-        acc + e.keyword + " error: " + e.instancePath + " " + e.message + "\n",
-      ""
-    ) || "Unknown error"
-  );
-  return false;
+      toast.error(
+        errors.reduce(
+          (acc, e) =>
+            acc +
+            e.keyword +
+            " error: " +
+            e.instancePath +
+            " " +
+            e.message +
+            "\n",
+          ""
+        ) || "Unknown error"
+      );
+      return false;
+    } catch (error) {
+      console.error(error);
+      toast.error("Study is invalid");
+      return false;
+    }
+  }
 }
 export function validate() {
   const { atoms } = useStore.getState();
@@ -40,7 +74,6 @@ export function load() {
   const { setAtoms } = useStore.getState();
   const input = document.createElement("input");
   input.type = "file";
-  let state = false;
   input.onchange = (e) => {
     // @ts-ignore
     const file = e.target.files![0];
@@ -49,20 +82,11 @@ export function load() {
       const data = JSON.parse(reader.result as string);
       const deconstructed = deconstructStudy(data);
       const rebuild = constructStudy(deconstructed);
-      if (validateStudy(rebuild)) {
-        state = true;
-        setAtoms(deconstructed);
-      }
+      validateStudy(rebuild); // Validate the study, and show errors if any, but don't stop loading as this is a user action
+      setAtoms(deconstructed);
     };
     reader.readAsText(file);
-    if (state) {
-      toast.success("Upload completed!");
-    } else {
-      toast.error("Upload failed!");
-    }
   };
-
-  
   input.click();
 }
 
@@ -75,6 +99,7 @@ export async function upload(study: Study): Promise<string> {
       body: data,
       redirect: "follow",
     });
+    
     const body = await response.text();
     if (body.includes("ObjectId(")) {
       // Success
@@ -84,7 +109,6 @@ export async function upload(study: Study): Promise<string> {
     }
   } catch (error) {
     console.error(error);
-
     throw "Error: " + error;
   }
 }

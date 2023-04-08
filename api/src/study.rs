@@ -352,39 +352,3 @@ mod test {
         }
     }
 }
-
-pub trait BasicQuestion {
-    fn get_id(&self) -> &str;
-    fn get_text(&self) -> &str;
-    fn get_response_data_type(&self) -> &str;
-}
-
-// Implement the trait for the enum
-impl BasicQuestion for Question {
-    fn get_id(&self) -> &str {
-        match self {
-            Question::Text { id, .. } => id,
-            Question::Datetime { id, .. } => id,
-            Question::YesNo { id, .. } => id,
-            Question::Slider { id, .. } => id,
-            Question::Multi { id, .. } => id,
-            Question::Media { id, .. } => id,
-            Question::Instruction { id, .. } => id,
-        }
-    }
-
-    fn get_text(&self) -> &str {
-        match self {
-            Question::Text { text, .. } => text,
-            Question::Datetime { text, .. } => text,
-            Question::YesNo { text, .. } => text,
-            Question::Slider { text, .. } => text,
-            Question::Multi { text, .. } => text,
-            Question::Media { text, .. } => text,
-            Question::Instruction { text, .. } => text,
-        }
-    }
-    fn get_response_data_type(&self) -> &str {
-        "text"
-    }
-}

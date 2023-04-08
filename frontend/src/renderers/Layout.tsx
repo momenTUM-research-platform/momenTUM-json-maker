@@ -9,50 +9,36 @@ import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 import Logo from "../../assets/icon.png";
 import { Menu } from "./Menu";
 import { Settings } from "./Settings";
+import Nav from "./Nav";
 export function Layout({ children }: { children: ReactElement }) {
   const { invertDirection, mode, invertMode } = useStore();
 
   return (
-    <main className="max-h-screen overflow-hidden">
-      <header className="flex justify-between p-8 pb-6 shadow-md relative">
-        <div className="flex">
-          <img
-            src={Logo}
-            alt="MomenTUM logo: A brain with a question mark"
-            className="w-10 h-10 "
-          />
-          <h1 className="text-xl p-2">MomenTUM Study Designer</h1>
-        </div>
-        <div className="flex justif">
-          <Action action={invertDirection}>
-            <Rotate /> Rotate Canvas
-          </Action>
-          <Action action={invertMode}>
-            <Calendar /> Switch to {mode === "timeline" ? "graph" : "calendar"} view
-          </Action>
-          <Action action={validate}>
-            <ShieldCheckIcon className="h-6 w-6" />
-            Validate Study
-          </Action>
-
-          <Menu />
-          <Settings />
-          {/*
-          
-          <Action action={addApiKey}>Add API key</Action>
-  */}
-        </div>
+    <main className="max-h-screen overflow-hidden w-screen">
+      <header className="flex justify-between  shadow-md relative w-screen">
+        <Nav />
       </header>
       {children}
-      <footer></footer>
+      <footer className="absolute w-full border bg-gray-100 text-grey-400 p-4 overflow-y-auto max-h-20">
+        
+        <p className="text-center text-sm">
+          © 2023 All rights reserved.
+        </p>
+      </footer>
     </main>
   );
 }
 
-function Action({ children, action }: { children: React.ReactNode; action: () => void }) {
+function Action({
+  children,
+  action,
+}: {
+  children: React.ReactNode;
+  action: () => void;
+}) {
   return (
     <button
-      className="pointer-events-auto ml-4 flex items-center gap-3  rounded-md  bg-main py-2 px-3 text-lg font-semibold leading-5 text-white hover:bg-sky-500"
+      className="pointer-events-auto ml-4 flex items-center gap-3   rounded-md  text-black hover:text-blue-600 focus:outline-none"
       onClick={action}
     >
       {children}

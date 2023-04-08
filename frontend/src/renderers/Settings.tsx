@@ -15,12 +15,11 @@ export function Settings() {
   return (
     <Menu as="div" className=" inline-block text-left">
       <div>
-        <Menu.Button className="pointer-events-auto ml-4 flex items-center gap-3  rounded-md border-2  border-main py-2 px-3 text-lg font-semibold leading-5 hover:border-sky-500 hover:bg-sky-500 hover:text-white">
+        <Menu.Button className="pointer-events-auto ml-4 flex items-center gap-3 rounded-md py-2 px-3 text-md leading-5 text-black hover:text-blue-500 focus:outline-none`
+">
+ <ChevronDownIcon className="block h-4 w-4" aria-hidden="true" />
           Settings
-          <ChevronDownIcon
-            className={classNames("ml-2 h-8 w-8 transition duration-150 ease-in-out ")}
-            aria-hidden="true"
-          />
+          
         </Menu.Button>
       </div>
 

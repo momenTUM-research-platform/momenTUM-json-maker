@@ -382,22 +382,6 @@ async fn docs_assets(path: PathBuf) -> Option<NamedFile> {
     }
 }
 
-#[get("/preview")]
-async fn preview() -> Option<NamedFile> {
-    let path = Path::new(relative!("../frontend/dist-preview/")).join("index.html");
-    NamedFile::open(path).await.ok()
-}
-
-#[get("/preview/<path..>")]
-async fn preview_assets(path: PathBuf) -> Option<NamedFile> {
-    let path = Path::new(relative!("../frontend/dist-preview/")).join(path);
-    if path.is_file() {
-        NamedFile::open(path).await.ok()
-    } else {
-        None
-    }
-}
-
 #[get("/api/v1/status")]
 fn status() -> &'static str {
     "The V1 API is live!"
@@ -496,33 +480,6 @@ async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
         .await?;
 
     Ok(())
-}
-
-#[post("/api/v1/redcap/<username>", data = "<study>")]
-async fn create_redcap_project(
-    db: Connection<DB>,
-    study: Json<Study>,
-    username: &str,
-) -> Result<&'static str> {
-    let study = study.0;
-    let api_key = redcap::create_project(&study).await?;
-    println!("Created project with API key {}", api_key.clone());
-    db.database(ACTIVE_DB)
-        .collection::<Key>("keys")
-        .replace_one(
-            doc! {"study_id":&study.properties.study_id},
-            Key {
-                study_id: study.properties.study_id.clone(),
-                api_key: api_key.clone(),
-            },
-            ReplaceOptions::builder().upsert(true).build(), // For true upsert, new key document will be inserted if not existing before => Only one key per study_id
-        )
-        .await?;
-    redcap::import_metadata(&study, api_key.clone()).await?;
-    redcap::enable_repeating_instruments(&study, api_key.clone()).await?;
-    redcap::import_user(username, api_key.clone()).await?;
-
-    Ok("Project successfully created. Go to https://tuspl22-redcap.srv.mwn.de/redcap/ to see it.")
 }
 
 #[post("/api/v1/redcap/<username>", data = "<study>")]

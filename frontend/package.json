@@ -20,7 +20,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@headlessui/react": "^1.7.4",
-    "@heroicons/react": "^2.0.13",
+    "@heroicons/react": "^2.0.17",
     "@mui/icons-material": "^5.10.16",
     "@mui/material": "^5.10.17",
     "@playwright/experimental-ct-react": "^1.30.0",
