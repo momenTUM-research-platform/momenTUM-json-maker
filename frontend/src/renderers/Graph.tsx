@@ -17,7 +17,7 @@ function useGraph(): [Node[], Edge[]] {
   );
 
   let [nodes, edges] = useMemo(() => calculateGraphFromAtoms(visibleAtoms), [visibleAtoms, direction]);
-
+  
   [nodes, edges] = useMemo(
     () => alignNodes(nodes, edges, direction),
     [nodes, edges, direction, visibleAtoms]
@@ -27,7 +27,6 @@ function useGraph(): [Node[], Edge[]] {
 
 export function Graph() {
   const [nodes, edges] = useGraph();
-
   return (
     <ReactFlow
       nodes={nodes}

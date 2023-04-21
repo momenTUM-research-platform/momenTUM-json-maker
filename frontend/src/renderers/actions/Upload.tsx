@@ -59,9 +59,15 @@ export function Upload({ close }: { close: () => void }) {
         <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
       </div>
       <div className="mt-3 mb-2 text-center sm:mt-5">
-        <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-          Upload
-        </Dialog.Title>
+        <Dialog open={false} onClose={() => {}}>
+          <Dialog.Title
+            as="h3"
+            className="text-lg font-medium leading-6 text-gray-900"
+          >
+            Upload
+          </Dialog.Title>
+          {/* Other Dialog content */}
+        </Dialog>
       </div>
 
       <nav aria-label="Progress">
@@ -69,7 +75,10 @@ export function Upload({ close }: { close: () => void }) {
           {steps.map((content, stepIdx) => (
             <li
               key={content.name}
-              className={classNames(stepIdx !== steps.length - 1 ? "pb-10" : "", "relative")}
+              className={classNames(
+                stepIdx !== steps.length - 1 ? "pb-10" : "",
+                "relative"
+              )}
             >
               {stepIdx < step ? (
                 <>
@@ -82,12 +91,19 @@ export function Upload({ close }: { close: () => void }) {
                   <a className="group relative flex items-start">
                     <span className="flex h-9 items-center">
                       <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 group-hover:bg-indigo-800">
-                        <CheckIcon className="h-5 w-5 text-white" aria-hidden="true" />
+                        <CheckIcon
+                          className="h-5 w-5 text-white"
+                          aria-hidden="true"
+                        />
                       </span>
                     </span>
                     <span className="ml-4 flex min-w-0 flex-col">
-                      <span className="text-sm font-medium">{content.name}</span>
-                      <span className="text-sm text-gray-500">{content.description}</span>
+                      <span className="text-sm font-medium">
+                        {content.name}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {content.description}
+                      </span>
                     </span>
                   </a>
                 </>
@@ -106,8 +122,12 @@ export function Upload({ close }: { close: () => void }) {
                       </span>
                     </span>
                     <span className="ml-4 flex min-w-0 flex-col">
-                      <span className="text-sm font-medium text-indigo-600">{content.name}</span>
-                      <span className="text-sm text-gray-500">{content.description}</span>
+                      <span className="text-sm font-medium text-indigo-600">
+                        {content.name}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {content.description}
+                      </span>
                     </span>
                   </a>
                 </>
@@ -126,8 +146,12 @@ export function Upload({ close }: { close: () => void }) {
                       </span>
                     </span>
                     <span className="ml-4 flex min-w-0 flex-col">
-                      <span className="text-sm font-medium text-gray-500">{content.name}</span>
-                      <span className="text-sm text-gray-500">{content.description}</span>
+                      <span className="text-sm font-medium text-gray-500">
+                        {content.name}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {content.description}
+                      </span>
                     </span>
                   </a>
                 </>

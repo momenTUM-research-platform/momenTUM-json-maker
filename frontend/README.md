@@ -17,3 +17,8 @@
 #### 1. Run
         yarn ci
 
+### Check it is in production or development mode
+    docker exec <container-name> printenv NODE_ENV
+
+### Check it to production or development mode
+    docker run -e NODE_ENV=development <image-name>

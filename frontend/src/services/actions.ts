@@ -8,10 +8,67 @@ import { deconstructStudy } from "../utils/deconstruct";
 import fetch from "cross-fetch";
 import { study as study_schema } from "../../schema/study";
 
+export function validateStudyFromObj(study_obj: any): study_obj is Study {
+  const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
+  const mIds: SchemaEnum[] = [];
+
+  const sections = study_obj.modules
+    .flatMap((module: any) => module.sections || [])
+    .filter(
+      (section: any) => section.questions && section.questions.length > 0
+    );
+
+  const questions = sections.flatMap((section: any) => section.questions);
+
+  for (const { id, text, _type } of questions) {
+    if (_type === "question") {
+      qIds.push({ id, text: text });
+    } else if (_type === "module") {
+      mIds.push({ id, text: (text as any).name });
+    }
+  }
+
+  for (const { id, name, _type } of study_obj.modules) {
+    if (_type === "module") {
+      mIds.push({ id, text: name });
+    }
+  }
+
+  let true_conditions = ["*"];
+  try {
+    const c = study_obj.properties.conditions;
+    if (c) true_conditions.push(...c);
+  } catch (err) {
+    console.error(err);
+    toast.error("Conditions error: " + err.message);
+    return false;
+  }
+
+  const schema = study_schema(true_conditions, qIds, mIds);
+  const validator = new Ajv().compile(schema);
+  const valid = validator(study_obj);
+
+  if (valid) {
+    return true;
+  } else {
+    const errors = validator.errors as DefinedError[];
+    const err =
+      errors.reduce((acc, e) => {
+        const keyword = e.keyword.charAt(0).toUpperCase() + e.keyword.slice(1);
+        return (
+          acc + keyword + " error: " + e.instancePath + " " + e.message + "\n"
+        );
+      }, "") || "Unknown error";
+    toast.error(err);
+    return false;
+  }
+}
+
 export function validateStudy(study: any): study is Study {
   const { conditions, atoms } = useStore.getState();
   const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
   const mIds: SchemaEnum[] = [];
+
   for (const [key, value] of atoms.entries()) {
     if (value.content._type === "question") {
       qIds.push({ id: key, text: value.content.text });
@@ -20,41 +77,38 @@ export function validateStudy(study: any): study is Study {
       mIds.push({ id: key, text: value.content.name });
     }
   }
+
   let true_conditions = ["*"];
   try {
     const c = study.properties.conditions;
     if (c) true_conditions.push(...c);
-  } finally {
-    console.log(true_conditions);
-    const schema = study_schema(true_conditions, qIds, mIds);
-    try {
-      const validator = new Ajv().compile(schema);
-      const valid = validator(study);
-      console.log(study, validator);
-      if (valid) return true;
-      const errors = validator.errors as DefinedError[];
+  } catch (err) {
+    console.error(err);
+    toast.error("Conditions error: " + err.message);
+    return false;
+  }
 
-      toast.error(
-        errors.reduce(
-          (acc, e) =>
-            acc +
-            e.keyword +
-            " error: " +
-            e.instancePath +
-            " " +
-            e.message +
-            "\n",
-          ""
-        ) || "Unknown error"
-      );
-      return false;
-    } catch (error) {
-      console.error(error);
-      toast.error("Study is invalid");
-      return false;
-    }
+  const schema = study_schema(true_conditions, qIds, mIds);
+  const validator = new Ajv().compile(schema);
+  const valid = validator(study);
+
+  if (valid) {
+    return true;
+  } else {
+    const errors = validator.errors as DefinedError[];
+    const err =
+      errors.reduce((acc, e) => {
+        const keyword = e.keyword.charAt(0).toUpperCase() + e.keyword.slice(1);
+        return (
+          acc + keyword + " error: " + e.instancePath + " " + e.message + "\n"
+        );
+      }, "") || "Unknown error";
+    toast.error(err);
+    console.error(err);
+    return false;
   }
 }
+
 export function validate() {
   const { atoms } = useStore.getState();
   validateStudy(constructStudy(atoms)) && toast.success("Study is valid");
@@ -82,8 +136,10 @@ export function load() {
       const data = JSON.parse(reader.result as string);
       const deconstructed = deconstructStudy(data);
       const rebuild = constructStudy(deconstructed);
-      validateStudy(rebuild); // Validate the study, and show errors if any, but don't stop loading as this is a user action
-      setAtoms(deconstructed);
+      // Validate the study, and show errors if any, but don't stop loading as this is a user action
+      if (validateStudyFromObj(rebuild)) {
+        setAtoms(deconstructed);
+      }
     };
     reader.readAsText(file);
   };
@@ -99,7 +155,6 @@ export async function upload(study: Study): Promise<string> {
       body: data,
       redirect: "follow",
     });
-    
     const body = await response.text();
     if (body.includes("ObjectId(")) {
       // Success
@@ -108,8 +163,17 @@ export async function upload(study: Study): Promise<string> {
       throw body;
     }
   } catch (error) {
-    console.error(error);
-    throw "Error: " + error;
+    let errorKind = error;
+    if (typeof errorKind === "string") {
+      const startIndex = errorKind.indexOf("Kind:");
+      const endIndex = errorKind.indexOf("Topology");
+      if (startIndex >= 0 && endIndex >= 0) {
+        errorKind = errorKind.substring(startIndex + 5, endIndex).trim();
+      }
+    }
+
+    console.error(`Error: ${errorKind}`);
+    throw `Error: ${errorKind}`;
   }
 }
 

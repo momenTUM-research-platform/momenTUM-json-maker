@@ -1,5 +1,4 @@
 import { Toaster } from "react-hot-toast";
-
 import { useEffect, useState } from "react";
 import { Form } from "./renderers/Form";
 import { Graph } from "./renderers/Graph";
@@ -9,8 +8,16 @@ import Drag from "../assets/drag";
 import { Calendar } from "./renderers/Calendar";
 import { Modal } from "./renderers/controllers/Modal";
 
-export const API_URL =
-  process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) {
+  console.log("Running in production mode");
+} else {
+  console.log("Running in development mode");
+}
+
+export const API_URL = isProduction ? "/api/v1" : "http://localhost:8000/api/v1";
+
 
 function App() {
   const [distribution, setDistribution] = useState(0.5);

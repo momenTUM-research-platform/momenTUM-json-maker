@@ -3,15 +3,10 @@ import create from "zustand";
 import { customAlphabet } from "nanoid";
 import produce from "immer";
 import { deleteNode } from "./utils/deleteNode";
-import { study } from "../schema/study";
-import { isModule, isQuestion, isSection, isProperties } from "./types/guards";
-import {
-  initialModule,
-  initialQuestion,
-  initialSection,
-  initialProperties,
-} from "./helpers/initialValues";
-import { DeleteNode, EarlierNode, LaterNode, NewNode } from "./renderers/CustomNodes";
+import { NewNode, EarlierNode, LaterNode, DeleteNode } from './renderers/CustomNodes';
+import { initialProperties, initialModule, initialSection, initialQuestion } from './helpers/initialValues';
+import { isSection, isModule, isQuestion, isProperties } from './types/guards';
+
 // Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
 const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
 export const nodeTypes = {
@@ -175,6 +170,7 @@ export const useStore = create<State>()((set, get) => ({
   setAtoms(atoms) {
     // Completely replace the atoms and recalculate the graph
     set({ atoms });
+    console.log("Setting atoms...");
     localStorage.setItem("atoms", JSON.stringify([...atoms]));
   },
   setModal(value) {
@@ -185,6 +181,7 @@ export const useStore = create<State>()((set, get) => ({
   },
   saveAtoms: async () => {
     // Saving all atoms takes some time and we don't want it to block rendering changes to atoms
+    console.log("Saving atoms...");
     localStorage.setItem("atoms", JSON.stringify([...get().atoms]));
   },
 

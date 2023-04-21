@@ -15,15 +15,12 @@ export function Layout({ children }: { children: ReactElement }) {
 
   return (
     <main className="max-h-screen overflow-hidden w-screen">
-      <header className="flex justify-between  shadow-md relative w-screen">
+      <header>
         <Nav />
       </header>
       {children}
       <footer className="absolute w-full border bg-gray-100 text-grey-400 p-4 overflow-y-auto max-h-20">
-        
-        <p className="text-center text-sm">
-          © 2023 All rights reserved.
-        </p>
+        <p className="text-center text-sm">© 2023 All rights reserved.</p>
       </footer>
     </main>
   );

@@ -9,8 +9,8 @@ import { useStore } from "../state";
 import { Menu } from "./Menu";
 import { Settings } from "./Settings";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
-import LockClosedIcon from "@heroicons/react/20/solid/LockClosedIcon";
 import QueueListIcon from "@heroicons/react/20/solid/QueueListIcon";
+import XMarkIcon from "@heroicons/react/20/solid/XMarkIcon";
 
 function Nav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +19,7 @@ function Nav() {
 
   return (
     <nav className="bg-white shadow-lg w-full">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-screen mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
             <img
@@ -27,12 +27,12 @@ function Nav() {
               src={Logo}
               alt="MomenTUM logo: A brain with a question mark"
             />
-            <h1 className="text-xl text-gray-900 ml-2">
+            <h1 className="text-xl font-light text-gray-900 ml-2">
               momenTUM Study Designer
             </h1>
           </div>
 
-          <div className="-mr-2 flex items-center sm:hidden">
+          <div className="-mr-2 flex items-center lg:hidden">
             <button
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
@@ -41,14 +41,14 @@ function Nav() {
               <span className="sr-only">Open main menu</span>
               {isOpen ? (
                 
-                <LockClosedIcon className="block h-6 w-6" aria-hidden="true" />
+                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
               ) : (
                 <QueueListIcon className="block h-6 w-6" aria-hidden="true" />
               )}
             </button>
           </div>
 
-          <div className="hidden sm:flex sm:items-center">
+          <div className="hidden font-light text-sm lg:flex sm:items-center">
             <Action action={invertDirection}>
               <Rotate /> Rotate Canvas
             </Action>
@@ -68,7 +68,7 @@ function Nav() {
       </div>
 
       {isOpen && (
-        <div className="sm:hidden">
+        <div className="lg:hidden">
           <div className="pt-2 pb-4 space-y-1">
             <Action action={invertDirection}>
               <Rotate /> Rotate Canvas

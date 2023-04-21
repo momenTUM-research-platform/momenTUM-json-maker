@@ -71,5 +71,6 @@ export function calculateGraphFromAtoms(atoms: Atoms): [Node[], Edge[]] {
     });
   });
   console.log(nodes.filter((n) => n.type === "later").length);
+  
   return [nodes, edges];
 }

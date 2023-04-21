@@ -7,6 +7,6 @@ describe('App', () => {
   it('renders headline', async () => {
     render(<App />);
     // check if App components renders headline
-    expect(await screen.findByText(/MomenTUM-JSON-Maker/i)).toBeInTheDocument();
+    expect(await screen.findByText(/momenTUM Study Designer/i)).toBeInTheDocument();
   });
 });

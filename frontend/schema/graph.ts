@@ -45,7 +45,6 @@ export const graph = (questions: SchemaEnum[]) => {
                 description:
                   "The id of a question object to graph. It must match one of the module's question ids.",
                 default: "none",
-
                 oneOf: questions.map((q) => ({ const: q.id, title: q.text })),
               },
               title: {

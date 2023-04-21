@@ -1,170 +1,170 @@
 {
-    "_type": "study",
-    "properties": {
-        "_type": "properties",
-        "study_name": "Environmental effects on sleep",
-        "study_id": "tum_2022_env_trial01",
-        "created_by": "Anna Biller",
-        "instructions": "This is a trial",
-        "post_url": "https: //tuspl22-momentum.srv.mwn.de/post.php",
-        "empty_msg": "You're all up to date",
-        "banner_url": "https://getschema.app/img/schema_banner.png",
-        "support_url": "",
-        "support_email": "anna.biller@tum.de",
-        "cache": false,
-        "ethics": "This study was approved by the ethics committee of the TUM with approval #2022-578-S-KH",
-        "pls": "",
-        "conditions": []
-    },
-    "modules": [
+  "_type": "study",
+  "properties": {
+    "_type": "properties",
+    "study_name": "Environmental effects on sleep",
+    "study_id": "tum_2022_env_trial01",
+    "created_by": "Anna Biller",
+    "instructions": "This is a trial",
+    "post_url": "https: //tuspl22-momentum.srv.mwn.de/post.php",
+    "empty_msg": "You're all up to date",
+    "banner_url": "https://getschema.app/img/schema_banner.png",
+    "support_url": "",
+    "support_email": "anna.biller@tum.de",
+    "cache": false,
+    "ethics": "This study was approved by the ethics committee of the TUM with approval #2022-578-S-KH",
+    "pls": "",
+    "conditions": []
+  },
+  "modules": [
+    {
+      "id": "sleep_diary",
+      "type": "survey",
+      "name": "Daily sleep diary",
+      "submit_text": "Submit",
+      "condition": "*",
+      "alerts": {
+        "title": "Good morning!",
+        "message": "Please fill out your daily sleep diary",
+        "duration": 24,
+        "times": [
+          {
+            "hours": 11,
+            "minutes": 0
+          }
+        ],
+        "random": false,
+        "random_interval": 0,
+        "sticky": true,
+        "sticky_label": "",
+        "timeout": false,
+        "timeout_after": 0,
+        "start_offset": 0
+      },
+      "graph": {
+        "display": true,
+        "variable": "JNzZp-Z6iJS7291H2f1OU",
+        "title": "",
+        "blurb": "",
+        "type": "bar",
+        "max_points": 10
+      },
+      "unlock_after": ["sleep_diary"],
+      "shuffle": false,
+      "_type": "module",
+      "sections": [
         {
-            "id": "Sleep Diary",
-            "type": "survey",
-            "name": "Daily sleep diary",
-            "submit_text": "Submit",
-            "condition": "*",
-            "alerts": {
-                "title": "Good morning!",
-                "message": "Please fill out your daily sleep diary",
-                "duration": 24,
-                "times": [
-                    {
-                        "hours": 11,
-                        "minutes": 0
-                    }
-                ],
-                "random": false,
-                "random_interval": 0,
-                "sticky": true,
-                "sticky_label": "",
-                "timeout": false,
-                "timeout_after": 0,
-                "start_offset": 0
+          "name": "Questions for sleep diary",
+          "shuffle": true,
+          "_type": "section",
+          "id": "FsQaZ2ftBNUu4gtM21M4J",
+          "questions": [
+            {
+              "id": "hSE7rsNlqwPLfPjexIJgk",
+              "text": "Here we will ask you about your last main sleep episode. This is usually but does not have to be the the previous night-time sleep episode. Please fill out the diary every morning after waking up.",
+              "required": true,
+              "hide_id": "",
+              "hide_value": "",
+              "hide_if": false,
+              "type": "instruction",
+              "_type": "question",
+              "rand_group": ""
             },
-            "graph": {
-                "display": true,
-                "variable": "",
-                "title": "",
-                "blurb": "",
-                "type": "bar",
-                "max_points": 10
+            {
+              "type": "datetime",
+              "subtype": "datetime",
+              "id": "BtcFLqU9v0T07TxjICTwE",
+              "text": "When did you fall asleep yesterday?",
+              "required": true,
+              "hide_id": "",
+              "hide_value": "",
+              "hide_if": false,
+              "_type": "question",
+              "rand_group": ""
             },
-            "unlock_after": [],
-            "shuffle": false,
-            "_type": "module",
-            "sections": [
-                {
-                    "name": "Questions for sleep diary",
-                    "shuffle": true,
-                    "_type": "section",
-                    "id": "FsQaZ2ftBNUu4gtM21M4J",
-                    "questions": [
-                        {
-                            "id": "hSE7rsNlqwPLfPjexIJgk",
-                            "text": "Here we will ask you about your last main sleep episode. This is usually but does not have to be the the previous night-time sleep episode. Please fill out the diary every morning after waking up.",
-                            "required": true,
-                            "hide_id": "",
-                            "hide_value": "",
-                            "hide_if": false,
-                            "type": "instruction",
-                            "_type": "question",
-                            "rand_group": ""
-                        },
-                        {
-                            "type": "datetime",
-                            "subtype": "datetime",
-                            "id": "BtcFLqU9v0T07TxjICTwE",
-                            "text": "When did you fall asleep yesterday?",
-                            "required": true,
-                            "hide_id": "",
-                            "hide_value": "",
-                            "hide_if": false,
-                            "_type": "question",
-                            "rand_group": ""
-                        },
-                        {
-                            "id": "juDISNtklXpBK1EVpnHjj",
-                            "text": "When did you wake up today?",
-                            "required": true,
-                            "hide_id": "",
-                            "hide_value": "",
-                            "hide_if": false,
-                            "type": "datetime",
-                            "_type": "question",
-                            "rand_group": "",
-                            "subtype": "datetime"
-                        },
-                        {
-                            "id": "JNzZp-Z6iJS7291H2f1OU",
-                            "text": "How would you rate your sleep quality today?",
-                            "required": true,
-                            "hide_id": "",
-                            "hide_value": "",
-                            "hide_if": false,
-                            "type": "slider",
-                            "_type": "question",
-                            "rand_group": "",
-                            "min": 1,
-                            "max": 4,
-                            "hint_left": "very good",
-                            "hint_right": "very bad"
-                        },
-                        {
-                            "id": "grbDZ4rA_QJzStWEM9HkY",
-                            "text": "Did you use an alarm clock to wake up?",
-                            "required": true,
-                            "hide_id": "",
-                            "hide_value": "",
-                            "hide_if": false,
-                            "type": "multi",
-                            "options": [
-                                "yes",
-                                "no but something else woke me up (e.g. bed partner, pet, noise...)",
-                                "no"
-                            ],
-                            "_type": "question",
-                            "rand_group": "",
-                            "modal": false,
-                            "radio": true,
-                            "shuffle": false
-                        },
-                        {
-                            "id": "BIRjLhE8QL_tuDQ5QPR9w",
-                            "text": "Do you need to work today?",
-                            "required": false,
-                            "hide_id": "",
-                            "hide_value": "",
-                            "hide_if": false,
-                            "type": "multi",
-                            "options": [
-                                "yes and I can choose my start time flexibly",
-                                "yes but I cannot choose my start time",
-                                "no "
-                            ],
-                            "_type": "question",
-                            "rand_group": "",
-                            "radio": true,
-                            "shuffle": false,
-                            "modal": false
-                        },
-                        {
-                            "id": "wwvhQUyE_UJHHAGIx1iug",
-                            "text": "How alert/sleepy are you at the moment?",
-                            "required": true,
-                            "hide_id": "",
-                            "hide_value": "",
-                            "hide_if": false,
-                            "type": "slider",
-                            "_type": "question",
-                            "rand_group": "",
-                            "min": 1,
-                            "max": 10,
-                            "hint_left": "very alert",
-                            "hint_right": "extremely sleepy, can't keep awake"
-                        }
-                    ]
-                }
-            ]
+            {
+              "id": "juDISNtklXpBK1EVpnHjj",
+              "text": "When did you wake up today?",
+              "required": true,
+              "hide_id": "",
+              "hide_value": "",
+              "hide_if": false,
+              "type": "datetime",
+              "_type": "question",
+              "rand_group": "",
+              "subtype": "datetime"
+            },
+            {
+              "id": "JNzZp-Z6iJS7291H2f1OU",
+              "text": "How would you rate your sleep quality today?",
+              "required": true,
+              "hide_id": "",
+              "hide_value": "",
+              "hide_if": false,
+              "type": "slider",
+              "_type": "question",
+              "rand_group": "",
+              "min": 1,
+              "max": 4,
+              "hint_left": "very good",
+              "hint_right": "very bad"
+            },
+            {
+              "id": "grbDZ4rA_QJzStWEM9HkY",
+              "text": "Did you use an alarm clock to wake up?",
+              "required": true,
+              "hide_id": "",
+              "hide_value": "",
+              "hide_if": false,
+              "type": "multi",
+              "options": [
+                "yes",
+                "no but something else woke me up (e.g. bed partner, pet, noise...)",
+                "no"
+              ],
+              "_type": "question",
+              "rand_group": "",
+              "modal": false,
+              "radio": true,
+              "shuffle": false
+            },
+            {
+              "id": "BIRjLhE8QL_tuDQ5QPR9w",
+              "text": "Do you need to work today?",
+              "required": false,
+              "hide_id": "",
+              "hide_value": "",
+              "hide_if": false,
+              "type": "multi",
+              "options": [
+                "yes and I can choose my start time flexibly",
+                "yes but I cannot choose my start time",
+                "no "
+              ],
+              "_type": "question",
+              "rand_group": "",
+              "radio": true,
+              "shuffle": false,
+              "modal": false
+            },
+            {
+              "id": "wwvhQUyE_UJHHAGIx1iug",
+              "text": "How alert/sleepy are you at the moment?",
+              "required": true,
+              "hide_id": "",
+              "hide_value": "",
+              "hide_if": false,
+              "type": "slider",
+              "_type": "question",
+              "rand_group": "",
+              "min": 1,
+              "max": 10,
+              "hint_left": "very alert",
+              "hint_right": "extremely sleepy, can't keep awake"
+            }
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }
