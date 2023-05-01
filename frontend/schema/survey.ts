@@ -1,39 +1,31 @@
 import { section } from "./section";
 
-export const survey = {
+export const survey = (questions: SchemaEnum[]) => {
+  return {
+  required: ["sections", "shuffle", "name"],
   properties: {
     type: {
       enum: ["survey"],
     },
-    // sections: {
-    //   $id: "#/properties/modules/items/properties/sections",
-    //   type: "array",
-    //   title: "Sections",
-    //   description: "Sections contain questions",
-    //   default: [],
-    //   examples: [
-    //     [
-    //       {
-    //         name: "Welcome",
-    //         questions: [
-    //           {
-    //             id: "instruction-1wnjocfw",
-    //             type: "instruction",
-    //             text: "Hello! Welcome to the study! This module only shows for those enrolled in the control condition.",
-    //             required: false,
-    //             hide_id: "",
-    //             hide_value: "",
-    //             hide_if: true,
-    //           },
-    //         ],
-    //         shuffle: false,
-    //       },
-    //     ],
-    //   ],
-    //   items: section,
-    // },
+    sections: {
+      $id: "#/properties/modules/items/properties/survey/sections",
+      type: "array",
+      title: "Sections",
+      default: [],
+      description:
+        "The section of a survey. It can be multiple entries",
+      items: section(questions),
+    },
+    name: {
+      $id: "#/properties/modules/items/properties/survey/name",
+      type: "string",
+      title: "Name",
+      description: "The name of the module. Basic HTML supported.",
+      default: "",
+      examples: ["Welcome"],
+    },
     shuffle: {
-      $id: "#/properties/modules/items/properties/shuffle",
+      $id: "#/properties/modules/items/properties/survey/shuffle",
       type: "boolean",
       title: "Shuffle sections?",
       description:
@@ -42,5 +34,5 @@ export const survey = {
       examples: [false, true],
     },
   },
-  required: ["sections", "shuffle"],
+}
 };

@@ -1,7 +1,7 @@
 import FormComponent from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
 import { useMemo, useState } from "react";
-import { module } from "../../schema/module";
+import { module } from "../../schema/params";
 import { properties } from "../../schema/properties";
 import { question } from "../../schema/question";
 import { section } from "../../schema/section";

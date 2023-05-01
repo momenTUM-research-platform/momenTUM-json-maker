@@ -2,39 +2,24 @@ import { alerts } from "./alerts";
 import { graph } from "./graph";
 import { pvt } from "./pvt";
 import { survey } from "./survey";
+import { properties } from './properties';
+import { params } from './params';
 
 export const module = (conditions: string[], questions: SchemaEnum[], modules: SchemaEnum[]) => {
   return {
     $id: "#/properties/modules/items",
     type: "object",
     required: [
-      "type",
       "name",
       "submit_text",
+      "condition",
       "alerts",
       "graph",
-      "sections",
-      "shuffle",
-      "condition",
       "id",
       "unlock_after",
+      "shuffle",
+      "params",
     ],
-    dependencies: {
-      type: {
-        oneOf: [
-          // Info/video/audio/video implementation is not specified
-          {
-            properties: {
-              type: {
-                enum: ["info"],
-              },
-            },
-          },
-          pvt,
-          survey,
-        ],
-      },
-    },
     properties: {
       id: {
         $id: "#/properties/modules/items/properties/id",
@@ -46,15 +31,7 @@ export const module = (conditions: string[], questions: SchemaEnum[], modules: S
         default: "",
         examples: [""],
       },
-      type: {
-        $id: "#/properties/modules/items/properties/type",
-        type: "string",
-        title: "Type",
-        description:
-          "The type of the module. Accepted values are survey, info or reaction-time-test.",
-        default: "survey",
-        enum: ["survey", "info", "pvt"],
-      },
+      params: params(questions),
       name: {
         $id: "#/properties/modules/items/properties/name",
         type: "string",
@@ -94,7 +71,7 @@ export const module = (conditions: string[], questions: SchemaEnum[], modules: S
           $id: "#/properties/modules/items/properties/unlock_after/items",
           type: "string",
           pattern: "^[a-z0-9_]+$",
-          oneOf: modules.map((q) => ({ const: q.id, title: q.text })),
+          //oneOf: questions.map((q) => ({ const: q.id, title: q.text })),
         },
       },
     },
