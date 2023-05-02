@@ -1,6 +1,3 @@
-import { properties } from "./properties";
-import { alerts } from "./alerts";
-import { graph } from "./graph";
 export const studt_object = (
   conditions: string[],
   questions: SchemaEnum[],

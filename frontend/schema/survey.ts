@@ -7,19 +7,13 @@ export const survey = (questions: any) => {
       type: {
         enum: ["survey"],
       },
-      sections: {
-        $id: "#/properties/modules/items/properties/survey/sections",
-        type: "array",
-        title: "Sections",
-        default: [],
-        description: "The section of a survey. It can be multiple entries",
-        items: section(questions),
-      },
+      sections: section(questions),
       name: {
         $id: "#/properties/modules/items/properties/survey/name",
         type: "string",
         title: "Name",
-        description: "The name of the module. Basic HTML supported.",
+        description:
+          "The name of the module. Basic HTML supported.",
         default: "",
         examples: ["Welcome"],
       },
