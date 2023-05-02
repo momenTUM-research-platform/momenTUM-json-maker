@@ -69,10 +69,8 @@ declare interface Properties {
 
 declare interface Module {
   _type: "module";
-  type: string;
   name: string;
   submit_text: string;
-
   condition: string;
   alerts: {
     title: string;
@@ -100,16 +98,16 @@ declare interface Module {
         max_points: number;
       }
     | { display: false };
-  sections: Section[];
 
   id: string;
   unlock_after: string[];
   shuffle: boolean;
+  params: survey | pvt;
 }
+
 
 declare interface Section {
   _type: "section";
-
   id: string;
   name: string;
   shuffle: boolean;

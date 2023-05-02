@@ -7,48 +7,60 @@ import { constructStudy } from "../utils/construct";
 import { deconstructStudy } from "../utils/deconstruct";
 import fetch from "cross-fetch";
 import { study as study_schema } from "../../schema/study";
+import { studt_object as study_schema_all } from "../../schema/all";
+import { section } from "../../schema/section";
 
-export function validateStudyFromObj(study_obj: any): study_obj is Study {
+export function validateStudyFromObj(study_obj: any) {
   const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
   const mIds: SchemaEnum[] = [];
+  const studyParams = [];
+  let questions;
 
-  const sections = study_obj.modules
-    .flatMap((module: any) => module.sections || [])
-    .filter(
-      (section: any) => section.questions && section.questions.length > 0
-    );
+  for (const { id, name, params } of study_obj.modules) {
+    mIds.push({ id, text: name });
+    studyParams.push(params);
+  }
 
-  const questions = sections.flatMap((section: any) => section.questions);
+  for (const { type } of studyParams) {
+    if (type === "survey") {
+      const sections = study_obj.modules
+        .flatMap((module: any) => module.params.sections || [])
+        .filter(
+          (section: any) => section.questions && section.questions.length > 0
+        );
+
+      questions = sections.flatMap((section: any) => section.questions);
+    }
+  }
 
   for (const { id, text, _type } of questions) {
     if (_type === "question") {
       qIds.push({ id, text: text });
-    } else if (_type === "module") {
-      mIds.push({ id, text: (text as any).name });
-    }
-  }
-
-  for (const { id, name, _type } of study_obj.modules) {
-    if (_type === "module") {
-      mIds.push({ id, text: name });
-    }
+    } 
   }
 
   let true_conditions = ["*"];
-  try {
-    const c = study_obj.properties.conditions;
-    if (c) true_conditions.push(...c);
-  } catch (err) {
-    console.error(err);
-    toast.error("Conditions error: " + err.message);
-    return false;
-  }
+  // try {
+  //   const c = study_obj.properties.conditions;
+  //   if (c) true_conditions.push(...c);
+  // } catch (err) {
+  //   console.error(err);
+  //   toast.error("Conditions error: " + err.message);
+  //   return false;
+  // }
+
+  console.log("True conditions", true_conditions);
+  console.log("Question IDs", qIds);
+  console.log("Moduel IDs", mIds);
 
   const schema = study_schema(true_conditions, qIds, mIds);
-  const validator = new Ajv().compile(schema);
-  const valid = validator(study_obj);
+  const ajv = new Ajv();
+  ajv.addKeyword("enumNames")
+  const validator = ajv.compile(schema);
+  
+  const is_valid = validator(study_obj);
 
-  if (valid) {
+  if (is_valid) {
     return true;
   } else {
     const errors = validator.errors as DefinedError[];
@@ -59,6 +71,7 @@ export function validateStudyFromObj(study_obj: any): study_obj is Study {
           acc + keyword + " error: " + e.instancePath + " " + e.message + "\n"
         );
       }, "") || "Unknown error";
+    console.log(err);
     toast.error(err);
     return false;
   }

@@ -1,6 +1,6 @@
 import { question } from "./question";
 
-export const section = (questions: SchemaEnum[]) => {
+export const section = (questions: any) => {
   return {
   $id: "#/properties/modules/items/properties/sections/items",
   type: "object",
