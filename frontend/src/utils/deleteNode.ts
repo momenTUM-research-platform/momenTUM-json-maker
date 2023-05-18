@@ -39,7 +39,7 @@ export function deleteNode(
             subNodes: parent.subNodes!.filter((s) => s !== id),
           });
           console.log("Updating localstorage...");
-          localStorage.setItem("atoms", JSON.stringify([state.atoms]));
+          // localStorage.setItem("atoms", JSON.stringify([state.atoms]));
         }
       })
     );

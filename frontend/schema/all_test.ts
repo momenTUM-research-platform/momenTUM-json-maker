@@ -125,7 +125,6 @@ export const studt_object = (
             description:
               "An email address that participants can contact for support with the study.",
             default: "",
-
             examples: ["hello@getschema.app"],
           },
           cache: {
@@ -201,31 +200,18 @@ export const studt_object = (
               default: "",
               examples: [""],
             },
-
             params: {
               $id: "#/properties/modules/items/properties/params",
               type: "object",
-              title: "Type",
+              title: "Module Type",
               description:
                 "The parameters of the module. Can be a survey object or a pvt object, but not both.",
-              required: ["type"],
-              properties: {
-                type: {
-                  $id: "#/properties/modules/items/properties/params/type",
-                  type: "string",
-                  title: "Type",
-                  description:
-                    "The type of the module. Accepted values are survey or pvt.",
-                  default: "survey",
-                  enum: ["survey", "pvt"],
-                },
-              },
+              required: [],
+              properties: {},
               oneOf: [
                 {
+                  title: "Survey",
                   properties: {
-                    type: {
-                      const: "survey",
-                    },
                     sections: {
                       $id: "#/properties/modules/items/properties/survey/sections",
                       type: "array",
@@ -306,10 +292,7 @@ export const studt_object = (
                                   description:
                                     "The id of the question that will trigger this question to dynamically show/hide. To use branching, you need to add two additional properties to the question object that is to be dynamically shown/hidden. Currently, branching is supported by the multi, yesno, and slider question types.",
                                   default: "none",
-                                  oneOf: questions.map((q) => ({
-                                    const: q.id,
-                                    title: q.text,
-                                  })),
+                                  
                                 },
                                 hide_value: {
                                   $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_value",
@@ -344,12 +327,30 @@ export const studt_object = (
                                       title:
                                         "None (This will create an empty field, don't worry)",
                                     },
-                                    { const: "A", title: "A" },
-                                    { const: "B", title: "B" },
-                                    { const: "C", title: "C" },
-                                    { const: "D", title: "D" },
-                                    { const: "E", title: "E" },
-                                    { const: "F", title: "F" },
+                                    {
+                                      const: "A",
+                                      title: "A",
+                                    },
+                                    {
+                                      const: "B",
+                                      title: "B",
+                                    },
+                                    {
+                                      const: "C",
+                                      title: "C",
+                                    },
+                                    {
+                                      const: "D",
+                                      title: "D",
+                                    },
+                                    {
+                                      const: "E",
+                                      title: "E",
+                                    },
+                                    {
+                                      const: "F",
+                                      title: "F",
+                                    },
                                   ],
                                 },
                                 type: {
@@ -589,15 +590,19 @@ export const studt_object = (
                       default: false,
                       examples: [false, true],
                     },
+                    type: {
+                      title: "Type",
+                      type: "string",
+                      readOnly: true,
+                      default: "survey",
+                    },
                   },
-                  required: ["sections", "shuffle", "name"],
+                  required: ["sections", "shuffle", "name", "type"],
                   additionalProperties: false,
                 },
                 {
+                  title: "PVT",
                   properties: {
-                    type: {
-                      const: "pvt",
-                    },
                     id: {
                       $id: "#/properties/modules/items/params/properties/pvt/id",
                       type: "string",
@@ -644,6 +649,12 @@ export const studt_object = (
                       type: "boolean",
                       title: "Enable exit from pvt?",
                     },
+                    type: {
+                      title: "Type",
+                      type: "string",
+                      readOnly: true,
+                      default: "pvt",
+                    },
                   },
                   required: [
                     "type",
@@ -681,7 +692,7 @@ export const studt_object = (
               description:
                 "The condition that this module belongs to. It must match one of the values from the conditions array from the study properties, or have the value * to be scheduled for all participants.",
               default: "",
-              enum: conditions,
+              enum: "conditions",
             },
             alerts: {
               $id: "#/properties/modules/items/properties/alerts",
@@ -714,9 +725,9 @@ export const studt_object = (
                 "message",
                 "duration",
                 "times",
-                "random", // TODO: conditionally display random interval depending on random
+                "random",
                 "random_interval",
-                "sticky", // Same for sticky label
+                "sticky",
                 "sticky_label",
                 "timeout",
                 "timeout_after",
@@ -916,10 +927,7 @@ export const studt_object = (
                           description:
                             "The id of a question object to graph. It must match one of the module's question ids.",
                           default: "none",
-                          oneOf: questions.map((q) => ({
-                            const: q.id,
-                            title: q.text,
-                          })),
+                          
                         },
                         title: {
                           $id: "#/properties/modules/items/properties/graph/properties/title",
@@ -975,7 +983,7 @@ export const studt_object = (
                 $id: "#/properties/modules/items/properties/unlock_after/items",
                 type: "string",
                 pattern: "^[a-z0-9_]+$",
-                oneOf: modules.map((m) => ({ const: m.id, title: m.text })),
+               
               },
             },
           },

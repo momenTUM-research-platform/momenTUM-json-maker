@@ -1,10 +1,19 @@
-declare type AtomVariants = "study" | "module" | "section" | "question" | "properties";
+declare type AtomVariants =
+  | "study"
+  | "module"
+  | "section"
+  | "question"
+  | "properties"
+  | "params";
 
 declare type Actions = "create" | "delete" | "earlier" | "later";
 
 declare type Mode = "graph" | "timeline";
 
-declare type Atoms = Map<string, Atom<Study | Properties | Question | Module | Section>>;
+declare type Atoms = Map<
+  string,
+  Atom<Study | Properties | Question | Module | Section | Params>
+>;
 
 declare interface SchemaEnum {
   id: string;
@@ -71,7 +80,9 @@ declare interface Module {
   _type: "module";
   name: string;
   submit_text: string;
+  id: string;
   condition: string;
+  unlock_after: [];
   alerts: {
     title: string;
     message: string;
@@ -87,7 +98,7 @@ declare interface Module {
     sticky_label: string;
     timeout: boolean;
     timeout_after: number;
-  };
+  }[];
   graph:
     | {
         display: true;
@@ -98,20 +109,37 @@ declare interface Module {
         max_points: number;
       }
     | { display: false };
-
-  id: string;
-  unlock_after: string[];
-  shuffle: boolean;
-  params: survey | pvt;
+  params: Params;
 }
 
+declare interface Params {
+  _type: "params";
+  type?: string;
+  trials?: number;
+  min_waiting?: number;
+  max_waiting?: number;
+  show?: boolean;
+  max_reaction?: number;
+  exit?: boolean;
+  shuffle?: boolean;
+  section?: Section[];
+}
 
 declare interface Section {
   _type: "section";
   id: string;
   name: string;
   shuffle: boolean;
-  questions: (Instruction | TextQuestion | DateTime | YesNo | Slider | Multi | Media | External)[];
+  questions: (
+    | Instruction
+    | TextQuestion
+    | DateTime
+    | YesNo
+    | Slider
+    | Multi
+    | Media
+    | External
+  )[];
 }
 
 declare interface Question {

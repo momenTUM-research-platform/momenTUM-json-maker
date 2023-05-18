@@ -25,15 +25,17 @@ function App() {
   const rightPx = Math.floor((window.innerWidth - 10) * (1 - distribution));
   const { selectedNode, setAtoms, mode } = useStore();
   useEffect(() => {
-    if (localStorage.getItem("atoms")) {
-      const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
-      setAtoms(atoms);
-    }
+    // if (localStorage.getItem("atoms")) {
+    //   const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
+    //   setAtoms(atoms);
+    // }
   }, []);
 
   return (
     <Layout>
       <main className="w-full flex">
+
+        {/* This is the react flow section */}
         <section className="h-[calc(100vh-110px)]" style={{ width: leftPx }}>
           {mode === "graph" ? <Graph /> : <Calendar />}
         </section>
@@ -48,6 +50,8 @@ function App() {
         >
           <Drag />
         </section>
+
+        {/* This is the forms sections */}
         <section
           className="my-8 px-2 overflow-scroll overflow-x-hidden h-[calc(100vh-160px)]"
           style={{ width: rightPx }}

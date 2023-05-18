@@ -19,36 +19,41 @@ export const initialModule = (id: string): Module => {
   return {
     _type: "module",
     id,
-    alerts: {
-      title: "",
-      duration: 0,
-      message: "",
-      random: false,
-      random_interval: 0,
-      start_offset: 0,
-      sticky: false,
-      sticky_label: "",
-      timeout: false,
-      timeout_after: 0,
-      times: [
-        {
-          hours: 8,
-          minutes: 30,
-        },
-      ],
-    },
+    alerts: [],
     condition: "",
     graph: {
       display: false,
     },
     name: "",
-    sections: [],
-    shuffle: false,
     submit_text: "Submit",
-    type: "info",
     unlock_after: [],
+    params: {
+      _type: "params",
+    }
   };
 };
+
+export const initialParamSurvey = (id: string): Params => {
+  return {
+    _type: "params",
+    type: "survey",
+    shuffle: false,
+    section: [],
+  };
+};
+
+export const initialParamPVT = (id: string): Params => {
+  return {
+    _type: "params",
+    type: "pvt",
+    trials: 0,
+    min_waiting: 0,
+    max_waiting: 0,
+    max_reaction: 0,
+  };
+};
+
+
 
 export const initialSection = (id: string): Section => {
   return {

@@ -36,28 +36,23 @@ export function validateStudyFromObj(study_obj: any) {
   for (const { id, text, _type } of questions) {
     if (_type === "question") {
       qIds.push({ id, text: text });
-    } 
+    }
   }
 
   let true_conditions = ["*"];
-  // try {
-  //   const c = study_obj.properties.conditions;
-  //   if (c) true_conditions.push(...c);
-  // } catch (err) {
-  //   console.error(err);
-  //   toast.error("Conditions error: " + err.message);
-  //   return false;
-  // }
-
-  console.log("True conditions", true_conditions);
-  console.log("Question IDs", qIds);
-  console.log("Moduel IDs", mIds);
-
+  try {
+    const c = study_obj.properties.conditions;
+    if (c) true_conditions.push(...c);
+  } catch (err) {
+    console.error(err);
+    toast.error("Conditions error: " + err.message);
+    return false;
+  }
   const schema = study_schema(true_conditions, qIds, mIds);
   const ajv = new Ajv();
-  ajv.addKeyword("enumNames")
+  ajv.addKeyword("enumNames");
   const validator = ajv.compile(schema);
-  
+
   const is_valid = validator(study_obj);
 
   if (is_valid) {

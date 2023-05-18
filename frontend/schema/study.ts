@@ -15,7 +15,15 @@ export const study = (conditions: string[], questions: SchemaEnum[], modules: Sc
     required: ["properties", "modules"],
     properties: {
       properties: properties,
-      modules: module(conditions, questions, modules),
+      modules: {
+        $id: "#/properties/modules",
+        type: "array",
+        title: "Modules",
+        description:
+          "Modules store the individual survey/intervention tasks that will be delivered to the participants.",
+        default: [],
+        items: module(conditions, questions, modules),
+      },
     },
   };
 };

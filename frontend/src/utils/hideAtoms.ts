@@ -28,6 +28,7 @@ export function hideAtoms(selectedNode: string, atoms: Atoms): Atoms {
   };
 
   const recursivelyFindIdsOfSubNodes = (id: string) => {
+
     const subs = atoms.get(id)!.subNodes;
 
     if (subs) {

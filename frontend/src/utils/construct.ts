@@ -2,6 +2,7 @@ import { isStudy } from "../types/guards";
 
 export function constructStudy(atoms: Atoms): Study {
   const start = JSON.parse(JSON.stringify(atoms.get("study"))) as Atom<Study>;
+  console.log("StudY LOOKS LIKE: ", start)
   let study = appendChildren(start);
   return study;
 

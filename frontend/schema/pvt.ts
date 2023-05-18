@@ -1,13 +1,22 @@
-export const pvt = {
+export const pvt =  {
+  title: "PVT",
   properties: {
-    type: {
-      enum: ["pvt"],
+    id: {
+      $id: "#/properties/modules/items/params/properties/pvt/id",
+      type: "string",
+      pattern: "^[a-z0-9_]+$",
+      title: "Unique identifier",
+      description:
+        "A unique identifier for this module. Will be generated if not provided. Must be lowercase and only letters, numbers and underscores. Cannot begin with a number",
+      default: "",
+      examples: [""],
     },
     trials: {
       minimum: 0,
       type: "number",
       title: "Number of trials",
-      description: "How many trials should be displayed to the user?",
+      description:
+        "How many trials should be displayed to the user?",
     },
     min_waiting: {
       minimum: 0,
@@ -27,7 +36,8 @@ export const pvt = {
       type: "number",
       title: "Time to timeout",
       minimum: 0,
-      description: "How long until timeout when the user does not react? In milliseconds",
+      description:
+        "How long until timeout when the user does not react? In milliseconds",
     },
     show: {
       type: "boolean",
@@ -37,6 +47,21 @@ export const pvt = {
       type: "boolean",
       title: "Enable exit from pvt?",
     },
+    type: {
+      title: "Type",
+      type: "string",
+      readOnly: true,
+      default: "pvt",
+    },
   },
-  required: ["trials", "min_waiting", "max_waiting", "max_reaction"],
+  required: [
+    "type",
+    "id",
+    "trials",
+    "min_waiting",
+    "max_waiting",
+    "max_reaction",
+  ],
+  additionalProperties: false,
 };
+

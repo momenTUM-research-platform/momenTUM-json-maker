@@ -2,11 +2,8 @@ import { section } from "./section";
 
 export const survey = (questions: any) => {
   return {
-    required: ["sections", "shuffle", "name"],
+    title: "Survey",
     properties: {
-      type: {
-        enum: ["survey"],
-      },
       sections: section(questions),
       name: {
         $id: "#/properties/modules/items/properties/survey/name",
@@ -26,6 +23,14 @@ export const survey = (questions: any) => {
         default: false,
         examples: [false, true],
       },
+      type: {
+        title: "Type",
+        type: "string",
+        readOnly: true,
+        default: "survey",
+      },
     },
+    required: ["sections", "shuffle", "name", "type"],
+    additionalProperties: false,
   };
 };

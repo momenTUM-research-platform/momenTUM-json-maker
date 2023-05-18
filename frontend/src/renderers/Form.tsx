@@ -1,16 +1,27 @@
 import FormComponent from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
 import { useMemo, useState } from "react";
-import { module } from "../../schema/params";
-import { properties } from "../../schema/properties";
-import { question } from "../../schema/question";
-import { section } from "../../schema/section";
-import { study } from "../../schema/study";
 import { useStore } from "../state";
+import { properties } from "../../schema/properties";
+import { section } from "../../schema/section";
+import { question } from "../../schema/question";
+import { module } from "../../schema/module";
+import { alerts } from "../../schema/alerts";
+import { modulePVT } from "../../schema/modulePVT";
+import { params } from "../../schema/params";
+import { paramsPVT } from "../../schema/paramsPVT";
+import { paramsSurvey } from "../../schema/paramsSurvey";
 
 export function Form({ id }: { id: string }) {
-  const { atoms, setAtom, conditions, saveAtoms, showHidingLogic, liveValidation, editableIds } =
-    useStore();
+  const {
+    atoms,
+    setAtom,
+    conditions,
+    saveAtoms,
+    showHidingLogic,
+    liveValidation,
+    editableIds,
+  } = useStore();
   const atom = atoms.get(id);
   const [questionIds, setQuestionIds] = useState<SchemaEnum[]>([]);
   const [moduleIds, setModuleIds] = useState<SchemaEnum[]>([]);
@@ -30,7 +41,9 @@ export function Form({ id }: { id: string }) {
     setModuleIds(mIds);
   }, [atoms.size]);
   if (!atom) {
-    console.error("Atom " + id + " does not exist. This should never be the case!");
+    console.error(
+      "Atom " + id + " does not exist. This should never be the case!"
+    );
     return <></>;
   }
   let uiSchema: { [key: string]: any } = {
@@ -87,8 +100,14 @@ export function Form({ id }: { id: string }) {
 
   const hiddenFields = ["id", "post_url"];
   const hidingLogic = ["hide_id", "hide_value", "hide_if", "rand_group"];
-  !editableIds && hiddenFields.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
-  !showHidingLogic && hidingLogic.forEach((field) => (uiSchema[field] = { "ui:widget": "hidden" }));
+  !editableIds &&
+    hiddenFields.forEach(
+      (field) => (uiSchema[field] = { "ui:widget": "hidden" })
+    );
+  !showHidingLogic &&
+    hidingLogic.forEach(
+      (field) => (uiSchema[field] = { "ui:widget": "hidden" })
+    );
   // Maps Atoms to JSON Schema
   const schema: { [key in AtomVariants]: () => Object } = {
     ["study"]: () => {
@@ -103,8 +122,17 @@ export function Form({ id }: { id: string }) {
     ["properties"]: () => properties,
     ["module"]: () => module(conditions, questionIds, moduleIds),
     ["section"]: () => section,
+    ["params"]: () =>
+      atom.content._type === "params" && atom.content.type === "survey"
+        ? paramsSurvey(questionIds)
+        : paramsPVT(),
     ["question"]: () => question(questionIds),
   };
+  // console.log("TYPE:", atom.content);
+  if (atom.content._type === "params") {
+    console.log("TYPE:", atom.content.type);
+    
+  }
 
   return (
     <FormComponent

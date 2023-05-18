@@ -19,7 +19,6 @@ export function deconstructStudy(study: Study): Atoms {
         childType: "section",
         content: { ...object, _type: "module", sections: [] },
         title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
-
         actions: ["create", "delete"],
         hidden: false,
       };

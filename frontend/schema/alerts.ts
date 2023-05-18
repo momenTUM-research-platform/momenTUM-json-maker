@@ -60,7 +60,7 @@ export const alerts = {
       title: "Duration",
       description:
         "Indicates the number of consecutive days that the module should be scheduled to display. If 0, the module will not be shown.",
-      default: 1,
+
       examples: [1],
     },
     times: {

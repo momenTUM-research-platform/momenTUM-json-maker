@@ -52,7 +52,6 @@ export function Download({ close }: { close: () => void }) {
         new Promise((resolve, reject) => {
           const atoms = deconstructStudy(study!);
           setAtoms(atoms);
-
           resolve(null);
         }),
     ];

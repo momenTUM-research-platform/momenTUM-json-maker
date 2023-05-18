@@ -4,7 +4,6 @@ mod common;
 #[cfg(test)]
 mod tests {
 
-
     fn greet() {
         println!("Hello!")
     }
@@ -13,6 +12,4 @@ mod tests {
     fn test_greet() {
         greet();
     }
-
-   
 }
