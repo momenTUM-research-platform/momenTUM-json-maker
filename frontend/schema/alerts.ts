@@ -42,7 +42,8 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/title",
       type: "string",
       title: "Title",
-      description: "The title that is displayed in the notification (main text).",
+      description:
+        "The title that is displayed in the notification (main text).",
       default: "",
       examples: ["Welcome to the study"],
     },
@@ -50,7 +51,8 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/message",
       type: "string",
       title: "Message",
-      description: "The message that is displayed in the notification (secondary text).",
+      description:
+        "The message that is displayed in the notification (secondary text).",
       default: "",
       examples: ["Tap to open the app"],
     },

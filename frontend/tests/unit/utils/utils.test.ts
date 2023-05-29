@@ -7,6 +7,7 @@ import monster_study from "../../../../studies/monster.json";
 import maydel_study from "../../../../studies/maydel.json";
 import { useStore } from "../../../src/state";
 import { deconstructStudy } from "../../../src/utils/deconstruct";
+import { create } from 'zustand';
 
 describe("Example studies", () => {
   it("Validates example studies", () => {

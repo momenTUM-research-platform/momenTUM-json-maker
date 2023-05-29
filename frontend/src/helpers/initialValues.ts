@@ -19,7 +19,19 @@ export const initialModule = (id: string): Module => {
   return {
     _type: "module",
     id,
-    alerts: [],
+    alerts: {
+      title: "",
+      message: "",
+      start_offset: 0,
+      duration: 0,
+      times: [],
+      random: false,
+      random_interval: 0,
+      sticky: false,
+      sticky_label: "",
+      timeout: false,
+      timeout_after: 0
+    },
     condition: "",
     graph: {
       display: false,
@@ -35,16 +47,18 @@ export const initialModule = (id: string): Module => {
 
 export const initialParamSurvey = (id: string): Params => {
   return {
+    id,
     _type: "params",
     type: "survey",
     shuffle: false,
-    section: [],
+    sections: [],
   };
 };
 
 export const initialParamPVT = (id: string): Params => {
   return {
     _type: "params",
+    id,
     type: "pvt",
     trials: 0,
     min_waiting: 0,

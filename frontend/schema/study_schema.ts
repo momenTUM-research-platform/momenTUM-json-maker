@@ -1,4 +1,4 @@
-export const studt_object = (
+export const study_object = (
   conditions: string[],
   questions: SchemaEnum[],
   modules: SchemaEnum[]
@@ -125,7 +125,6 @@ export const studt_object = (
             description:
               "An email address that participants can contact for support with the study.",
             default: "",
-
             examples: ["hello@getschema.app"],
           },
           cache: {
@@ -201,31 +200,22 @@ export const studt_object = (
               default: "",
               examples: [""],
             },
-
             params: {
               $id: "#/properties/modules/items/properties/params",
               type: "object",
-              title: "Type",
+              title: "Module Type",
               description:
                 "The parameters of the module. Can be a survey object or a pvt object, but not both.",
-              required: ["type"],
-              properties: {
-                type: {
-                  $id: "#/properties/modules/items/properties/params/type",
-                  type: "string",
-                  title: "Type",
-                  description:
-                    "The type of the module. Accepted values are survey or pvt.",
-                  default: "survey",
-                  enum: ["survey", "pvt"],
-                },
-              },
+              required: [],
+              properties: {},
               oneOf: [
                 {
+                  $id: "#/properties/modules/items/properties/params/survey",
+                  title: "Survey",
+                  type: "object",
+                  description:
+                    "The parameters of the module. Can be a survey object or a PVT object, but not both.",
                   properties: {
-                    type: {
-                      const: "survey",
-                    },
                     sections: {
                       $id: "#/properties/modules/items/properties/survey/sections",
                       type: "array",
@@ -306,10 +296,6 @@ export const studt_object = (
                                   description:
                                     "The id of the question that will trigger this question to dynamically show/hide. To use branching, you need to add two additional properties to the question object that is to be dynamically shown/hidden. Currently, branching is supported by the multi, yesno, and slider question types.",
                                   default: "none",
-                                  oneOf: questions.map((q) => ({
-                                    const: q.id,
-                                    title: q.text,
-                                  })),
                                 },
                                 hide_value: {
                                   $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/hide_value",
@@ -344,12 +330,30 @@ export const studt_object = (
                                       title:
                                         "None (This will create an empty field, don't worry)",
                                     },
-                                    { const: "A", title: "A" },
-                                    { const: "B", title: "B" },
-                                    { const: "C", title: "C" },
-                                    { const: "D", title: "D" },
-                                    { const: "E", title: "E" },
-                                    { const: "F", title: "F" },
+                                    {
+                                      const: "A",
+                                      title: "A",
+                                    },
+                                    {
+                                      const: "B",
+                                      title: "B",
+                                    },
+                                    {
+                                      const: "C",
+                                      title: "C",
+                                    },
+                                    {
+                                      const: "D",
+                                      title: "D",
+                                    },
+                                    {
+                                      const: "E",
+                                      title: "E",
+                                    },
+                                    {
+                                      const: "F",
+                                      title: "F",
+                                    },
                                   ],
                                 },
                                 type: {
@@ -571,58 +575,56 @@ export const studt_object = (
                         },
                       },
                     },
+                    type: {
+                      type: "string",
+                      enum: ["survey"],
+                    },
                     name: {
-                      $id: "#/properties/modules/items/properties/survey/name",
+                      $id: "#/properties/modules/items/properties/params/survey/name",
                       type: "string",
                       title: "Name",
                       description:
                         "The name of the module. Basic HTML supported.",
-                      default: "",
-                      examples: ["Welcome"],
                     },
                     shuffle: {
-                      $id: "#/properties/modules/items/properties/survey/shuffle",
+                      $id: "#/properties/modules/items/properties/params/survey/shuffle",
                       type: "boolean",
                       title: "Shuffle sections?",
                       description:
-                        "Used for counterbalancing. If true, the order of the sections will be randomised every time the module is accessed.",
-                      default: false,
-                      examples: [false, true],
+                        "Used for counterbalancing. If true, the order of the sections will be randomized every time the module is accessed.",
                     },
                   },
-                  required: ["sections", "shuffle", "name"],
-                  additionalProperties: false,
+                  required: ["sections", "shuffle", "name", "type"],
                 },
                 {
+                  $id: "#/properties/modules/items/properties/params/pvt",
+                  type: "object",
+                  title: "PVT",
+                  description:
+                    "The parameters of the module. Can be a survey object or a PVT object, but not both.",
                   properties: {
                     type: {
-                      const: "pvt",
-                    },
-                    id: {
-                      $id: "#/properties/modules/items/params/properties/pvt/id",
                       type: "string",
-                      pattern: "^[a-z0-9_]+$",
-                      title: "Unique identifier",
-                      description:
-                        "A unique identifier for this module. Will be generated if not provided. Must be lowercase and only letters, numbers and underscores. Cannot begin with a number",
-                      default: "",
-                      examples: [""],
+                      enum: ["pvt"],
                     },
                     trials: {
-                      minimum: 0,
+                      $id: "#/properties/modules/items/properties/params/pvt/trials",
                       type: "number",
+                      minimum: 0,
                       title: "Number of trials",
                       description:
                         "How many trials should be displayed to the user?",
                     },
                     min_waiting: {
-                      minimum: 0,
+                      $id: "#/properties/modules/items/properties/params/pvt/min_waiting",
                       type: "number",
+                      minimum: 0,
                       title: "Minimum waiting period",
                       description:
-                        "How long should the user minimally have to wait before the trigger?  In milliseconds",
+                        "How long should the user minimally have to wait before the trigger? In milliseconds",
                     },
                     max_waiting: {
+                      $id: "#/properties/modules/items/properties/params/pvt/max_waiting",
                       type: "number",
                       minimum: 0,
                       title: "Maximum waiting period",
@@ -630,30 +632,31 @@ export const studt_object = (
                         "How long should the user maximally have to wait before the trigger? In milliseconds",
                     },
                     max_reaction: {
+                      $id: "#/properties/modules/items/properties/params/pvt/max_reaction",
                       type: "number",
-                      title: "Time to timeout",
                       minimum: 0,
+                      title: "Time to timeout",
                       description:
                         "How long until timeout when the user does not react? In milliseconds",
                     },
                     show: {
+                      $id: "#/properties/modules/items/properties/params/pvt/show",
                       type: "boolean",
                       title: "Show results to the user?",
                     },
                     exit: {
+                      $id: "#/properties/modules/items/properties/params/pvt/exit",
                       type: "boolean",
-                      title: "Enable exit from pvt?",
+                      title: "Enable exit from PVT?",
                     },
                   },
                   required: [
                     "type",
-                    "id",
                     "trials",
                     "min_waiting",
                     "max_waiting",
                     "max_reaction",
                   ],
-                  additionalProperties: false,
                 },
               ],
             },
@@ -714,9 +717,9 @@ export const studt_object = (
                 "message",
                 "duration",
                 "times",
-                "random", // TODO: conditionally display random interval depending on random
+                "random",
                 "random_interval",
-                "sticky", // Same for sticky label
+                "sticky",
                 "sticky_label",
                 "timeout",
                 "timeout_after",
@@ -916,10 +919,6 @@ export const studt_object = (
                           description:
                             "The id of a question object to graph. It must match one of the module's question ids.",
                           default: "none",
-                          oneOf: questions.map((q) => ({
-                            const: q.id,
-                            title: q.text,
-                          })),
                         },
                         title: {
                           $id: "#/properties/modules/items/properties/graph/properties/title",
@@ -975,7 +974,6 @@ export const studt_object = (
                 $id: "#/properties/modules/items/properties/unlock_after/items",
                 type: "string",
                 pattern: "^[a-z0-9_]+$",
-                oneOf: modules.map((m) => ({ const: m.id, title: m.text })),
               },
             },
           },

@@ -39,10 +39,8 @@ export interface State {
   liveValidation: boolean;
   editableIds: boolean;
   showHidingLogic: boolean;
-  showPopup: boolean;
   selectedOption: string;
   options: string[];
-  setShowPopup: (showPopup: boolean) => void;
   setSelectedOption: (selectedOption: string) => void;
   invertDirection: () => void;
   invertMode: () => void;
@@ -68,10 +66,8 @@ export const useStore = create<State>()((set, get) => ({
   editableIds: false,
   liveValidation: true,
   showHidingLogic: false,
-  showPopup: false,
   selectedOption: "",
   options: ["Survey", "PVT"],
-  setShowPopup: (showPopup) => set({ showPopup }),
   setSelectedOption: (selectedOption) => set({ selectedOption }),
   setLiveValidation: (value) => set({ liveValidation: value }),
   setShowHidingLogic: (value) => set({ showHidingLogic: value }),

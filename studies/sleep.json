@@ -14,7 +14,10 @@
     "cache": false,
     "ethics": "This study was approved by the ethics committee of the TUM with approval #2022-578-S-KH",
     "pls": "",
-    "conditions": []
+    "conditions": [
+      "Control",
+      "Treatment"
+    ]
   },
   "modules": [
     {
@@ -46,9 +49,7 @@
         "display": false
       },
       "params": {
-        "_type": "params",
         "type": "survey",
-
         "shuffle": false,
         "name": "Survey Example",
         "sections": [
@@ -137,9 +138,7 @@
       "unlock_after": [],
       "_type": "module",
       "params": {
-        "_type": "params",
         "type": "survey",
-
         "shuffle": false,
         "name": "Survey Example 2",
         "sections": [

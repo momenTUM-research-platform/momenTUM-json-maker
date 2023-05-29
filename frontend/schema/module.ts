@@ -70,7 +70,7 @@ export const module = (
           $id: "#/properties/modules/items/properties/unlock_after/items",
           type: "string",
           pattern: "^[a-z0-9_]+$",
-          oneOf: modules.map((m) => ({ const: m.id, title: m.text })),
+          oneOf: modules.map((q) => ({ const: q.id, title: q.text })),
         },
       },
     },

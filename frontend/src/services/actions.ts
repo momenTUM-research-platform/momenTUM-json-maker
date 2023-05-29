@@ -6,9 +6,8 @@ import Ajv, { ValidateFunction } from "ajv";
 import { constructStudy } from "../utils/construct";
 import { deconstructStudy } from "../utils/deconstruct";
 import fetch from "cross-fetch";
-import { study as study_schema } from "../../schema/study";
-import { studt_object as study_schema_all } from "../../schema/all";
-import { section } from "../../schema/section";
+import { study_object as study_schema } from "../../schema/study_validator";
+import { betterAjvErrors } from "@apideck/better-ajv-errors";
 
 export function validateStudyFromObj(study_obj: any) {
   const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
@@ -30,12 +29,16 @@ export function validateStudyFromObj(study_obj: any) {
         );
 
       questions = sections.flatMap((section: any) => section.questions);
+
+      
     }
   }
 
-  for (const { id, text, _type } of questions) {
-    if (_type === "question") {
-      qIds.push({ id, text: text });
+  if (questions != null && questions.length > 0) {
+    for (const { id, text, _type } of questions) {
+      if (_type === "question") {
+        qIds.push({ id, text: text });
+      }
     }
   }
 
@@ -43,7 +46,7 @@ export function validateStudyFromObj(study_obj: any) {
   try {
     const c = study_obj.properties.conditions;
     if (c) true_conditions.push(...c);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     toast.error("Conditions error: " + err.message);
     return false;
@@ -58,22 +61,29 @@ export function validateStudyFromObj(study_obj: any) {
   if (is_valid) {
     return true;
   } else {
-    const errors = validator.errors as DefinedError[];
-    const err =
-      errors.reduce((acc, e) => {
-        const keyword = e.keyword.charAt(0).toUpperCase() + e.keyword.slice(1);
-        return (
-          acc + keyword + " error: " + e.instancePath + " " + e.message + "\n"
-        );
-      }, "") || "Unknown error";
-    console.log(err);
-    toast.error(err);
+    toast.error("Study is invalid");
+
+    const errors = validator.errors;
+
+    const beautifiedErrors = betterAjvErrors({
+      schema,
+      data: study_obj,
+      errors: errors,
+      basePath: "study",
+    });
+    const errorMessages = beautifiedErrors.map((err) => err.message);
+    for (const errorMessage of errorMessages) {
+      console.log(errorMessage);
+      toast.error(errorMessage!);
+    }
+
+    return false;
     return false;
   }
 }
 
 export function validateStudy(study: any): study is Study {
-  const { conditions, atoms } = useStore.getState();
+  const { atoms } = useStore.getState();
   const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
   const mIds: SchemaEnum[] = [];
 
@@ -90,29 +100,36 @@ export function validateStudy(study: any): study is Study {
   try {
     const c = study.properties.conditions;
     if (c) true_conditions.push(...c);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     toast.error("Conditions error: " + err.message);
     return false;
   }
-
   const schema = study_schema(true_conditions, qIds, mIds);
-  const validator = new Ajv().compile(schema);
-  const valid = validator(study);
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addKeyword("enumNames");
+  const validator = ajv.compile(schema);
 
-  if (valid) {
+  const is_valid = validator(study);
+  if (is_valid) {
     return true;
   } else {
-    const errors = validator.errors as DefinedError[];
-    const err =
-      errors.reduce((acc, e) => {
-        const keyword = e.keyword.charAt(0).toUpperCase() + e.keyword.slice(1);
-        return (
-          acc + keyword + " error: " + e.instancePath + " " + e.message + "\n"
-        );
-      }, "") || "Unknown error";
-    toast.error(err);
-    console.error(err);
+    toast.error("Study is invalid");
+
+    const errors = validator.errors;
+
+    const beautifiedErrors = betterAjvErrors({
+      schema,
+      data: study,
+      errors: errors,
+      basePath: "study",
+    });
+    const errorMessages = beautifiedErrors.map((err) => err.message);
+    for (const errorMessage of errorMessages) {
+      console.log(errorMessage);
+      toast.error(errorMessage!);
+    }
+
     return false;
   }
 }

@@ -2,8 +2,6 @@ import { properties } from "./properties";
 import { module } from "./module";
 
 export const study = (conditions: string[], questions: SchemaEnum[], modules: SchemaEnum[]) => {
-  console.log("Types: ", typeof(properties));
-  console.log("Types: ", typeof(module(conditions, questions, modules)));
   return {
     $schema: "http://json-schema.org/draft-07/schema",
     $id: "https://momenTUM.de/schema/v1/schema.json",

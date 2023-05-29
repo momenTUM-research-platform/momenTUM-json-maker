@@ -1,9 +1,18 @@
-import { isProperties, isModule, isSection, isQuestion } from "../types/guards";
+import {
+  isProperties,
+  isModule,
+  isSection,
+  isQuestion,
+  isParams,
+} from "../types/guards";
 
 export function deconstructStudy(study: Study): Atoms {
   let atoms: Atoms = new Map();
 
-  function extractChildren(object: Study | Question | Module | Section, parent: string | null) {
+  function extractChildren(
+    object: Study | Question | Module | Params | Section,
+    parent: string | null
+  ) {
     // @ts-ignore
     const normalizeID = (id: string) => {
       let n = id.toLowerCase();
@@ -14,17 +23,55 @@ export function deconstructStudy(study: Study): Atoms {
     if (isModule(object)) {
       const atom: Atom<Module> = {
         parent: parent,
-        subNodes: object.sections.map((s) => normalizeID(s.id)),
+        subNodes: [normalizeID(object.params.id!)],
         type: "module",
-        childType: "section",
-        content: { ...object, _type: "module", sections: [] },
-        title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
-        actions: ["create", "delete"],
+        childType: null,
+        content: { ...object, _type: "module", params: object.params },
+        title:
+          object.name.length > 32
+            ? object.name.slice(0, 32) + "..."
+            : object.name,
+        actions: ["delete"],
         hidden: false,
       };
 
       atoms.set(normalizeID(object.id), atom);
-      object.sections.forEach((child) => extractChildren(child, normalizeID(object.id)));
+      if (object.params) {
+        extractChildren(object.params, normalizeID(object.id));
+      }
+    } else if (isParams(object)) {
+      if (object.type == "survey") {
+        const atom: Atom<Params> = {
+          parent: parent,
+          subNodes: object.sections!.map((s) => normalizeID(s.id)),
+          type: "section",
+          childType: "question",
+          content: { ...object, _type: "params", type: "survey", sections: [] },
+          title: "New Survey",
+          actions: ["create", "delete"],
+          hidden: false,
+        };
+
+        atoms.set(normalizeID(object.id!), atom);
+        if (object.sections) {
+          object.sections.forEach((child) =>
+            extractChildren(child, normalizeID(object.id!))
+          );
+        }
+      } else {
+        const atom: Atom<Params> = {
+          parent: parent,
+          subNodes: null,
+          type: "section",
+          childType: "question",
+          content: { ...object, _type: "params", type: "pvt" },
+          title: "New PVT",
+          actions: [],
+          hidden: false,
+        };
+
+        atoms.set(normalizeID(object.id!), atom);
+      }
     } else if (isSection(object)) {
       const atom: Atom<Section> = {
         parent: parent,
@@ -32,14 +79,19 @@ export function deconstructStudy(study: Study): Atoms {
         type: "section",
         childType: "question",
         content: { ...object, _type: "section", questions: [] },
-        title: object.name.length > 32 ? object.name.slice(0, 32) + "..." : object.name,
+        title:
+          object.name.length > 32
+            ? object.name.slice(0, 32) + "..."
+            : object.name,
 
         actions: ["create", "delete", "earlier", "later"],
         hidden: false,
       };
 
       atoms.set(normalizeID(object.id), atom);
-      object.questions.forEach((child) => extractChildren(child, normalizeID(object.id)));
+      object.questions.forEach((child) =>
+        extractChildren(child, normalizeID(object.id))
+      );
     } else if (isQuestion(object)) {
       const atom: Atom<Question> = {
         parent: parent,
@@ -47,7 +99,10 @@ export function deconstructStudy(study: Study): Atoms {
         type: "question",
         childType: null,
         content: { ...object, _type: "question" },
-        title: object.text.length > 32 ? object.text.slice(0, 60) + "..." : object.text,
+        title:
+          object.text.length > 32
+            ? object.text.slice(0, 60) + "..."
+            : object.text,
         actions: ["delete", "earlier", "later"],
         hidden: false,
       };
@@ -57,7 +112,10 @@ export function deconstructStudy(study: Study): Atoms {
       // Must be the top level study object
       const study: Atom<Study> = {
         parent: null,
-        subNodes: ["properties", ...object.modules.map((m) => normalizeID(m.id))],
+        subNodes: [
+          "properties",
+          ...object.modules.map((m) => normalizeID(m.id)),
+        ],
         type: "study",
         childType: "module",
         title: object.properties.study_name,
@@ -85,7 +143,9 @@ export function deconstructStudy(study: Study): Atoms {
       };
       atoms.set("study", study);
       atoms.set("properties", properties);
-      object.modules.forEach((child) => extractChildren(child, normalizeID("study")));
+      object.modules.forEach((child) =>
+        extractChildren(child, normalizeID("study"))
+      );
     }
   }
 

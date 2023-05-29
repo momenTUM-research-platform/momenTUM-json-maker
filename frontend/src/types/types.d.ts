@@ -98,7 +98,7 @@ declare interface Module {
     sticky_label: string;
     timeout: boolean;
     timeout_after: number;
-  }[];
+  };
   graph:
     | {
         display: true;
@@ -114,6 +114,7 @@ declare interface Module {
 
 declare interface Params {
   _type: "params";
+  id?: string;
   type?: string;
   trials?: number;
   min_waiting?: number;
@@ -122,7 +123,7 @@ declare interface Params {
   max_reaction?: number;
   exit?: boolean;
   shuffle?: boolean;
-  section?: Section[];
+  sections?: Section[];
 }
 
 declare interface Section {
@@ -144,7 +145,6 @@ declare interface Section {
 
 declare interface Question {
   _type: "question";
-
   id: string;
   text: string;
   //  type: "instruction" | "datetime" | "multi" | "text" | "slider" | "media" | "yesno" | "external";

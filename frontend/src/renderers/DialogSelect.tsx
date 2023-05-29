@@ -10,20 +10,18 @@ type DialogSelectProps = {
 };
 
 const DialogSelect: React.FC<DialogSelectProps> = ({ options, onSelect, onClose }) => {
-  const { showPopup, setShowPopup } = useStore();
+
 
   useEffect(() => {
-    setShowPopup(true);
   }, []); // Open the dialog when component mounts
 
   const handleClose = () => {
-    setShowPopup(false);
     onClose(); // Call onClose when dialog is closed
   };
 
   return (
     <>
-      <Transition appear show={showPopup} as={Fragment}>
+      <Transition appear show={true} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={handleClose}>
           <Transition.Child
             as={Fragment}

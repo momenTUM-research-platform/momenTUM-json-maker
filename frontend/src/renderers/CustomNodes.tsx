@@ -12,11 +12,9 @@ export function NewNode({
   data,
 }: NodeProps<{ childType: AtomVariants; parent: string }>) {
   const {
-    setShowPopup,
     setSelectedOption,
     addNewNode,
     selectedOption,
-    showPopup,
     options,
     atoms,
   } = useStore();

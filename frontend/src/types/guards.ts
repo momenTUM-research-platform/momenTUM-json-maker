@@ -2,6 +2,9 @@
 export function isModule(object: any): object is Module {
   return object._type === "module";
 }
+export function isParams(object: any): object is Params {
+  return object._type === "params";
+}
 export function isSection(object: any): object is Section {
   return object._type === "section";
 }
