@@ -22,6 +22,7 @@
     "@ginkgo-bioworks/react-json-schema-form-builder": "^2.10.2",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.18",
+    "@mui/material": "^5.13.3",
     "@playwright/experimental-ct-react": "^1.33.0",
     "@rjsf/core": "^5.7.3",
     "@rjsf/fluent-ui": "^5.7.3",

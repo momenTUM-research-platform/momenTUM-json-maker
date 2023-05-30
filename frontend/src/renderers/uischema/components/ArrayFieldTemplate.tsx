@@ -1,5 +1,6 @@
-import { Box, Paper, Grid } from "@mui/material";
+
 import { ArrayFieldTemplateItemType } from '@rjsf/utils';
+import { Grid, Box, Paper } from '@mui/material';
 import ArrayFieldItemTemplate from './ArrayFieldItemTemplate';
 
 import {
