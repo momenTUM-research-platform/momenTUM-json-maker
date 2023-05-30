@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import {
   isProperties,
   isModule,
@@ -14,10 +15,18 @@ export function deconstructStudy(study: Study): Atoms {
     parent: string | null
   ) {
     // @ts-ignore
-    const normalizeID = (id: string) => {
-      let n = id.toLowerCase();
-      n = n.replace(/[^a-z0-9_]/g, "");
-      return n;
+    const normalizeID = (id) => {
+      try {
+        if (id === undefined) {
+          throw new Error("The 'id' parameter is undefined.");
+        }
+
+        let n = id.toLowerCase();
+        n = n.replace(/[^a-z0-9_]/g, "");
+        return n;
+      } catch (error: any) {
+        toast.error(error.message);
+      }
     };
 
     if (isModule(object)) {

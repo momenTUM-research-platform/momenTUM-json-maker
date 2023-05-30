@@ -29,8 +29,6 @@ export function validateStudyFromObj(study_obj: any) {
         );
 
       questions = sections.flatMap((section: any) => section.questions);
-
-      
     }
   }
 
@@ -62,9 +60,7 @@ export function validateStudyFromObj(study_obj: any) {
     return true;
   } else {
     toast.error("Study is invalid");
-
     const errors = validator.errors;
-
     const beautifiedErrors = betterAjvErrors({
       schema,
       data: study_obj,
@@ -77,7 +73,6 @@ export function validateStudyFromObj(study_obj: any) {
       toast.error(errorMessage!);
     }
 
-    return false;
     return false;
   }
 }
@@ -108,20 +103,38 @@ export function validateStudy(study: any): study is Study {
   const schema = study_schema(true_conditions, qIds, mIds);
   const ajv = new Ajv({ allErrors: true });
   ajv.addKeyword("enumNames");
-  const validator = ajv.compile(schema);
 
-  const is_valid = validator(study);
-  if (is_valid) {
-    return true;
-  } else {
+  try {
+    const validator = ajv.compile(schema);
+    const is_valid = validator(study);
+    if (is_valid) {
+      return true;
+    } else {
+      toast.error("Study is invalid");
+
+      const errors = validator.errors;
+
+      const beautifiedErrors = betterAjvErrors({
+        schema,
+        data: study,
+        errors: errors,
+        basePath: "study",
+      });
+      const errorMessages = beautifiedErrors.map((err) => err.message);
+      for (const errorMessage of errorMessages) {
+        console.log(errorMessage);
+        toast.error(errorMessage!);
+      }
+
+      return false;
+    }
+  } catch (err: any) {
     toast.error("Study is invalid");
-
-    const errors = validator.errors;
 
     const beautifiedErrors = betterAjvErrors({
       schema,
       data: study,
-      errors: errors,
+      errors: err,
       basePath: "study",
     });
     const errorMessages = beautifiedErrors.map((err) => err.message);

@@ -38,7 +38,7 @@ export function Upload({ close }: { close: () => void }) {
       // Validate
       () =>
         new Promise((resolve, reject) =>
-          validateStudy(study) ? resolve(null) : reject("Study is invalid")
+          validateStudy({ study }) ? resolve(null) : reject("Study is invalid")
         ),
       // Upload
       () => upload(study),
