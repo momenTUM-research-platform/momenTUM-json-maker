@@ -6,16 +6,14 @@ import { properties } from "../../schema/properties";
 import { section } from "../../schema/section";
 import { question } from "../../schema/question";
 import { module } from "../../schema/module";
-
 import { paramsPVT } from "../../schema/paramsPVT";
 import { paramsSurvey } from "../../schema/paramsSurvey";
-
 import TitleWidget from "./uischema/components/TitleWidget";
 import DescriptionWidget from "./uischema/components/DescriptionWidget";
-import { propertiesSchema } from './uischema/properties';
-import { modulesSchema } from './uischema/modules';
-import { surveySchema } from './uischema/survey';
-import { ParamsPVtSchema } from './uischema/paramsPVT';
+import { propertiesSchema } from "./uischema/properties";
+import { modulesSchema } from "./uischema/modules";
+import { surveySchema } from "./uischema/survey";
+import { ParamsPVtSchema } from "./uischema/paramsPVT";
 
 export function Form({ id }: { id: string }) {
   const {
@@ -86,12 +84,12 @@ export function Form({ id }: { id: string }) {
     ...surveySchema,
     ...ParamsPVtSchema,
     "ui:submitButtonOptions": { norender: true },
-    required: { "ui:widget": "radio" },
-    radio: { "ui:widget": "radio" },
-    modal: { "ui:widget": "radio" },
-    hide_if: { "ui:widget": "radio" },
+
+    // @ts-ignore
     "ui:title": <TitleWidget Title={formSchema.title} />,
+
     "ui:description": (
+      // @ts-ignore
       <DescriptionWidget description={formSchema.description} />
     ),
   };

@@ -6,7 +6,8 @@ import DescriptionWidget from "./components/DescriptionWidget";
 import { graph } from "../../../schema/graph";
 
 export const modulesSchema: { [key: string]: any } = {
-
+  modal: { "ui:widget": "radio" },
+  hide_if: { "ui:widget": "radio" },
   alerts: {
     random: { "ui:widget": "radio" },
     sticky: { "ui:widget": "radio" },

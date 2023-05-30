@@ -1,15 +1,12 @@
 import { properties } from "../../../schema/properties";
-import { CheckboxWidget } from "./components/CheckboxWidget";
 import DescriptionWidget from "./components/DescriptionWidget";
 import ArrayFieldTemplate from "./components/ArrayFieldTemplate";
 import TitleWidget from "./components/TitleWidget";
 
 export const propertiesSchema: { [key: string]: any } = {
-
-  cache: {
-    "ui:widget": CheckboxWidget,
-  },
-
+  cache: { "ui:widget": "radio" },
+  radio: { "ui:widget": "radio" },
+  required: { "ui:widget": "radio" },
   conditions: {
     "ui:title": <TitleWidget Title={properties.properties.conditions.title} />,
     "ui:description": (
@@ -22,6 +19,5 @@ export const propertiesSchema: { [key: string]: any } = {
       addable: true, // Allow adding new items
       removable: true, // Allow removing items
     },
-
   },
 };
