@@ -1,8 +1,8 @@
 import { properties } from "../../../schema/properties";
 import { CheckboxWidget } from "./components/CheckboxWidget";
 import DescriptionWidget from "./components/DescriptionWidget";
-import { EmailWidget } from "./components/EmailWidget";
-import { TextFieldWidget } from "./components/TextFieldWidget";
+import ArrayFieldTemplate from "./components/ArrayFieldTemplate";
+import TextFieldWidget from "./components/TextFieldWidget";
 import TitleWidget from "./components/TitleWidget";
 
 export const propertiesSchema: { [key: string]: any } = {
@@ -31,7 +31,7 @@ export const propertiesSchema: { [key: string]: any } = {
     "ui:widget": TextFieldWidget,
   },
   support_email: {
-    "ui:widget": EmailWidget,
+    "ui:widget": TextFieldWidget,
   },
   cache: {
     "ui:widget": CheckboxWidget,
@@ -43,16 +43,18 @@ export const propertiesSchema: { [key: string]: any } = {
     "ui:widget": TextFieldWidget,
   },
   conditions: {
-    "ui:title": <TitleWidget Title={properties.title} />,
+    "ui:title": <TitleWidget Title={properties.properties.conditions.title} />,
     "ui:description": (
-      <DescriptionWidget description={properties.description} />
+      <DescriptionWidget
+        description={properties.properties.conditions.description}
+      />
     ),
+    "ui:ArrayFieldTemplate": ArrayFieldTemplate, // Use custom ArrayFieldTemplate component
     "ui:options": {
       addable: true, // Allow adding new items
       removable: true, // Allow removing items
     },
     items: {
-      // Define the widget for each item in the array
       "ui:widget": TextFieldWidget, // Example: Use TextFieldWidget for each item
     },
   },

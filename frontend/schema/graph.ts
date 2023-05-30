@@ -51,7 +51,8 @@ export const graph = (questions: SchemaEnum[]) => {
                 $id: "#/properties/modules/items/properties/graph/properties/title",
                 type: "string",
                 title: "Title",
-                description: "The title of the graph to be displayed in the Feedback tab.",
+                description:
+                  "The title of the graph to be displayed in the Feedback tab.",
                 default: "",
                 examples: [""],
               },
@@ -68,7 +69,8 @@ export const graph = (questions: SchemaEnum[]) => {
                 $id: "#/properties/modules/items/properties/graph/properties/type",
                 type: "string",
                 title: "Type",
-                description: "The type of graph to display. One of: bar or line",
+                description:
+                  "The type of graph to display. One of: bar or line",
                 default: "bar",
                 enum: ["bar", "line"],
                 examples: ["bar", "line"],

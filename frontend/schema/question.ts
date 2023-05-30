@@ -2,6 +2,7 @@ export const question = (questions: SchemaEnum[]) => {
   return {
     $id: "#/properties/modules/items/properties/sections/items/properties/questions/items",
     type: "object",
+    title: "Questions",
     required: ["id", "type", "text", "required"],
     properties: {
       id: {

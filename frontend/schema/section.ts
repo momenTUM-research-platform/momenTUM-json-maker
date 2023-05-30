@@ -3,6 +3,7 @@ import { question } from "./question";
 export const section = {
   $id: "#/properties/modules/items/properties/sections/items",
   type: "object",
+  title: "Sections",
   required: ["id", "name", "questions", "shuffle"],
   properties: {
     name: {

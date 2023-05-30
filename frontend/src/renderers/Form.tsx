@@ -10,9 +10,15 @@ import { alerts } from "../../schema/alerts";
 import { params } from "../../schema/params";
 import { paramsPVT } from "../../schema/paramsPVT";
 import { paramsSurvey } from "../../schema/paramsSurvey";
-import { TextFieldWidget } from "./uischema/components/TextFieldWidget";
 import { propertiesSchema } from "./uischema/properties";
+import TextFieldWidget from "./uischema/components/TextFieldWidget";
+import { withTheme } from "@rjsf/core";
+import Theme from "@rjsf/mui";
+import TitleWidget from "./uischema/components/TitleWidget";
 import DescriptionWidget from "./uischema/components/DescriptionWidget";
+import { modulesSchema } from "./uischema/modules";
+import { surveySchema } from "./uischema/survey";
+import { ParamsPVtSchema } from './uischema/paramsPVT';
 
 export function Form({ id }: { id: string }) {
   const {
@@ -49,44 +55,6 @@ export function Form({ id }: { id: string }) {
     return <></>;
   }
 
-  const hiddenFields = ["id", "post_url"];
-  const hidingLogic = ["hide_id", "hide_value", "hide_if", "rand_group"];
-  const uiSchema: { [key: string]: any } = {
-    ...propertiesSchema,
-    alerts: {
-      random: { "ui:widget": "radio" },
-      sticky: { "ui:widget": "radio" },
-      timeout: { "ui:widget": "radio" },
-    },
-    graph: {
-      display: { "ui:widget": "radio" },
-      blurb: {
-        "ui:widget": TextFieldWidget, // Use custom widget for text fields
-      },
-    },
-    created_by: { "ui:widget": TextFieldWidget },
-    shuffle: { "ui:widget": "radio" },
-    "ui:submitButtonOptions": { norender: true },
-    instructions: {
-      "ui:widget": TextFieldWidget, // Use custom widget for text fields
-    },
-    required: { "ui:widget": "radio" },
-    radio: { "ui:widget": "radio" },
-    modal: { "ui:widget": "radio" },
-    text: {
-      "ui:widget": TextFieldWidget, // Use custom widget for text fields
-    },
-    hide_if: { "ui:widget": "radio" },
-
-  };
-
-  hiddenFields.forEach(
-    (field) => !editableIds && (uiSchema[field] = { "ui:widget": "hidden" })
-  );
-  hidingLogic.forEach(
-    (field) => !showHidingLogic && (uiSchema[field] = { "ui:widget": "hidden" })
-  );
-
   const studyForm = () => ({
     $id: "#",
     type: "object",
@@ -111,6 +79,32 @@ export function Form({ id }: { id: string }) {
     params: paramsForm,
     question: () => question(questionIds),
   };
+  const formSchema = schema[atom.content._type]();
+
+  const hiddenFields = ["id", "post_url"];
+  const hidingLogic = ["hide_id", "hide_value", "hide_if", "rand_group"];
+  const uiSchema: { [key: string]: any } = {
+    ...propertiesSchema,
+    ...modulesSchema,
+    ...surveySchema,
+    ...ParamsPVtSchema,
+    "ui:submitButtonOptions": { norender: true },
+    required: { "ui:widget": "radio" },
+    radio: { "ui:widget": "radio" },
+    modal: { "ui:widget": "radio" },
+    hide_if: { "ui:widget": "radio" },
+    "ui:title": <TitleWidget Title={formSchema.title} />,
+    "ui:description": (
+      <DescriptionWidget description={formSchema.description} />
+    ),
+  };
+
+  hiddenFields.forEach(
+    (field) => !editableIds && (uiSchema[field] = { "ui:widget": "hidden" })
+  );
+  hidingLogic.forEach(
+    (field) => !showHidingLogic && (uiSchema[field] = { "ui:widget": "hidden" })
+  );
 
   return (
     <div className="px-10 py-5">
@@ -119,7 +113,7 @@ export function Form({ id }: { id: string }) {
         onBlur={saveAtoms}
         children={true}
         liveValidate={liveValidation}
-        schema={schema[atom.content._type]()}
+        schema={formSchema}
         formData={atom.content}
         validator={validator}
         noValidate={!liveValidation}

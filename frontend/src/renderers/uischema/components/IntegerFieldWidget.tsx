@@ -19,7 +19,7 @@ const TYPES_THAT_SHRINK_LABEL = ["date", "datetime-local", "file", "time"];
  *
  * @param props - The `WidgetProps` for this template
  */
-export default function TextFieldWidget<
+export default function IntegerFieldWidget<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any
@@ -67,6 +67,7 @@ export default function TextFieldWidget<
     <>
       <TextField
         id={id}
+        type="number"
         name={id}
         placeholder={placeholder}
         label={labelValue(label || undefined, hideLabel, false)}

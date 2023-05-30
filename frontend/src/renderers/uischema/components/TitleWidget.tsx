@@ -7,7 +7,7 @@ interface TitleWidgetProps {
 const TitleWidget: React.FC<TitleWidgetProps> = ({
   Title,
 }) => {
-  return <div className="text-[14px]">{Title}</div>;
+  return <div className="text-md">{Title}</div>;
 };
 
 export default TitleWidget;

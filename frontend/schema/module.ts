@@ -10,6 +10,8 @@ export const module = (
   return {
     $id: "#/properties/modules/items",
     type: "object",
+    title: "Module",
+    description: "This is the schema for the module.",
     required: [
       "name",
       "submit_text",
@@ -58,7 +60,7 @@ export const module = (
         enum: conditions,
       },
       alerts: alerts,
-      graph: graph(questions),
+      graph: graph(questions!),
       unlock_after: {
         $id: "#/properties/modules/items/properties/unlock_after",
         type: "array",
@@ -70,7 +72,7 @@ export const module = (
           $id: "#/properties/modules/items/properties/unlock_after/items",
           type: "string",
           pattern: "^[a-z0-9_]+$",
-          oneOf: modules.map((q) => ({ const: q.id, title: q.text })),
+          oneOf: modules!.map((q) => ({ const: q.id, title: q.text })),
         },
       },
     },
