@@ -17,7 +17,13 @@ import {
   initialParamPVT,
   initialParamSurvey,
 } from "helpers/initialValues";
-import { isSection, isModule, isQuestion, isProperties } from "types/guards";
+import {
+  isSection,
+  isModule,
+  isQuestion,
+  isProperties,
+  isParams,
+} from "types/guards";
 // Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
 const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
 export const nodeTypes = {
@@ -130,8 +136,8 @@ export const useStore = create<State>()((set, get) => ({
               type: "module",
               childType: null,
               title: "New Module",
-              hidden: false,
               actions: ["delete"],
+              hidden: false,
               content: initialModule(id),
             });
             if (flag === "PVT") {
@@ -141,8 +147,8 @@ export const useStore = create<State>()((set, get) => ({
                 type: "params",
                 childType: null,
                 title: `New ${flag}`,
-                hidden: false,
                 actions: [],
+                hidden: false,
                 content: initialParamPVT(id_params),
               });
             } else {
@@ -157,7 +163,6 @@ export const useStore = create<State>()((set, get) => ({
                 content: initialParamSurvey(id_params),
               });
             }
-            
             break;
           }
           case "section": {
@@ -203,6 +208,12 @@ export const useStore = create<State>()((set, get) => ({
             content.name.length > 32
               ? content.name.slice(0, 32) + "..."
               : content.name;
+        }
+        if (isParams(content) && content.type) {
+          atom.title =
+            content.type.length > 32
+              ? content.type.slice(0, 32) + "..."
+              : content.type;
         }
         if (isQuestion(content) && content.text) {
           atom.title =

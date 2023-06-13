@@ -9,9 +9,11 @@ export function hideAtoms(selectedNode: string, atoms: Atoms): Atoms {
   const node = atoms.get(focus);
   const atomsCopy: Atoms = new Map();
   // hide all, then unhide subnodes + edges
+
   atoms.forEach((atom, id) => atomsCopy.set(id, { ...atom, hidden: true }));
 
   let nodesToShow: string[] = []; // Ids of nodes selected to be shown
+
   nodesToShow.push(focus);
 
   const recursivelyFindIdsOfParentNodes = (id: string) => {
@@ -19,16 +21,29 @@ export function hideAtoms(selectedNode: string, atoms: Atoms): Atoms {
     if (parent) {
       nodesToShow.push(parent);
       // Get siblings while filtering out itself. BTW, are you your own sibling?
-      const siblings = atoms.get(parent)!.subNodes;
+      let children = atoms.get(parent)!.subNodes;
+
+      // Initialize siblings as an empty array
+      const siblings: Array<any> = [];
+      siblings.push(...children!);
+
+      // Also get first children of siblings
+      children!.forEach((s) =>
+        siblings.push(...(atoms.get(s)!.subNodes || []))
+      );
+
       siblings && nodesToShow.push(...siblings.filter((s) => s !== id));
       // Also get children of siblings => nieces and nephews? Makes it more fluent
-      siblings && siblings.forEach((s) => nodesToShow.push(...(atoms.get(s)!.subNodes || [])));
+      siblings &&
+        siblings.forEach((s) =>
+          nodesToShow.push(...(atoms.get(s)!.subNodes || []))
+        );
+
       recursivelyFindIdsOfParentNodes(parent);
     }
   };
 
   const recursivelyFindIdsOfSubNodes = (id: string) => {
-
     const subs = atoms.get(id)!.subNodes;
 
     if (subs) {

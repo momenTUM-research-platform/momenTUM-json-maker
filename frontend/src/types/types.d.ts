@@ -129,7 +129,6 @@ declare interface Params {
 declare interface Section {
   _type: "section";
   id: string;
-  name: string;
   shuffle: boolean;
   questions: (
     | Instruction

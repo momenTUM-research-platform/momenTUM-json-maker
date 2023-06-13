@@ -4,16 +4,8 @@ export const section = {
   $id: "#/properties/modules/items/properties/sections/items",
   type: "object",
   title: "Sections",
-  required: ["id", "name", "questions", "shuffle"],
+  required: ["id", "questions", "shuffle"],
   properties: {
-    name: {
-      $id: "#/properties/modules/items/properties/sections/items/properties/name",
-      type: "string",
-      title: "Section name",
-      description: "The title of this section, which is displayed at the top of the screen.",
-      default: "",
-      examples: ["Welcome"],
-    },
     id: {
       $id: "#/properties/modules/items/properties/id",
       type: "string",

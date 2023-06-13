@@ -14,7 +14,6 @@ export function NewNode({
   const {
     setSelectedOption,
     addNewNode,
-    selectedOption,
     options,
     atoms,
   } = useStore();

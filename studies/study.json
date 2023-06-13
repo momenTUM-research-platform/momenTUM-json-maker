@@ -1,0 +1,271 @@
+{
+  "properties": {
+    "study_name": "Blen Assefa",
+    "study_id": "study_id",
+    "created_by": "Blen Assefa",
+    "instructions": "This is a demo study showing the features of schema",
+    "post_url": "https://tuspl22-momentum.srv.mwn.de/api/v1",
+    "empty_msg": "You're all up to date",
+    "banner_url": "https://blog.optimalworkshop.com/wp-content/uploads/2020/03/19-user-research-tips-from-2019.png",
+    "support_url": "https://www.momentumresearch.eu/",
+    "support_email": "blenassefa00@gmail.com",
+    "cache": false,
+    "ethics": "This study was approved by ethics body with approval #123456789",
+    "pls": "https://www.momentumresearch.eu/",
+    "conditions": [
+      "Control",
+      "Treatment"
+    ],
+    "_type": "properties"
+  },
+  "modules": [
+    {
+      "id": "guljcnfb1lcyk8oc",
+      "name": "Module-Survey",
+      "submit_text": "Submit",
+      "condition": "Control",
+      "alerts": {
+        "title": "Alert",
+        "message": "Tap to open the app",
+        "times": [
+          {
+            "hours": 8,
+            "minutes": 0
+          }
+        ],
+        "random": false,
+        "random_interval": 2,
+        "sticky": false,
+        "sticky_label": "Sticky Label",
+        "timeout": false,
+        "timeout_after": -1,
+        "start_offset": 0,
+        "duration": 0
+      },
+      "graph": {
+        "display": true,
+        "variable": "none",
+        "title": "Graph",
+        "blurb": "A brief description of the graph to be displayed below it in the feedback tab.",
+        "max_points": 10,
+        "type": "bar"
+      },
+      "unlock_after": [
+        "guljcnfb1lcyk8oc"
+      ],
+      "_type": "module",
+      "params": {
+        "id": "yuutmwcn7jojq7l2",
+        "_type": "params",
+        "type": "survey",
+        "shuffle": false,
+        "sections": [
+          {
+            "name": "Section",
+            "id": "nex34_zl5y8oidih",
+            "shuffle": false,
+            "_type": "section",
+            "questions": [
+              {
+                "id": "2hwp_e88u8ktyjfg",
+                "text": "This is a text question.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "text",
+                "_type": "question",
+                "subtype": "short"
+              },
+              {
+                "id": "gl8liuv2uljg1hk_",
+                "text": "This is an instruction.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "instruction",
+                "_type": "question",
+                "subtype": "short"
+              },
+              {
+                "id": "u3zbws8cecm11iov",
+                "text": "This is a datetime. ",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "datetime"
+              },
+              {
+                "id": "bpd7nt6y241vl_ro",
+                "text": "This is a date time, only time.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "time"
+              },
+              {
+                "id": "xckaco2527iihirl",
+                "text": "This is a datetime, only date. ",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "datetime",
+                "_type": "question",
+                "subtype": "time"
+              },
+              {
+                "id": "fejynjs3ow2c3s7z",
+                "text": "This is a multiselect.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "multi",
+                "options": [
+                  "Choice one",
+                  "Choice two",
+                  "Choice three",
+                  "Choice four",
+                  "Choice 5"
+                ],
+                "_type": "question",
+                "subtype": "short",
+                "radio": true,
+                "modal": true,
+                "shuffle": false
+              },
+              {
+                "id": "66ark8_la3713b6a",
+                "text": "This is a slider.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "slider",
+                "_type": "question",
+                "subtype": "short",
+                "min": 0,
+                "max": 10,
+                "hint_left": "Min",
+                "hint_right": "Max"
+              },
+              {
+                "id": "oo_r3ndlhliugt3s",
+                "text": "This is a media question: video.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "media",
+                "subtype": "video",
+                "_type": "question",
+                "src": "https://www.youtube.com/watch?v=jfKfPfyJRdk",
+                "thumb": "https://ichef.bbci.co.uk/news/976/cpsprodpb/1317F/production/_125870287_8bb3c7d1-9b75-402e-abb0-812090677ead.jpg"
+              },
+              {
+                "id": "p08a1tvnmd1husl9",
+                "text": "This is a media question: audio.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "media",
+                "subtype": "audio",
+                "_type": "question",
+                "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+              },
+              {
+                "id": "bk3teo9owe4mrjsf",
+                "text": "This is a media question: Image",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "media",
+                "subtype": "image",
+                "_type": "question",
+                "src": "https://www.voxco.com/wp-content/uploads/2021/10/RESEARCH1-1-scaled.jpg"
+              },
+              {
+                "id": "d58z_1q2_ynjdydm",
+                "text": "This is a yes/no question.",
+                "required": true,
+                "hide_id": "none",
+                "hide_value": "",
+                "hide_if": false,
+                "rand_group": "",
+                "type": "yesno",
+                "_type": "question",
+                "subtype": "short",
+                "yes_text": "Yes",
+                "no_text": "No"
+              }
+            ]
+          }
+        ],
+        "name": "Survey"
+      }
+    },
+    {
+      "id": "2k0w36f39a1x24ng",
+      "name": "Module-PVT",
+      "submit_text": "Submit",
+      "condition": "Control",
+      "alerts": {
+        "title": "Alert",
+        "message": "Tap to open the app",
+        "times": [
+          {
+            "hours": 8,
+            "minutes": 0
+          }
+        ],
+        "random": false,
+        "random_interval": 0,
+        "sticky": false,
+        "sticky_label": "Sticky Label",
+        "timeout": false,
+        "timeout_after": 0,
+        "start_offset": 0,
+        "duration": 0
+      },
+      "graph": {
+        "display": false
+      },
+      "unlock_after": [
+        "guljcnfb1lcyk8oc"
+      ],
+      "_type": "module",
+      "params": {
+        "id": "8up2kxn5vakwzdfg",
+        "_type": "params",
+        "type": "pvt",
+        "trials": 3,
+        "min_waiting": 5,
+        "max_waiting": 5,
+        "max_reaction": 5,
+        "show": true,
+        "exit": true
+      }
+    }
+  ],
+  "_type": "study"
+}

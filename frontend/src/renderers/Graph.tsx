@@ -30,6 +30,7 @@ function useGraph(): [Node[], Edge[]] {
     () => alignNodes(nodes, edges, direction),
     [nodes, edges, direction, visibleAtoms]
   );
+
   return [nodes, edges];
 }
 
