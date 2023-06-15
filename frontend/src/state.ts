@@ -1,7 +1,7 @@
 import create from "zustand";
 
 import { customAlphabet } from "nanoid";
-import produce from "immer";
+import { produce } from "immer";
 import { deleteNode } from "./utils/deleteNode";
 import {
   DeleteNode,

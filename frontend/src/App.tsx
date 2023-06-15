@@ -16,8 +16,9 @@ if (isProduction) {
   console.log("Running in development mode");
 }
 
-export const API_URL = isProduction ? "/api/v1" : "http://localhost:8000/api/v1";
-
+export const API_URL = isProduction
+  ? "/api/v1"
+  : "http://localhost:8000/api/v1";
 
 function App() {
   const [distribution, setDistribution] = useState(0.5);
@@ -34,7 +35,6 @@ function App() {
   return (
     <Layout>
       <main className="w-full flex">
-
         {/* This is the react flow section */}
         <section className="h-[calc(100vh-110px)]" style={{ width: leftPx }}>
           {mode === "graph" ? <Graph /> : <Calendar />}
@@ -60,7 +60,9 @@ function App() {
             <Form id={selectedNode} />
           ) : (
             <div className="flex place-content-center h-full ">
-              <p className="text-center self-center">Select node to start editing</p>
+              <p className="text-center self-center">
+                Select node to start editing
+              </p>
             </div>
           )}
         </section>

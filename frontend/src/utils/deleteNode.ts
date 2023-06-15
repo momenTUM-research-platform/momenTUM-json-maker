@@ -1,4 +1,5 @@
-import produce from "immer";
+
+import { produce } from "immer";
 import { State } from "../state";
 
 export function deleteNode(
@@ -38,8 +39,8 @@ export function deleteNode(
             ...parent,
             subNodes: parent.subNodes!.filter((s) => s !== id),
           });
-          console.log("Updating localstorage...");
-          // localStorage.setItem("atoms", JSON.stringify([state.atoms]));
+          console.log("Updating localStorage...");
+          localStorage.setItem("atoms", JSON.stringify([state.atoms]));
         }
       })
     );

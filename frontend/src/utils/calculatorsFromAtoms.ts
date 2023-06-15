@@ -49,7 +49,7 @@ export function calculateGraphFromAtoms(atoms: Atoms): [Node[], Edge[]] {
     // Create a node for each atom
     nodes.push({ id, data: { label: atom.title }, hidden: atom.hidden, position });
     // Create a node for each action of an atom, like deleting or creating
-    atom.actions.forEach((action) => {
+    atom.actions?.forEach((action) => {
       action === "later" && console.log(action);
       nodes.push({
         id: id + "_" + action,
@@ -66,7 +66,7 @@ export function calculateGraphFromAtoms(atoms: Atoms): [Node[], Edge[]] {
         source: id,
         target: sub,
         label: i + 1,
-        hidden: atom.hidden || atoms.get(sub)!.hidden,
+        hidden: atom.hidden || atoms.get(sub)?.hidden,
       });
     });
   });
