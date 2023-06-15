@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { classNames } from "../Calendar";
 import { useStore } from "../../state";
-import { createRedcapProject, validateStudy } from "../../services/actions";
+import { createRedcapProject } from "../../services/actions";
 import { constructStudy } from "../../utils/construct";
+import { validateStudy } from '../../services/validations';
 
 const steps = [
   {

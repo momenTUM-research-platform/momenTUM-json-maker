@@ -8,54 +8,9 @@ import { deconstructStudy } from "../utils/deconstruct";
 import fetch from "cross-fetch";
 import { study_object as study_schema } from "../../schema/study_object";
 import { betterAjvErrors } from "@apideck/better-ajv-errors";
-import { validateEachNode, validateStudyFromObj } from "./validations";
+import { validateEachNode, validateStudyFromObj, validateStudy } from './validations';
 
-export function validateStudy(study: any): study is Study {
-  // Create an instance of Ajv
-const ajv = new Ajv({ allErrors: true });
-ajv.addKeyword("enumNames");
-  const { true_conditions, qIds, mIds } = getStudyCQMFromAtom(study);
-  const schema = study_schema(true_conditions, qIds, mIds);
 
-  try {
-    const validator = ajv.compile(schema);
-    const is_valid = validator(study);
-    console.log("Study looks like: ", JSON.stringify(study));
-    if (is_valid) {
-      return true;
-    } else {
-      toast.error("First catch Study is invalid");
-      const errors = validator.errors;
-      const beautifiedErrors = betterAjvErrors({
-        schema,
-        data: study,
-        errors: errors,
-        basePath: "study",
-      });
-      const errorMessages = beautifiedErrors.map((err) => err.message);
-      for (const errorMessage of errorMessages) {
-        console.log(errorMessage);
-        toast.error(errorMessage!);
-      }
-      return false;
-    }
-  } catch (err: any) {
-    console.log("Study looks like: ", err);
-    toast.error("Second catch Study is invalid");
-    const beautifiedErrors = betterAjvErrors({
-      schema,
-      data: study,
-      errors: err,
-      basePath: "study",
-    });
-    const errorMessages = beautifiedErrors.map((err) => err.message);
-    for (const errorMessage of errorMessages) {
-      console.log(errorMessage);
-      toast.error(errorMessage!);
-    }
-    return false;
-  }
-}
 
 export function validate() {
   const { atoms } = useStore.getState();

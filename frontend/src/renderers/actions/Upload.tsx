@@ -5,8 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { classNames } from "../Calendar";
 import { useStore } from "../../state";
-import { upload, validateStudy } from "../../services/actions";
+import { upload } from "../../services/actions";
 import { constructStudy } from "../../utils/construct";
+import { validateStudy } from "../../services/validations";
 
 const steps = [
   {
@@ -21,7 +22,10 @@ const steps = [
     name: "Upload",
     description: "Saving forever (ok until tomorrow at least)",
   },
-  { name: "Finished", description: "Everything worked as expected" },
+  {
+    name: "Finished",
+    description: "Everything worked as expected",
+  },
 ];
 export function Upload({ close }: { close: () => void }) {
   const [step, setStep] = useState(0);
@@ -38,7 +42,7 @@ export function Upload({ close }: { close: () => void }) {
       // Validate
       () =>
         new Promise((resolve, reject) =>
-          validateStudy({ study }) ? resolve(null) : reject("Study is invalid")
+          validateStudy(study) ? resolve(null) : reject("Study is invalid")
         ),
       // Upload
       () => upload(study),
