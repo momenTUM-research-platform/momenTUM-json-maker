@@ -32,7 +32,6 @@ export const study_object = (
           type: "object",
           required: [
             "name",
-            "submit_text",
             "condition",
             "alerts",
             "graph",
@@ -57,16 +56,26 @@ export const study_object = (
               title: "Module Type",
               description:
                 "The parameters of the module. Can be a survey object or a pvt object, but not both.",
-              required: [],
               properties: {},
               oneOf: [
                 {
                   $id: "#/properties/modules/items/properties/params/survey",
                   title: "Survey",
                   type: "object",
+                  required: ["sections", "submit_text", "shuffle", "type"],
                   description:
                     "The parameters of the module. Can be a survey object or a PVT object, but not both.",
                   properties: {
+                    id: {
+                      $id: "#/properties/modules/items/properties/params/survey/id",
+                      type: "string",
+                      pattern: "^[a-z0-9_]+$",
+                      title: "Unique identifier",
+                      description:
+                        "A unique identifier for this module. Will be generated if not provided. Must be lowercase and only letters, numbers and underscores. Cannot begin with a number",
+                      default: "",
+                      examples: [""],
+                    },
                     sections: {
                       $id: "#/properties/modules/items/properties/survey/sections",
                       type: "array",
@@ -109,16 +118,14 @@ export const study_object = (
                         },
                       },
                     },
-                    type: {
+                    submit_text: {
+                      $id: "#/properties/modules/items/properties/submit_text",
                       type: "string",
-                      enum: ["survey"],
-                    },
-                    name: {
-                      $id: "#/properties/modules/items/properties/params/survey/name",
-                      type: "string",
-                      title: "Name",
+                      title: "Submit Text",
                       description:
-                        "The name of the module. Basic HTML supported.",
+                        "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
+                      default: "Submit",
+                      examples: ["Submit"],
                     },
                     shuffle: {
                       $id: "#/properties/modules/items/properties/params/survey/shuffle",
@@ -127,18 +134,11 @@ export const study_object = (
                       description:
                         "Used for counterbalancing. If true, the order of the sections will be randomized every time the module is accessed.",
                     },
-                    id: {
-                      $id: "#/properties/modules/items/properties/params/survey/id",
+                    type: {
                       type: "string",
-                      pattern: "^[a-z0-9_]+$",
-                      title: "Unique identifier",
-                      description:
-                        "A unique identifier for this module. Will be generated if not provided. Must be lowercase and only letters, numbers and underscores. Cannot begin with a number",
-                      default: "",
-                      examples: [""],
+                      enum: ["survey"],
                     },
                   },
-                  required: ["sections", "shuffle", "name", "type"],
                 },
                 paramsPVT,
               ],
@@ -150,15 +150,6 @@ export const study_object = (
               description: "The name of the module. Basic HTML supported.",
               default: "",
               examples: ["Welcome"],
-            },
-            submit_text: {
-              $id: "#/properties/modules/items/properties/submit_text",
-              type: "string",
-              title: "Submit Text",
-              description:
-                "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
-              default: "Submit",
-              examples: ["Submit"],
             },
             condition: {
               $id: "#/properties/modules/items/properties/condition",
@@ -182,9 +173,12 @@ export const study_object = (
                 $id: "#/properties/modules/items/properties/unlock_after/items",
                 type: "string",
                 pattern: "^[a-z0-9_]+$",
-              
-              oneOf: modules.map((m) => ({ const: m.id, title: m.text })),
-            },
+
+                oneOf:
+                  modules.length === 0
+                    ? [{ const: "", title: "" }]
+                    : modules!.map((m) => ({ const: m.id, title: m.text })),
+              },
             },
           },
         },

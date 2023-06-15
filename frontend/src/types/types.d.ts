@@ -79,7 +79,6 @@ declare interface Properties {
 declare interface Module {
   _type: "module";
   name: string;
-  submit_text: string;
   id: string;
   condition: string;
   unlock_after: [];
@@ -117,6 +116,7 @@ declare interface Params {
   id?: string;
   type?: string;
   trials?: number;
+  submit_text?: string;
   min_waiting?: number;
   max_waiting?: number;
   show?: boolean;
@@ -129,6 +129,7 @@ declare interface Params {
 declare interface Section {
   _type: "section";
   id: string;
+  name: string;
   shuffle: boolean;
   questions: (
     | Instruction

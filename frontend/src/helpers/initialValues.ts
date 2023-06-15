@@ -1,18 +1,18 @@
 export const initialProperties: Properties = {
   _type: "properties",
   study_name: "Study",
-  study_id: "enter_a_study_id_here",
-  created_by: "",
-  instructions: "",
+  study_id: String(),
+  created_by: String(),
+  instructions: String(),
   post_url: "https://tuspl22-momentum.srv.mwn.de/api/v1",
-  empty_msg: "",
-  banner_url: "",
-  support_url: "",
-  support_email: "",
+  empty_msg: String(),
+  banner_url: String(),
+  support_url: String(),
+  support_email: String(),
   conditions: ["Control", "Treatment"],
   cache: false,
-  ethics: "",
-  pls: "",
+  ethics: String(),
+  pls: String(),
 };
 
 export const initialModule = (id: string): Module => {
@@ -20,24 +20,23 @@ export const initialModule = (id: string): Module => {
     _type: "module",
     id,
     alerts: {
-      title: "",
-      message: "",
+      title:  String(),
+      message: String(),
       start_offset: 0,
       duration: 0,
       times: [],
       random: false,
       random_interval: 0,
       sticky: false,
-      sticky_label: "",
+      sticky_label: String(),
       timeout: false,
       timeout_after: 0
     },
-    condition: "",
+    condition: String(),
     graph: {
       display: false,
     },
-    name: "",
-    submit_text: "Submit",
+    name: String(),
     unlock_after: [],
     params: {
       _type: "params",
@@ -50,6 +49,7 @@ export const initialParamSurvey = (id: string): Params => {
     id,
     _type: "params",
     type: "survey",
+    submit_text: "Submit",
     shuffle: false,
     sections: [],
   };
@@ -73,7 +73,7 @@ export const initialSection = (id: string): Section => {
   return {
     _type: "section",
     id,
-    name: "",
+    name: String(),
     questions: [],
     shuffle: false,
   };
@@ -83,9 +83,9 @@ export const initialQuestion = (id: string): TextQuestion => {
   return {
     _type: "question",
     id,
-    rand_group: "",
+    rand_group: String(),
     required: true,
-    text: "",
+    text: String(),
     type: "text",
     subtype: "short",
   };

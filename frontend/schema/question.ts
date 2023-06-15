@@ -8,6 +8,7 @@ export const question = (questions: SchemaEnum[]) => {
       id: {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/id",
         type: "string",
+        
         pattern: "^[a-z0-9_]+$",
         title: "Question ID",
         description:
@@ -18,6 +19,7 @@ export const question = (questions: SchemaEnum[]) => {
       text: {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/text",
         type: "string",
+        minLength: 3,
         title: "Text",
         description: "The label displayed alongside the question. Basic HTML supported.",
         default: "",

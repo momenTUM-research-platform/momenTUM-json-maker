@@ -14,13 +14,11 @@ export const module = (
     description: "This is the schema for the module.",
     required: [
       "name",
-      "submit_text",
       "condition",
       "alerts",
       "graph",
       "id",
-      "unlock_after",
-      "params",
+      "unlock_after"
     ],
     properties: {
       id: {
@@ -40,15 +38,7 @@ export const module = (
         description: "The name of the module. Basic HTML supported.",
         default: "",
         examples: ["Welcome"],
-      },
-      submit_text: {
-        $id: "#/properties/modules/items/properties/submit_text",
-        type: "string",
-        title: "Submit Text",
-        description:
-          "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
-        default: "",
-        examples: ["Submit"],
+        minLength: 3,
       },
       condition: {
         $id: "#/properties/modules/items/properties/condition",
@@ -72,7 +62,7 @@ export const module = (
           $id: "#/properties/modules/items/properties/unlock_after/items",
           type: "string",
           pattern: "^[a-z0-9_]+$",
-          oneOf: modules!.map((q) => ({ const: q.id, title: q.text })),
+          oneOf: modules.length === 0 ? [{ const: "", title: "" }] : modules!.map((m) => ({ const: m.id, title: m.text })),
         },
       },
     },

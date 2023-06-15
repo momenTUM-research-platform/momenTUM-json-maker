@@ -42,6 +42,7 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/title",
       type: "string",
       title: "Title",
+      minLength: 3,
       description:
         "The title that is displayed in the notification (main text).",
       default: "",
@@ -51,6 +52,7 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/message",
       type: "string",
       title: "Message",
+      minLength: 3,
       description:
         "The message that is displayed in the notification (secondary text).",
       default: "",
@@ -144,6 +146,7 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/sticky_label",
       type: "string",
       title: "Sticky label",
+      minLength: 3,
       description:
         "A title that appears above a sticky module on the home screen. Multiple sticky modules that are set to appear in succession will be grouped under this title.",
       default: "",

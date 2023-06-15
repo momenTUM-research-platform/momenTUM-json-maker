@@ -24,6 +24,7 @@ import {
   isProperties,
   isParams,
 } from "types/guards";
+import { toTitleCase } from "utils/utils";
 // Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
 const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
 export const nodeTypes = {
@@ -203,22 +204,28 @@ export const useStore = create<State>()((set, get) => ({
       produce((state: State) => {
         const atom = state.atoms.get(id)!;
         atom.content = content;
-        if ((isSection(content) || isModule(content)) && content.name) {
+        if (isModule(content) && content.name) {
           atom.title =
             content.name.length > 32
-              ? content.name.slice(0, 32) + "..."
-              : content.name;
+              ? toTitleCase(content.name.slice(0, 32) + "...")
+              : toTitleCase(content.name);
+        }
+        if (isSection(content) && content.name) {
+          atom.title =
+            content.name.length > 32
+              ? toTitleCase(content.name.slice(0, 32) + "...")
+              : toTitleCase(content.name);
         }
         if (isParams(content) && content.type) {
           atom.title =
             content.type.length > 32
-              ? content.type.slice(0, 32) + "..."
-              : content.type;
+              ? toTitleCase(content.type.slice(0, 32) + "...")
+              : toTitleCase(content.type);
         }
         if (isQuestion(content) && content.text) {
           atom.title =
             content.text.length > 32
-              ? content.text.slice(0, 60) + "..."
+              ? content.text.slice(0, 32) + "..."
               : content.text;
         }
         if (isProperties(content)) {

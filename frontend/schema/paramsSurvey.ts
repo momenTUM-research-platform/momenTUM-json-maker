@@ -21,11 +21,14 @@ export const paramsSurvey = (questions: SchemaEnum[]) => {
         readOnly: true,
         enum: ["survey"],
       },
-      name: {
-        $id: "#/properties/modules/items/properties/params/survey/name",
+      submit_text: {
+        $id: "#/properties/modules/items/properties/submit_text",
         type: "string",
-        title: "Name",
-        description: "The name of the module. Basic HTML supported.",
+        title: "Submit Text",
+        description:
+          "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
+        default: "Submit",
+        examples: ["Submit"],
       },
       shuffle: {
         $id: "#/properties/modules/items/properties/params/survey/shuffle",
@@ -35,6 +38,6 @@ export const paramsSurvey = (questions: SchemaEnum[]) => {
           "Used for counterbalancing. If true, the order of the sections will be randomized every time the module is accessed.",
       },
     },
-    required: ["sections", "type", "name", "shuffle"],
+    required: ["sections", "type", "submit_text", "shuffle"],
   };
 };

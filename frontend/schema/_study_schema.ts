@@ -181,7 +181,6 @@ export const study_object = (
           type: "object",
           required: [
             "name",
-            "submit_text",
             "condition",
             "alerts",
             "graph",
@@ -228,6 +227,7 @@ export const study_object = (
                         type: "object",
                         required: ["name", "questions", "shuffle"],
                         properties: {
+                       
                           name: {
                             $id: "#/properties/modules/items/properties/sections/items/properties/name",
                             type: "string",
@@ -575,6 +575,15 @@ export const study_object = (
                         },
                       },
                     },
+                    submit_text: {
+                      $id: "#/properties/modules/items/properties/submit_text",
+                      type: "string",
+                      title: "Submit Text",
+                      description:
+                        "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
+                      default: "Submit",
+                      examples: ["Submit"],
+                    },
                     type: {
                       type: "string",
                       enum: ["survey"],
@@ -594,7 +603,7 @@ export const study_object = (
                         "Used for counterbalancing. If true, the order of the sections will be randomized every time the module is accessed.",
                     },
                   },
-                  required: ["sections", "shuffle", "name", "type"],
+                  required: ["sections", "shuffle", "name", "submit_text","type"],
                 },
                 {
                   $id: "#/properties/modules/items/properties/params/pvt",
@@ -667,15 +676,6 @@ export const study_object = (
               description: "The name of the module. Basic HTML supported.",
               default: "",
               examples: ["Welcome"],
-            },
-            submit_text: {
-              $id: "#/properties/modules/items/properties/submit_text",
-              type: "string",
-              title: "Submit Text",
-              description:
-                "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
-              default: "Submit",
-              examples: ["Submit"],
             },
             condition: {
               $id: "#/properties/modules/items/properties/condition",
