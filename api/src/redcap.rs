@@ -1,15 +1,11 @@
-use crate::study::{BasicQuestion, Modules};
+use crate::study::{BasicQuestion, Params};
 use crate::Result;
 use crate::{error::Error, study::Study, Key, ACTIVE_DB, DB};
 use mongodb::bson::doc;
-use mongodb::bson::oid::ObjectId;
-use mongodb::options::FindOneOptions;
 use rocket_db_pools::Connection;
 use serde::{Deserialize, Serialize};
-use sha2::digest::typenum::Mod;
 use std::collections::HashMap;
 use std::env;
-use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(untagged)]
@@ -260,8 +256,8 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
     let mut dictionary: Vec<MetaData> = Vec::new();
 
     for (i, module) in study.modules.iter().enumerate() {
-        match module {
-            Modules::Pvt(pvt) => {
+        match &module.params {
+            Params::Pvt(pvt) => {
                 if i == 0 {
                     dictionary.push(MetaData::create(
                         "record_id".to_string(),
@@ -290,7 +286,7 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
                 ));
                 dictionary.push(MetaData::create(pvt.id.clone(), &pvt.id, "text", "PVT"));
             }
-            Modules::Survey(survey) => {
+            Params::Survey(survey) => {
                 if i == 0 {
                     dictionary.push(MetaData::create(
                         "record_id".to_string(),
@@ -373,8 +369,8 @@ struct RepeatingInstrument {
 pub async fn enable_repeating_instruments(study: &Study, api_key: ApiKey) -> Result<()> {
     let mut repeating_instruments: Vec<RepeatingInstrument> = Vec::new();
     for module in study.modules.iter() {
-        match module {
-            Modules::Survey(survey) => {
+        match &module.params {
+            Params::Survey(survey) => {
                 repeating_instruments.push(RepeatingInstrument {
                     form_name: format!("module_{}", survey.id.clone()),
                     custom_form_label: String::new(),
