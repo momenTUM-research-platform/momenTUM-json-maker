@@ -1,5 +1,5 @@
-import { module } from "./module";
 import { properties } from "./properties";
+import { module } from "./module";
 
 export const study = (conditions: string[], questions: SchemaEnum[], modules: SchemaEnum[]) => {
   return {

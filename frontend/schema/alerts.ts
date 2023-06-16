@@ -42,7 +42,9 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/title",
       type: "string",
       title: "Title",
-      description: "The title that is displayed in the notification (main text).",
+      minLength: 3,
+      description:
+        "The title that is displayed in the notification (main text).",
       default: "",
       examples: ["Welcome to the study"],
     },
@@ -50,7 +52,9 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/message",
       type: "string",
       title: "Message",
-      description: "The message that is displayed in the notification (secondary text).",
+      minLength: 3,
+      description:
+        "The message that is displayed in the notification (secondary text).",
       default: "",
       examples: ["Tap to open the app"],
     },
@@ -60,7 +64,7 @@ export const alerts = {
       title: "Duration",
       description:
         "Indicates the number of consecutive days that the module should be scheduled to display. If 0, the module will not be shown.",
-      default: 1,
+
       examples: [1],
     },
     times: {
@@ -142,6 +146,7 @@ export const alerts = {
       $id: "#/properties/modules/items/properties/alerts/properties/sticky_label",
       type: "string",
       title: "Sticky label",
+      minLength: 3,
       description:
         "A title that appears above a sticky module on the home screen. Multiple sticky modules that are set to appear in succession will be grouped under this title.",
       default: "",

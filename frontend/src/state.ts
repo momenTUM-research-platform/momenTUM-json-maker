@@ -1,16 +1,30 @@
 import create from "zustand";
 
 import { customAlphabet } from "nanoid";
-import produce from "immer";
+import { produce } from "immer";
 import { deleteNode } from "./utils/deleteNode";
-import { isModule, isQuestion, isSection, isProperties } from "./utils/typeGuards";
 import {
-  initialModule,
-  initialQuestion,
-  initialSection,
+  DeleteNode,
+  EarlierNode,
+  LaterNode,
+  NewNode,
+} from "./renderers/CustomNodes";
+import {
   initialProperties,
-} from "./utils/initialValues";
-import { DeleteNode, EarlierNode, LaterNode, NewNode } from "./CustomNodes";
+  initialSection,
+  initialQuestion,
+  initialModule,
+  initialParamPVT,
+  initialParamSurvey,
+} from "helpers/initialValues";
+import {
+  isSection,
+  isModule,
+  isQuestion,
+  isProperties,
+  isParams,
+} from "types/guards";
+import { toTitleCase } from "utils/utils";
 // Custom alphabet required for redcap handling of ids; they don't allow capital letters or hyphens
 const nanoid = customAlphabet("0123456789_abcdefghijklmnopqrstuvwxyz", 16);
 export const nodeTypes = {
@@ -32,13 +46,19 @@ export interface State {
   liveValidation: boolean;
   editableIds: boolean;
   showHidingLogic: boolean;
+  selectedOption: string;
+  options: string[];
+  setSelectedOption: (selectedOption: string) => void;
   invertDirection: () => void;
   invertMode: () => void;
-  setAtom: (id: string, content: Properties | Question | Module | Section) => void;
+  setAtom: (
+    id: string,
+    content: Properties | Question | Module | Section | Params
+  ) => void;
   setAtoms: (atoms: Atoms) => void;
   setModal: (value: null | "upload" | "download" | "qr" | "redcap") => void;
   saveAtoms: () => void;
-  addNewNode: (type: AtomVariants, parent: string) => void;
+  addNewNode: (type: AtomVariants, parent: string, flag: string) => void;
   deleteNode: (id: string) => void;
   setPermalink: (permalink: string) => void;
   setLiveValidation: (value: boolean) => void;
@@ -53,6 +73,9 @@ export const useStore = create<State>()((set, get) => ({
   editableIds: false,
   liveValidation: true,
   showHidingLogic: false,
+  selectedOption: "",
+  options: ["Survey", "PVT"],
+  setSelectedOption: (selectedOption) => set({ selectedOption }),
   setLiveValidation: (value) => set({ liveValidation: value }),
   setShowHidingLogic: (value) => set({ showHidingLogic: value }),
   setIdsEditable: (value) => set({ editableIds: value }),
@@ -101,24 +124,46 @@ export const useStore = create<State>()((set, get) => ({
   invertMode: () => {
     set({ mode: get().mode === "graph" ? "timeline" : "graph" });
   },
-  addNewNode: (type, parent) => {
+  addNewNode: (type, parent, flag) => {
     const id = nanoid();
-
     set(
       produce((state: State) => {
         switch (type) {
           case "module": {
+            const id_params = nanoid();
             state.atoms.set(id, {
               parent,
-              subNodes: [],
+              subNodes: [id_params],
               type: "module",
-              childType: "section",
+              childType: null,
               title: "New Module",
+              actions: ["delete"],
               hidden: false,
-              actions: ["create", "delete"],
               content: initialModule(id),
             });
-            // If no parent exists, you've got a bigger issue
+            if (flag === "PVT") {
+              state.atoms.set(id_params, {
+                parent: id,
+                subNodes: null,
+                type: "params",
+                childType: null,
+                title: `New ${flag}`,
+                actions: [],
+                hidden: false,
+                content: initialParamPVT(id_params),
+              });
+            } else {
+              state.atoms.set(id_params, {
+                parent: id,
+                subNodes: [],
+                type: "params",
+                childType: "section",
+                title: `New ${flag}`,
+                hidden: false,
+                actions: ["create"],
+                content: initialParamSurvey(id_params),
+              });
+            }
             break;
           }
           case "section": {
@@ -159,11 +204,29 @@ export const useStore = create<State>()((set, get) => ({
       produce((state: State) => {
         const atom = state.atoms.get(id)!;
         atom.content = content;
-        if ((isSection(content) || isModule(content)) && content.name) {
-          atom.title = content.name.length > 32 ? content.name.slice(0, 32) + "..." : content.name;
+        if (isModule(content) && content.name) {
+          atom.title =
+            content.name.length > 32
+              ? toTitleCase(content.name.slice(0, 32) + "...")
+              : toTitleCase(content.name);
+        }
+        if (isSection(content) && content.name) {
+          atom.title =
+            content.name.length > 32
+              ? toTitleCase(content.name.slice(0, 32) + "...")
+              : toTitleCase(content.name);
+        }
+        if (isParams(content) && content.type) {
+          atom.title =
+            content.type.length > 32
+              ? toTitleCase(content.type.slice(0, 32) + "...")
+              : toTitleCase(content.type);
         }
         if (isQuestion(content) && content.text) {
-          atom.title = content.text.length > 32 ? content.text.slice(0, 60) + "..." : content.text;
+          atom.title =
+            content.text.length > 32
+              ? content.text.slice(0, 32) + "..."
+              : content.text;
         }
         if (isProperties(content)) {
           // @ts-ignore Because we are using the root node also as the properties node (which is not correct for the study), the properties fields are in the study object

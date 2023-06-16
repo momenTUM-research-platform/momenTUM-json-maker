@@ -45,14 +45,14 @@ export const graph = (questions: SchemaEnum[]) => {
                 description:
                   "The id of a question object to graph. It must match one of the module's question ids.",
                 default: "none",
-
                 oneOf: questions.map((q) => ({ const: q.id, title: q.text })),
               },
               title: {
                 $id: "#/properties/modules/items/properties/graph/properties/title",
                 type: "string",
                 title: "Title",
-                description: "The title of the graph to be displayed in the Feedback tab.",
+                description:
+                  "The title of the graph to be displayed in the Feedback tab.",
                 default: "",
                 examples: [""],
               },
@@ -69,7 +69,8 @@ export const graph = (questions: SchemaEnum[]) => {
                 $id: "#/properties/modules/items/properties/graph/properties/type",
                 type: "string",
                 title: "Type",
-                description: "The type of graph to display. One of: bar or line",
+                description:
+                  "The type of graph to display. One of: bar or line",
                 default: "bar",
                 enum: ["bar", "line"],
                 examples: ["bar", "line"],

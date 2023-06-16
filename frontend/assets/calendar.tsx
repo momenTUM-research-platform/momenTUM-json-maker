@@ -8,7 +8,7 @@ export default function Icon() {
       viewBox="0 0 24 24"
       strokeWidth="1.5"
       stroke="currentColor"
-      height={24}
+      height={18}
     >
       <path
         strokeLinecap="round"

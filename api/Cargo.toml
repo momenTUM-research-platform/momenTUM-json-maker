@@ -22,8 +22,14 @@ base64 = "0.13.0"
 sha2 = "0.10"
 serde-xml-rs = "0.6.0"
 rand = "0.8.5"
+lazy_static = "1.4.0"
 
 
 [dependencies.rocket_db_pools]
 version = "0.1.0-rc.2"
 features = ["mongodb"]
+
+[lib]
+name = "api"
+path = "src/main.rs"
+crate-type = ["rlib"]

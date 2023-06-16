@@ -2,11 +2,13 @@ export const question = (questions: SchemaEnum[]) => {
   return {
     $id: "#/properties/modules/items/properties/sections/items/properties/questions/items",
     type: "object",
+    title: "Questions",
     required: ["id", "type", "text", "required"],
     properties: {
       id: {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/id",
         type: "string",
+        
         pattern: "^[a-z0-9_]+$",
         title: "Question ID",
         description:
@@ -17,6 +19,7 @@ export const question = (questions: SchemaEnum[]) => {
       text: {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/text",
         type: "string",
+        minLength: 3,
         title: "Text",
         description: "The label displayed alongside the question. Basic HTML supported.",
         default: "",

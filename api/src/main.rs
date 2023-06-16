@@ -324,6 +324,8 @@
 #[macro_use]
 extern crate rocket;
 
+pub extern crate lazy_static;
+
 use mongodb::options::ReplaceOptions;
 use mongodb::{
     bson::{doc, oid::ObjectId, DateTime},
@@ -566,7 +568,7 @@ impl Fairing for CORS {
 }
 
 #[launch]
-fn rocket() -> _ {
+pub fn rocket() -> _ {
     dotenv::dotenv().ok();
     println!("The API is using the {ACTIVE_DB} database");
 

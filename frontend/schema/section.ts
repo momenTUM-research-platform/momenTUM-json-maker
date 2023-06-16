@@ -3,15 +3,25 @@ import { question } from "./question";
 export const section = {
   $id: "#/properties/modules/items/properties/sections/items",
   type: "object",
-  required: ["name", "questions", "shuffle"],
+  title: "Sections",
+  required: ["id", "questions", "name", "shuffle"],
   properties: {
-    name: {
-      $id: "#/properties/modules/items/properties/sections/items/properties/name",
+    id: {
+      $id: "#/properties/modules/items/properties/id",
       type: "string",
-      title: "Section name",
-      description: "The title of this section, which is displayed at the top of the screen.",
+      pattern: "^[a-z0-9_]+$",
+      title: "Unique identifier",
+      description:
+        "A unique identifier for this module. Will be generated if not provided. Must be lowercase and only letters, numbers and underscores. Cannot begin with a number",
       default: "",
-      examples: ["Welcome"],
+      examples: [""],
+    },
+    name: {
+      $id: "#/properties/modules/items/properties/params/survey/name",
+      type: "string",
+      title: "Name",
+      description: "The name of the Section. Basic HTML supported.",
+      minLength: 3,
     },
     shuffle: {
       $id: "#/properties/modules/items/properties/sections/items/properties/shuffle",
@@ -22,26 +32,5 @@ export const section = {
       default: false,
       examples: [false],
     },
-    // questions: {
-    //   $id: "#/properties/modules/items/properties/sections/items/properties/questions",
-    //   type: "array",
-    //   title: "Questions",
-    //   description: "An array containing all of the questions for this section of the module.",
-    //   default: [],
-    //   examples: [
-    //     [
-    //       {
-    //         id: "instruction-1wnjocfw",
-    //         type: "instruction",
-    //         text: "Hello! Welcome to the study! This module only shows for those enrolled in the control condition.",
-    //         required: false,
-    //         hide_id: "",
-    //         hide_value: "",
-    //         hide_if: true,
-    //       },
-    //     ],
-    //   ],
-    //   items: question,
-    // },
   },
 };

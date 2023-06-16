@@ -1,4 +1,4 @@
-import { isStudy } from "./typeGuards";
+import { isStudy } from "../types/guards";
 
 export function constructStudy(atoms: Atoms): Study {
   const start = JSON.parse(JSON.stringify(atoms.get("study"))) as Atom<Study>;
@@ -26,6 +26,7 @@ export function constructStudy(atoms: Atoms): Study {
           const children = appendChildren(copy);
           // @ts-ignore
           const type: AtomVariants = atom.content._type;
+          
           switch (type) {
             case "study": {
               //@ts-expect-error
@@ -33,6 +34,11 @@ export function constructStudy(atoms: Atoms): Study {
               break;
             }
             case "module": {
+              // @ts-expect-error
+              result.params = children;
+              break;
+            }
+            case "params": {
               // @ts-expect-error
               result.sections.push(children);
               break;

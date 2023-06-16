@@ -17,7 +17,7 @@
     },
     "modules": [
         {
-            "id": "Sleep Diary",
+            "id": "sleep_diary",
             "type": "survey",
             "name": "Daily sleep diary",
             "submit_text": "Submit",

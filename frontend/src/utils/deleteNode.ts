@@ -1,9 +1,13 @@
-import produce from "immer";
+
+import { produce } from "immer";
 import { State } from "../state";
 
 export function deleteNode(
   set: (
-    partial: State | Partial<State> | ((state: State) => State | Partial<State>),
+    partial:
+      | State
+      | Partial<State>
+      | ((state: State) => State | Partial<State>),
     replace?: undefined
   ) => void,
   get: () => State
@@ -26,10 +30,8 @@ export function deleteNode(
         };
 
         recursivelyFindIdsOfSubNodes(id);
-
+        console.log("Deleting node...");
         nodesToDelete.forEach((n) => state.atoms.delete(n));
-
-  
         if (parentId) {
           const parent = state.atoms.get(parentId)!;
           state.selectedNode = parentId;
@@ -37,6 +39,8 @@ export function deleteNode(
             ...parent,
             subNodes: parent.subNodes!.filter((s) => s !== id),
           });
+          console.log("Updating localStorage...");
+          localStorage.setItem("atoms", JSON.stringify([state.atoms]));
         }
       })
     );

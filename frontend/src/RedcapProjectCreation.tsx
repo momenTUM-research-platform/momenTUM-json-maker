@@ -2,10 +2,12 @@ import { Dialog } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
-import { classNames } from "./Calendar";
+
 import { useStore } from "./state";
-import { createRedcapProject, validateStudy } from "./utils/actions";
+
 import { constructStudy } from "./utils/construct";
+import { createRedcapProject, validateStudy } from './services/actions';
+import { classNames } from './renderers/Calendar';
 
 const steps = [
   {

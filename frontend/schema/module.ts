@@ -1,40 +1,25 @@
 import { alerts } from "./alerts";
 import { graph } from "./graph";
-import { pvt } from "./pvt";
-import { survey } from "./survey";
+import { params } from "./params";
 
-export const module = (conditions: string[], questions: SchemaEnum[], modules: SchemaEnum[]) => {
+export const module = (
+  conditions: string[],
+  questions: SchemaEnum[],
+  modules: SchemaEnum[]
+) => {
   return {
     $id: "#/properties/modules/items",
     type: "object",
+    title: "Module",
+    description: "This is the schema for the module.",
     required: [
-      "type",
       "name",
-      "submit_text",
+      "condition",
       "alerts",
       "graph",
-      "sections",
-      "shuffle",
-      "condition",
       "id",
-      "unlock_after",
+      "unlock_after"
     ],
-    dependencies: {
-      type: {
-        oneOf: [
-          // Info/video/audio/video implementation is not specified
-          {
-            properties: {
-              type: {
-                enum: ["info"],
-              },
-            },
-          },
-          pvt,
-          survey,
-        ],
-      },
-    },
     properties: {
       id: {
         $id: "#/properties/modules/items/properties/id",
@@ -46,15 +31,6 @@ export const module = (conditions: string[], questions: SchemaEnum[], modules: S
         default: "",
         examples: [""],
       },
-      type: {
-        $id: "#/properties/modules/items/properties/type",
-        type: "string",
-        title: "Type",
-        description:
-          "The type of the module. Accepted values are survey, info or reaction-time-test.",
-        default: "survey",
-        enum: ["survey", "info", "pvt"],
-      },
       name: {
         $id: "#/properties/modules/items/properties/name",
         type: "string",
@@ -62,15 +38,7 @@ export const module = (conditions: string[], questions: SchemaEnum[], modules: S
         description: "The name of the module. Basic HTML supported.",
         default: "",
         examples: ["Welcome"],
-      },
-      submit_text: {
-        $id: "#/properties/modules/items/properties/submit_text",
-        type: "string",
-        title: "Submit Text",
-        description:
-          "The label of the submit button for this module. Note: this value appears only on the final section of a module.",
-        default: "Submit",
-        examples: ["Submit"],
+        minLength: 3,
       },
       condition: {
         $id: "#/properties/modules/items/properties/condition",
@@ -82,7 +50,7 @@ export const module = (conditions: string[], questions: SchemaEnum[], modules: S
         enum: conditions,
       },
       alerts: alerts,
-      graph: graph(questions),
+      graph: graph(questions!),
       unlock_after: {
         $id: "#/properties/modules/items/properties/unlock_after",
         type: "array",
@@ -94,7 +62,7 @@ export const module = (conditions: string[], questions: SchemaEnum[], modules: S
           $id: "#/properties/modules/items/properties/unlock_after/items",
           type: "string",
           pattern: "^[a-z0-9_]+$",
-          oneOf: modules.map((q) => ({ const: q.id, title: q.text })),
+          oneOf: modules.length === 0 ? [{ const: "", title: "" }] : modules!.map((m) => ({ const: m.id, title: m.text })),
         },
       },
     },
