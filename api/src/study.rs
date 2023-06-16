@@ -28,17 +28,24 @@ pub struct Properties {
     pub created_by: String,
 }
 #[derive(Clone, Serialize, Deserialize)]
-pub struct Survey {
-    pub r#type: String,
+pub struct Modules {
     pub _type: String,
+    pub id: String,
     pub name: String,
-    pub submit_text: String,
     pub condition: String,
     pub alerts: Alert,
     pub graph: GraphOrNoGraph,
-    pub id: String,
     pub unlock_after: Vec<String>,
+    pub params: Params,
+}
 
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Survey {
+    pub r#type: String,
+    pub _type: String,
+    pub submit_text: String,
+    pub id: String,
     pub sections: Vec<Section>,
     pub shuffle: bool,
 }
@@ -47,14 +54,7 @@ pub struct Survey {
 pub struct Pvt {
     pub r#type: String,
     pub _type: String,
-    pub name: String,
-    pub submit_text: String,
-    pub condition: String,
-    pub alerts: Alert,
     pub id: String,
-    pub unlock_after: Vec<String>,
-    pub graph: GraphOrNoGraph,
-
     pub trials: i32,
     pub min_waiting: i32,
     pub max_waiting: i32,
@@ -209,29 +209,27 @@ pub enum StringOrBool {
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-/// Enumeration of all the different modules.
+/// Enumeration of all the different Parameters.
 /// https://serde.rs/enum-representations.html
 ///
-/// Info modules are treated as surveys, because they are a strict subset.
-pub enum Modules {
+/// Info parameters are treated as surveys, because they are a strict subset.
+pub enum Params {
     Pvt(Pvt),
     Survey(Survey),
-    Video, // These three are not yet implemented
-    Audio,
 }
 
-impl Modules {
+impl Params {
     pub fn get_id(&self) -> Option<String> {
         match self {
-            Modules::Survey(survey) => Some(survey.id.clone()),
-            Modules::Pvt(pvt) => Some(pvt.id.clone()),
+            Params::Survey(survey) => Some(survey.id.clone()),
+            Params::Pvt(pvt) => Some(pvt.id.clone()),
             _ => None,
         }
     }
     pub fn get_name(&self) -> Option<String> {
         match self {
-            Modules::Survey(survey) => Some(survey.name.clone()),
-            Modules::Pvt(pvt) => Some(pvt.name.clone()),
+            Params::Survey(survey) => Some(survey.r#type.clone()),
+            Params::Pvt(pvt) => Some(pvt.r#type.clone()),
             _ => None,
         }
     }
@@ -328,9 +326,9 @@ mod test {
     fn test_pvt() {
         let json = include_str!("../../studies/monster.json");
         let study: super::Study = serde_json::from_str(json).unwrap();
-        let pvt = &study.modules[2];
+        let pvt = &study.modules[2].params;
         match pvt {
-            super::Modules::Pvt(pvt) => {
+            super::Params::Pvt(pvt) => {
                 assert_eq!(pvt.min_waiting, 200);
                 assert!(pvt.max_waiting > 200);
                 assert!(pvt.max_reaction > pvt.max_waiting);
@@ -343,9 +341,9 @@ mod test {
     fn test_survey() {
         let json = include_str!("../../studies/monster.json");
         let study: super::Study = serde_json::from_str(json).unwrap();
-        let survey = &study.modules[0];
+        let survey = &study.modules[0].params;
         match survey {
-            super::Modules::Survey(survey) => {
+            super::Params::Survey(survey) => {
                 assert_eq!(survey.sections.len(), 4);
             }
             _ => panic!("Expected a survey module"),
