@@ -17,12 +17,16 @@ To run automatically, install Docker and run:
 ```
 docker network create caddy
 docker compose -f docker-compose.local.yml  up --build -d
-
 ```
 
 This will start your services as close to production as possible, just not available at the normal domain but on localhost.
 
-Docker will eat up all your disk space with build cache, so you might want to clean it up from time to time. To do so, run `docker system prune` and confirm with `y`.
+Docker will eat up all your disk space with build cache, so you might want to clean it up from time to time. To do so, run 
+```
+docker system prune
+``` 
+
+and confirm with `y`.
 
 To run manually, install dependencies and run:
 
@@ -32,7 +36,11 @@ pnpm
 pnpm dev
 ```
 
-I like to use pnpm, but yarn or npm should work as well. To install pnpm, run `npm install -g pnpm`, which you might need superuser-rights for.
+I like to use pnpm, but yarn or npm should work as well. To install pnpm, run 
+```
+npm install -g pnpm
+```
+which you might need superuser-rights for.
 
 Rust API
 
@@ -52,7 +60,13 @@ cd api
 cargo run --release
 ```
 
-Of course, you can also install dependencies with npm (then the start script is npm run dev). To install yarn, run `npm install -g yarn`, which you might need superuser-rights for.
+Of course, you can also install dependencies with npm (then the start script is npm run dev). To install yarn, run
+
+```
+npm install -g yarn
+```
+
+which you might need superuser-rights for.
 
 ## Production
 

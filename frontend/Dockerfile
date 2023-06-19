@@ -1,8 +1,5 @@
 FROM node:18
 
-# ENV NODE_ENV production
-ENV NODE_ENV development
-
 WORKDIR /usr/src/app
 
 COPY package*.json ./
@@ -12,8 +9,8 @@ RUN npm install
 
 COPY . .
 
-# ENV NODE_ENV production
-ENV NODE_ENV development
+# ENV NODE_ENV development
+ENV NODE_ENV production
 
 EXPOSE 3000
 
