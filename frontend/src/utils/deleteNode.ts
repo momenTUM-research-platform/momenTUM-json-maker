@@ -39,8 +39,6 @@ export function deleteNode(
             ...parent,
             subNodes: parent.subNodes!.filter((s) => s !== id),
           });
-          console.log("Updating localStorage...");
-          localStorage.setItem("atoms", JSON.stringify([state.atoms]));
         }
       })
     );

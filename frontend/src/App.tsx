@@ -8,17 +8,8 @@ import Drag from "../assets/drag";
 import { Calendar } from "./renderers/Calendar";
 import { Modal } from "./renderers/controllers/Modal";
 
-const isProduction = process.env.NODE_ENV === "production";
-
-if (isProduction) {
-  console.log("Running in production mode");
-} else {
-  console.log("Running in development mode");
-}
-
-export const API_URL = isProduction
-  ? "/api/v1"
-  : "http://localhost:8000/api/v1";
+export const API_URL =
+  process.env.NODE_ENV === "production" ? "/api/v1" : "http://localhost:8000/api/v1";
 
 function App() {
   const [distribution, setDistribution] = useState(0.5);
@@ -26,10 +17,10 @@ function App() {
   const rightPx = Math.floor((window.innerWidth - 10) * (1 - distribution));
   const { selectedNode, setAtoms, mode } = useStore();
   useEffect(() => {
-    // if (localStorage.getItem("atoms")) {
-    //   const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
-    //   setAtoms(atoms);
-    // }
+    if (localStorage.getItem("atoms")) {
+      const atoms: Atoms = new Map(JSON.parse(localStorage.getItem("atoms")!)); // Load previous state from local storage
+      setAtoms(atoms);
+    }
   }, []);
 
   return (
