@@ -56,4 +56,9 @@ Of course, you can also install dependencies with npm (then the start script is 
 
 ## Production
 
-When deploying to production, cd into the _momenTUM-json-maker_ directory (clone it first if you don't have it in your userspace), then run `git pull  && docker network create caddy  && docker compose up -d--build` which will automatically pull the latest changes from GitHub, build the project for production, and start the docker containers. You can then access the project at https://make.momentumresearch.eu. The API is running on https://make.momentumresearch.eu.
+When deploying to production, cd into the _momenTUM-json-maker_ directory (clone it first if you don't have it in your userspace), then run 
+```
+git pull  && docker network create caddy  && docker compose up -d --build
+```
+
+which will automatically pull the latest changes from GitHub, build the project for production, and start the docker containers. You can then access the project at https://make.momentumresearch.eu. The API is running on https://make.momentumresearch.eu.
