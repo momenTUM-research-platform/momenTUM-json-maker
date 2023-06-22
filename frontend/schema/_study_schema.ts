@@ -592,13 +592,6 @@ export const study_object = (
                       type: "string",
                       enum: ["survey"],
                     },
-                    name: {
-                      $id: "#/properties/modules/items/properties/params/survey/name",
-                      type: "string",
-                      title: "Name",
-                      description:
-                        "The name of the module. Basic HTML supported.",
-                    },
                     shuffle: {
                       $id: "#/properties/modules/items/properties/params/survey/shuffle",
                       type: "boolean",
@@ -607,7 +600,7 @@ export const study_object = (
                         "Used for counterbalancing. If true, the order of the sections will be randomized every time the module is accessed.",
                     },
                   },
-                  required: ["sections", "shuffle", "name", "submit_text","type"],
+                  required: ["sections", "shuffle", "submit_text","type"],
                 },
                 {
                   $id: "#/properties/modules/items/properties/params/pvt",
