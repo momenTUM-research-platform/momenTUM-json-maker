@@ -7,9 +7,9 @@ import { module as module_schema } from "../../schema/module";
 import { properties as properties_schema } from "../../schema/properties";
 import { isStudy } from "../types/guards";
 import toast from "react-hot-toast";
+import test from "../../schema/activity6.json";
 import { study_object as study_schema } from "../../schema/study_object";
 import { betterAjvErrors } from "@apideck/better-ajv-errors";
-import { getStudyCQMFromAtom } from "./actions";
 
 // Function to validate a study object
 export function validateProperties(properties: Properties) {
@@ -209,6 +209,79 @@ export function validateEachNode(
   }
 }
 export function validateStudyFromObj(study_obj: any) {
+  const { true_conditions, qIds, mIds } = getStudyCQM(study_obj);
+  const schema = study_schema(true_conditions, qIds, mIds);
+  const ajv = new Ajv();
+  ajv.addKeyword("enumNames");
+  const validator = ajv.compile(schema);
+
+  const is_valid = validator(study_obj);
+
+  if (is_valid) {
+    return true;
+  } else {
+    toast.error("Study is invalid");
+    const errors = validator.errors;
+    const beautifiedErrors = betterAjvErrors({
+      schema,
+      data: study_obj,
+      errors: errors,
+      basePath: "study",
+    });
+    const errorMessages = beautifiedErrors.map((err) => err.message);
+    for (const errorMessage of errorMessages) {
+      toast.error(errorMessage!);
+    }
+
+    return false;
+  }
+}
+export function validateStudy(study: any): study is Study {
+  // Create an instance of Ajv
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addKeyword("enumNames");
+  const { true_conditions, qIds, mIds } = getStudyCQM(study);
+  const schema = study_schema(true_conditions, qIds, mIds);
+
+  try {
+    const validator = ajv.compile(schema);
+    const is_valid = validator(study);
+
+    if (is_valid) {
+      return true;
+    } else {
+      toast.error("Study is invalid");
+      const errors = validator.errors;
+      const beautifiedErrors = betterAjvErrors({
+        schema,
+        data: study,
+        errors: errors,
+        basePath: "study",
+      });
+      const errorMessages = beautifiedErrors.map((err) => err.message);
+      for (const errorMessage of errorMessages) {
+        console.log(errorMessage!);
+        toast.error(errorMessage!);
+      }
+      return false;
+    }
+  } catch (err: any) {
+    toast.error("Study is invalid due to an error.");
+    const beautifiedErrors = betterAjvErrors({
+      schema,
+      data: study,
+      errors: err,
+      basePath: "study",
+    });
+    const errorMessages = beautifiedErrors.map((err) => err.message);
+    for (const errorMessage of errorMessages) {
+      toast.error(errorMessage!);
+    }
+    return false;
+  }
+}
+
+export function getStudyCQM(study_obj: any) {
   const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
   const mIds: SchemaEnum[] = [];
   const studyParams = [];
@@ -246,76 +319,7 @@ export function validateStudyFromObj(study_obj: any) {
   } catch (err: any) {
     console.error(err);
     toast.error("Conditions error: " + err.message);
-    return false;
+    return { true_conditions: [], qIds: qIds, mIds: mIds };
   }
-
-  const schema = study_schema(true_conditions, qIds, mIds);
-  const ajv = new Ajv();
-  ajv.addKeyword("enumNames");
-  const validator = ajv.compile(schema);
-
-  const is_valid = validator(study_obj);
-
-  if (is_valid) {
-    return true;
-  } else {
-    toast.error("Study is invalid");
-    const errors = validator.errors;
-    const beautifiedErrors = betterAjvErrors({
-      schema,
-      data: study_obj,
-      errors: errors,
-      basePath: "study",
-    });
-    const errorMessages = beautifiedErrors.map((err) => err.message);
-    for (const errorMessage of errorMessages) {
-      toast.error(errorMessage!);
-    }
-
-    return false;
-  }
-}
-export function validateStudy(study: any): study is Study {
-  // Create an instance of Ajv
-  const ajv = new Ajv({ allErrors: true });
-  ajv.addKeyword("enumNames");
-  const { true_conditions, qIds, mIds } = getStudyCQMFromAtom(study);
-  const schema = study_schema(true_conditions, qIds, mIds);
-
-  try {
-    const validator = ajv.compile(schema);
-    const is_valid = validator(study);
-
-    if (is_valid) {
-      return true;
-    } else {
-      toast.error("Study is invalid");
-      const errors = validator.errors;
-      const beautifiedErrors = betterAjvErrors({
-        schema,
-        data: study,
-        errors: errors,
-        basePath: "study",
-      });
-      const errorMessages = beautifiedErrors.map((err) => err.message);
-      for (const errorMessage of errorMessages) {
-        toast.error(errorMessage!);
-      }
-      return false;
-    }
-  } catch (err: any) {
-    toast.error("Study is invalid due to an error.");
-    const beautifiedErrors = betterAjvErrors({
-      schema,
-      data: study,
-      errors: err,
-      basePath: "study",
-    });
-    const errorMessages = beautifiedErrors.map((err) => err.message);
-    for (const errorMessage of errorMessages) {
-
-      toast.error(errorMessage!);
-    }
-    return false;
-  }
+  return { true_conditions, qIds, mIds };
 }
