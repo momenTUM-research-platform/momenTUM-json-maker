@@ -257,6 +257,7 @@ export function validateStudyFromObj(study_obj: any) {
     toast.error("Conditions error: " + err.message);
     return false;
   }
+ 
   const schema = study_schema(true_conditions, qIds, mIds);
   const ajv = new Ajv();
   ajv.addKeyword("enumNames");
