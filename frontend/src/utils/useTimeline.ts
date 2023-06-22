@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useStore } from "../state";
+import { useStore } from "../State";
 import { calculateTimelineFromAtoms } from "./calculatorsFromAtoms";
 
 /**

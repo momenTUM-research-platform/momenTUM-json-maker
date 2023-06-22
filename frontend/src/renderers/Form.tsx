@@ -1,7 +1,6 @@
 import FormComponent from "@rjsf/fluent-ui";
 import validator from "@rjsf/validator-ajv8";
 import { useMemo, useState } from "react";
-import { useStore } from "../state";
 import { properties } from "../../schema/properties";
 import { section } from "../../schema/section";
 import { question } from "../../schema/question";
@@ -10,10 +9,11 @@ import { paramsPVT } from "../../schema/paramsPVT";
 import { paramsSurvey } from "../../schema/paramsSurvey";
 import TitleWidget from "./uischema/components/TitleWidget";
 import DescriptionWidget from "./uischema/components/DescriptionWidget";
-import { propertiesSchema } from "./uischema/properties";
-import { modulesSchema } from "./uischema/modules";
-import { surveySchema } from "./uischema/survey";
-import { ParamsPVtSchema } from "./uischema/paramsPVT";
+import { propertiesSchema } from "./uischema/PropertiesSchema";
+import { modulesSchema } from "./uischema/ModuleSchema";
+import { surveySchema } from "./uischema/SurveySchema";
+import { ParamsPVtSchema } from "./uischema/ParamsPVTSchema";
+import { useStore } from '../State';
 
 export function Form({ id }: { id: string }) {
   const {

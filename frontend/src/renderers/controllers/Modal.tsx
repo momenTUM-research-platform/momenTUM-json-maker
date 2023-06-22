@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useStore } from "../../state";
+import { useStore } from "../../State";
 import { Upload } from "../actions/Upload";
 import { Download } from "../actions/Download";
 import { QR } from "../QR";

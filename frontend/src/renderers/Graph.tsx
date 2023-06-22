@@ -9,7 +9,7 @@ import ReactFlow, {
 } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
-import { useStore, nodeTypes } from "../state";
+import { useStore, nodeTypes } from "../State";
 import { hideAtoms } from "../utils/hideAtoms";
 import { alignNodes } from "../utils/alignNodes";
 import { calculateGraphFromAtoms } from "../utils/calculatorsFromAtoms";

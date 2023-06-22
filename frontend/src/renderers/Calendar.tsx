@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Menu, Transition } from "@headlessui/react";
 import dayjs from "dayjs";
-import { useStore } from "../state";
+import { useStore } from "../State";
 import { useTimeline } from "../utils/useTimeline";
 
 export function classNames(...classes: (boolean | null | undefined | string)[]) {

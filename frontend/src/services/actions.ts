@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { API_URL } from "../App";
-import { useStore } from "../state";
+import { useStore } from "../State";
 import { constructStudy } from "../utils/construct";
 import { deconstructStudy } from "../utils/deconstruct";
 import fetch from "cross-fetch";

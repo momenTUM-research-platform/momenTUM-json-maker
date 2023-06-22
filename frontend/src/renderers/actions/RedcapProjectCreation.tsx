@@ -3,7 +3,7 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { classNames } from "../Calendar";
-import { useStore } from "../../state";
+import { useStore } from "../../State";
 import { createRedcapProject } from "../../services/actions";
 import { constructStudy } from "../../utils/construct";
 import { validateStudy } from '../../services/validations';

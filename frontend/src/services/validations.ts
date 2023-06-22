@@ -269,7 +269,6 @@ export function validateStudyFromObj(study_obj: any) {
     });
     const errorMessages = beautifiedErrors.map((err) => err.message);
     for (const errorMessage of errorMessages) {
-      console.log(errorMessage);
       toast.error(errorMessage!);
     }
 
@@ -281,7 +280,6 @@ export function validateStudy(study: any): study is Study {
   const ajv = new Ajv({ allErrors: true });
   ajv.addKeyword("enumNames");
   const { true_conditions, qIds, mIds } = getStudyCQMFromAtom(study);
-  console.log(study);
   const schema = study_schema(true_conditions, qIds, mIds);
 
   try {
@@ -301,13 +299,11 @@ export function validateStudy(study: any): study is Study {
       });
       const errorMessages = beautifiedErrors.map((err) => err.message);
       for (const errorMessage of errorMessages) {
-        console.log(errorMessage);
         toast.error(errorMessage!);
       }
       return false;
     }
   } catch (err: any) {
-    console.log("Error Message: ", err);
     toast.error("Study is invalid due to an error.");
     const beautifiedErrors = betterAjvErrors({
       schema,
@@ -317,7 +313,7 @@ export function validateStudy(study: any): study is Study {
     });
     const errorMessages = beautifiedErrors.map((err) => err.message);
     for (const errorMessage of errorMessages) {
-      console.log(errorMessage);
+
       toast.error(errorMessage!);
     }
     return false;

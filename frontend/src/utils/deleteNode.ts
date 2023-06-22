@@ -1,6 +1,6 @@
 
 import { produce } from "immer";
-import { State } from "../state";
+import { State } from "../State";
 
 export function deleteNode(
   set: (
@@ -30,7 +30,6 @@ export function deleteNode(
         };
 
         recursivelyFindIdsOfSubNodes(id);
-        console.log("Deleting node...");
         nodesToDelete.forEach((n) => state.atoms.delete(n));
         if (parentId) {
           const parent = state.atoms.get(parentId)!;
