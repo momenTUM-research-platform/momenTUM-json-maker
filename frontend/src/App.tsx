@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Form } from "./renderers/Form";
 import { Graph } from "./renderers/Graph";
 import { Layout } from "./renderers/Layout";
-import { useStore } from "./state";
+import { useStore } from "./State";
 import Drag from "../assets/drag";
 import { Calendar } from "./renderers/Calendar";
 import { Modal } from "./renderers/controllers/Modal";

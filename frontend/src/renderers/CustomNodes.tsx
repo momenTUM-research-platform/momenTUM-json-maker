@@ -1,6 +1,6 @@
 import { NodeProps } from "reactflow";
 import React, { useEffect, useState } from "react";
-import { useStore } from "../state";
+import { useStore } from "../State";
 import Plus from "../../assets/plus";
 import Delete from "../../assets/delete";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";

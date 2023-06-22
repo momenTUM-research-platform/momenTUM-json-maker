@@ -62,5 +62,5 @@ export const paramsPVT = {
       title: "Enable exit from PVT?",
     },
   },
-  required: ["type", "trials", "min_waiting", "max_waiting", "max_reaction"],
+  required: ["type", "trials", "min_waiting", "max_waiting", "max_reaction", "exit", "show"],
 };

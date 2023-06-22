@@ -1,8 +1,8 @@
-import { useStore } from "../../../src/state";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { describe, expect, it, vi } from "vitest";
 import { Download } from "../../../src/renderers/actions/Download";
 import { render, screen, act, fireEvent } from "@testing-library/react";
-import { create } from "zustand";
+
 
 // Create a spy for the download function
 vi.mock("/services/actions", () => ({

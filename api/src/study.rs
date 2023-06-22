@@ -100,7 +100,6 @@ pub struct Section {
     pub id: String,
     pub name: String,
     _type: String,
-
     pub shuffle: bool,
     pub questions: Vec<Question>,
 }

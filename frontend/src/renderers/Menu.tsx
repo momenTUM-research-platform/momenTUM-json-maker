@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { load, save } from "../services/actions";
 import { classNames } from "./Calendar";
-import { useStore } from "../state";
+import { useStore } from "../State";
 
 export function Menu() {
   const { setModal } = useStore();

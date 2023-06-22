@@ -5,7 +5,7 @@ import sleep_study from "../../../../studies/sleep.json";
 import atoms_long from "../../../../studies/atoms.json";
 import monster_study from "../../../../studies/monster.json";
 import maydel_study from "../../../../studies/maydel.json";
-import { useStore } from "../../../src/state";
+import { useStore } from "../../../src/State";
 import { deconstructStudy } from "../../../src/utils/deconstruct";
 import { create } from 'zustand';
 

@@ -1,13 +1,9 @@
 import toast from "react-hot-toast";
 import { API_URL } from "../App";
-import { useStore } from "../state";
-import { DefinedError } from "ajv";
-import Ajv, { ValidateFunction } from "ajv";
+import { useStore } from "../State";
 import { constructStudy } from "../utils/construct";
 import { deconstructStudy } from "../utils/deconstruct";
 import fetch from "cross-fetch";
-import { study_object as study_schema } from "../../schema/study_object";
-import { betterAjvErrors } from "@apideck/better-ajv-errors";
 import { validateEachNode, validateStudyFromObj, validateStudy } from './validations';
 
 

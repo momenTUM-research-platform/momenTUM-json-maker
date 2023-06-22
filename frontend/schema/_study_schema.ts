@@ -157,6 +157,7 @@ export const study_object = (
           conditions: {
             $id: "#/properties/properties/properties/conditions",
             type: "array",
+            "minItems": 1,
             title: "Conditions",
             description:
               "A list of conditions that participants can be randomised into.",
@@ -172,6 +173,7 @@ export const study_object = (
       modules: {
         $id: "#/properties/modules",
         type: "array",
+        "minItems": 1,
         title: "Modules",
         description:
           "Modules store the individual survey/intervention tasks that will be delivered to the participants.",
@@ -218,6 +220,7 @@ export const study_object = (
                     sections: {
                       $id: "#/properties/modules/items/properties/survey/sections",
                       type: "array",
+                      "minItems": 1,
                       title: "Sections",
                       default: [],
                       description:
@@ -249,6 +252,7 @@ export const study_object = (
                           questions: {
                             $id: "#/properties/modules/items/properties/sections/items/properties/questions",
                             type: "array",
+                            "minItems": 1,
                             title: "Questions",
                             description:
                               "An array containing all of the questions for this section of the module.",

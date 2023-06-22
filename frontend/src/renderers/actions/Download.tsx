@@ -5,7 +5,7 @@ import { resolve } from "path";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { classNames } from "../Calendar";
-import { useStore } from "../../state";
+import { useStore } from "../../State";
 import { download } from "../../services/actions";
 import { constructStudy } from "../../utils/construct";
 import { deconstructStudy } from "../../utils/deconstruct";
