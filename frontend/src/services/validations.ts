@@ -9,15 +9,13 @@ import { isStudy } from "../types/guards";
 import toast from "react-hot-toast";
 import { study_object as study_schema } from "../../schema/study_object";
 import { betterAjvErrors } from "@apideck/better-ajv-errors";
-import { getStudyCQMFromAtom } from './actions';
-
-
+import { getStudyCQMFromAtom } from "./actions";
 
 // Function to validate a study object
 export function validateProperties(properties: Properties) {
-    // Create an instance of Ajv
-const ajv = new Ajv({ allErrors: true });
-ajv.addKeyword("enumNames");
+  // Create an instance of Ajv
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addKeyword("enumNames");
   const schema = properties_schema;
   const validator = ajv.compile(schema);
   const is_valid = validator(properties);
@@ -36,7 +34,6 @@ ajv.addKeyword("enumNames");
     }
     throw new Error("Properties");
   }
-  return;
 }
 
 // Function to validate a module object
@@ -46,9 +43,9 @@ export function validateModule(
   qIds: SchemaEnum[],
   mIds: SchemaEnum[]
 ) {
-    // Create an instance of Ajv
-const ajv = new Ajv({ allErrors: true });
-ajv.addKeyword("enumNames");
+  // Create an instance of Ajv
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addKeyword("enumNames");
   const schema = module_schema(conditions, qIds, mIds);
   const validator = ajv.compile(schema);
   const is_valid = validator(module);
@@ -68,14 +65,13 @@ ajv.addKeyword("enumNames");
     }
     throw new Error("Module");
   }
-  return;
 }
 
 // Function to validate a params object
 export function validateParams(params: Params, qIds: SchemaEnum[]) {
-    // Create an instance of Ajv
-const ajv = new Ajv({ allErrors: true });
-ajv.addKeyword("enumNames");
+  // Create an instance of Ajv
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addKeyword("enumNames");
   if (params.type == "survey") {
     const schema = paramsSurvey(qIds);
     const validator = ajv.compile(schema);
@@ -95,7 +91,6 @@ ajv.addKeyword("enumNames");
       }
       throw new Error("Survey");
     }
-    return;
   } else {
     const schema = paramsPVT;
     const validator = ajv.compile(paramsPVT);
@@ -116,16 +111,14 @@ ajv.addKeyword("enumNames");
       }
       throw new Error("PVT");
     }
-
-    return;
   }
 }
 
 // Function to validate a section object
 export function validateSection(section: Section) {
-    // Create an instance of Ajv
-const ajv = new Ajv({ allErrors: true });
-ajv.addKeyword("enumNames");
+  // Create an instance of Ajv
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addKeyword("enumNames");
   const schema = section_schema;
   const validator = ajv.compile(section_schema);
   const is_valid = validator(section);
@@ -145,14 +138,13 @@ ajv.addKeyword("enumNames");
     }
     throw new Error("Section");
   }
-  return;
 }
 
 // Function to validate a section object
 export function validateQuestions(question: Question, qIds: SchemaEnum[]) {
-    // Create an instance of Ajv
-const ajv = new Ajv({ allErrors: true });
-ajv.addKeyword("enumNames");
+  // Create an instance of Ajv
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addKeyword("enumNames");
   const schema = question_schema(qIds);
   const validator = ajv.compile(question_schema(qIds));
   const is_valid = validator(question);
@@ -172,7 +164,6 @@ ajv.addKeyword("enumNames");
     }
     throw new Error("Questions");
   }
-  return;
 }
 
 export function validateEachNode(
@@ -257,7 +248,7 @@ export function validateStudyFromObj(study_obj: any) {
     toast.error("Conditions error: " + err.message);
     return false;
   }
- 
+
   const schema = study_schema(true_conditions, qIds, mIds);
   const ajv = new Ajv();
   ajv.addKeyword("enumNames");
@@ -290,13 +281,13 @@ export function validateStudy(study: any): study is Study {
   const ajv = new Ajv({ allErrors: true });
   ajv.addKeyword("enumNames");
   const { true_conditions, qIds, mIds } = getStudyCQMFromAtom(study);
+  console.log(study);
   const schema = study_schema(true_conditions, qIds, mIds);
-
 
   try {
     const validator = ajv.compile(schema);
     const is_valid = validator(study);
-   
+
     if (is_valid) {
       return true;
     } else {

@@ -35,7 +35,6 @@ export function Form({ id }: { id: string }) {
     for (const [key, value] of atoms.entries()) {
       if (value.content._type === "question") {
         qIds.push({ id: key, text: value.content.text });
-        console.log(key);
       } else if (value.content._type === "module" && key !== id) {
         mIds.push({ id: key, text: value.content.name });
       }

@@ -1,5 +1,4 @@
 export const question = (questions: SchemaEnum[]) => {
-  console.log(questions);
   return {
     $id: "#/properties/modules/items/properties/sections/items/properties/questions/items",
     type: "object",

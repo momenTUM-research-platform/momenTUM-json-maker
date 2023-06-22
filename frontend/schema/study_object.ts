@@ -24,6 +24,7 @@ export const study_object = (
         $id: "#/properties/modules",
         type: "array",
         title: "Modules",
+        minItems: 1,
         description:
           "Modules store the individual survey/intervention tasks that will be delivered to the participants.",
         default: [],
@@ -56,7 +57,6 @@ export const study_object = (
               title: "Module Type",
               description:
                 "The parameters of the module. Can be a survey object or a pvt object, but not both.",
-              properties: {},
               oneOf: [
                 {
                   $id: "#/properties/modules/items/properties/params/survey",
@@ -95,6 +95,7 @@ export const study_object = (
                             description:
                               "The title of this section, which is displayed at the top of the screen.",
                             default: "",
+                            minLength: 3,
                             examples: ["Welcome"],
                           },
                           shuffle: {
