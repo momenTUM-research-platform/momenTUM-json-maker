@@ -9,7 +9,7 @@ import { useStore } from "../../State";
 import { download } from "../../services/actions";
 import { constructStudy } from "../../utils/construct";
 import { deconstructStudy } from "../../utils/deconstruct";
-import { validateStudy } from '../../services/validations';
+import { validateStudy } from "../../services/validations";
 
 const steps = [
   {
@@ -30,7 +30,7 @@ export function Download({ close }: { close: () => void }) {
   const [step, setStep] = useState(-1);
   const [studyId, setStudyId] = useState<string | null>(null);
   const [study, setStudy] = useState<Study | null>(null);
-  const { setAtoms } = useStore();
+  const { setAtoms, atoms } = useStore();
   useEffect(() => {
     if (step < 0 || step > 3) return;
     const actions = [
@@ -45,9 +45,10 @@ export function Download({ close }: { close: () => void }) {
       () => download(studyId!),
       // Validate
       () =>
-        new Promise((resolve, reject) =>
-          validateStudy( study ) ? resolve(null) : reject("Study is invalid")
-        ),
+        new Promise((resolve, reject) => {
+          setAtoms(atoms);
+          validateStudy(study) ? resolve(null) : reject("Study is invalid");
+        }),
       // Set atoms
       () =>
         new Promise((resolve, reject) => {
