@@ -4,9 +4,11 @@ import { useStore } from "../State";
 import { constructStudy } from "../utils/construct";
 import { deconstructStudy } from "../utils/deconstruct";
 import fetch from "cross-fetch";
-import { validateEachNode, validateStudyFromObj, validateStudy } from './validations';
-
-
+import {
+  validateEachNode,
+  validateStudyFromObj,
+  validateStudy,
+} from "./validations";
 
 export function validate() {
   const { atoms } = useStore.getState();

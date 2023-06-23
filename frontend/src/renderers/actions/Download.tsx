@@ -24,7 +24,10 @@ const steps = [
     name: "Verification",
     description: "Quick check that the study is correct",
   },
-  { name: "Finished", description: "Everything worked as expected" },
+  {
+    name: "Finished",
+    description: "Everything worked as expected",
+  },
 ];
 export function Download({ close }: { close: () => void }) {
   const [step, setStep] = useState(-1);
