@@ -329,7 +329,6 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
                     }
                 }
             }
-            _ => continue, // not implemented for other
         }
     }
     println!("{dictionary:#?}");

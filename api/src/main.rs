@@ -184,7 +184,7 @@
 //!
 //! ```
 //! #[post("/api/v1/study", data = "<potential_study>")]
-//! async fn create_study(
+//! pub async fn create_study(
 //!     user: User,
 //!     db: Connection<DB>,
 //!     potential_study: Result<Json<Study>, json::Error<'_>>
@@ -242,7 +242,7 @@
 //!
 //! ```
 //! #[post("/api/v1/redcap/<username>", data = "<study>")]
-//! async fn create_redcap_project(
+//! pub async fn create_redcap_project(
 //!     db: Connection<DB>,
 //!     study: Json<Study>,
 //!     username: &str,
@@ -322,7 +322,9 @@
 //!![image](https://user-images.githubusercontent.com/67916925/177830661-8f145d70-1790-4f66-a912-9b1ef31d770a.png)
 
 #[macro_use]
-extern crate rocket;
+pub extern crate rocket;
+
+pub extern crate lazy_static;
 
 use mongodb::options::ReplaceOptions;
 use mongodb::{
@@ -337,9 +339,14 @@ use rocket::Request;
 use rocket::{form::Form, serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
+
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use study::Study;
+
+pub use study::Study;
+pub use study::Params;
+pub use study::Alert;
+
 
 use crate::error::Error;
 use crate::redcap::{import_response, Log, Response};
@@ -373,7 +380,7 @@ pub struct Key {
 }
 
 #[get("/api/docs/<path..>")]
-async fn docs_assets(path: PathBuf) -> Option<NamedFile> {
+pub async fn docs_assets(path: PathBuf) -> Option<NamedFile> {
     let path = Path::new("/docs/").join(path);
     if path.is_file() {
         NamedFile::open(path).await.ok()
@@ -383,12 +390,12 @@ async fn docs_assets(path: PathBuf) -> Option<NamedFile> {
 }
 
 #[get("/api/v1/status")]
-fn status() -> &'static str {
+pub fn status() -> &'static str {
     "The V1 API is live!"
 }
 
 #[get("/api/v1/studies/<study_id>")]
-async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy {
+ pub async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy {
     if study_id.ends_with(".json") {
         study_id = study_id.replace(".json", "");
     }
@@ -411,12 +418,12 @@ async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy
 }
 
 #[post("/api/v1/studies/<study_id>")] // Support for legacy schema app, which uses POST to retrieve studies
-async fn get_study_by_post(db: Connection<DB>, study_id: String) -> PotentialStudy {
+pub async fn get_study_by_post(db: Connection<DB>, study_id: String) -> PotentialStudy {
     fetch_study(db, study_id).await
 }
 
 #[get("/api/v1/studies")]
-async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
+pub async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
     let mut cursor = db
         .database(ACTIVE_DB)
         .collection::<Study>("studies")
@@ -432,7 +439,7 @@ async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
 }
 
 #[get("/api/v1/studies/all/<study_id>")]
-async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result<Json<Vec<Study>>> {
+pub async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result<Json<Vec<Study>>> {
     let cursor = db
         .database(ACTIVE_DB)
         .collection::<Study>("studies")
@@ -443,7 +450,7 @@ async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result
 }
 
 #[post("/api/v1/study", data = "<potential_study>")]
-async fn create_study(
+pub async fn create_study(
     // user: Result<User>,
     db: Connection<DB>,
     potential_study: std::result::Result<Json<Study>, rocket::serde::json::Error<'_>>, // Use Result to return precise error message instead of catcher route: https://api.rocket.rs/v0.5-rc/rocket/request/trait.FromRequest.html#outcomes
@@ -468,12 +475,12 @@ async fn create_study(
 ///
 /// By including the Connection<DB> parameter, the database connection is automatically injected into the function
 #[post("/api/v1/response", data = "<submission>")]
-async fn save_response(submission: Form<Response>, db: Connection<DB>) -> Result<()> {
+pub async fn save_response(submission: Form<Response>, db: Connection<DB>) -> Result<()> {
     import_response(db, submission.into_inner()).await
 }
 
 #[post("/api/v1/log", data = "<submission>")]
-async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
+pub async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
     db.database(ACTIVE_DB)
         .collection("logs")
         .insert_one(submission.into_inner(), None)
@@ -483,7 +490,7 @@ async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
 }
 
 #[post("/api/v1/redcap/<username>", data = "<study>")]
-async fn create_redcap_project(
+pub async fn create_redcap_project(
     db: Connection<DB>,
     study: Json<Study>,
     username: &str,
@@ -510,7 +517,7 @@ async fn create_redcap_project(
 }
 
 #[post("/api/v1/user", data = "<new_user>")]
-async fn add_user(
+pub async fn add_user(
     new_user: Json<User>,
     user: Result<User>,
     db: Connection<DB>,
@@ -529,13 +536,13 @@ async fn add_user(
 }
 
 #[catch(422)]
-fn catch_malformed_request(req: &Request) -> String {
+pub fn catch_malformed_request(req: &Request) -> String {
     format!("{req}")
 }
 
 /// Catches all OPTION requests in order to get the CORS related Fairing triggered.
 // #[options("/<_..>")]
-// fn all_options() {
+// pub fn all_options() {
 //     /* Intentionally left empty */
 // }
 
@@ -543,14 +550,14 @@ pub struct CORS;
 
 #[rocket::async_trait]
 impl Fairing for CORS {
-    fn info(&self) -> Info {
+     fn info(&self) -> Info {
         Info {
             name: "Add CORS headers to responses",
             kind: Kind::Response,
         }
     }
 
-    async fn on_response<'r>(
+     async fn on_response<'r>(
         &self,
         _request: &'r Request<'_>,
         response: &mut rocket::Response<'r>,
@@ -565,8 +572,9 @@ impl Fairing for CORS {
     }
 }
 
+
 #[launch]
-fn rocket() -> _ {
+pub fn rocket() -> _ {
     dotenv::dotenv().ok();
     println!("The API is using the {ACTIVE_DB} database");
 

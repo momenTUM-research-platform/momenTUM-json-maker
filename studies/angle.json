@@ -1,22 +1,22 @@
 {
-  "_id": { "$oid": "649447a602ad6f0d50b52608" },
-  "_type": "study",
-  "timestamp": 1687439270546,
   "properties": {
-    "_type": "properties",
-    "study_id": "acticut_v6",
-    "study_name": "acticut",
+    "study_name": "Study",
+    "study_id": "study_v1",
+    "created_by": "Blen Assefa",
     "instructions": "Remember to complete your daily sleep diary and wear log. Take the ActiWatch off when you receive an alert to do so, and remember to log it!",
+    "post_url": "https://tuspl22-momentum.srv.mwn.de/api/v1",
+    "empty_msg": "You have no pending surveys",
     "banner_url": "https://img.freepik.com/free-vector/realistic-fitness-tracker-concept_52683-38272.jpg",
-    "support_email": "maydel.fernandez.alonso@tuebingen",
     "support_url": "https://www.tscnlab.org/",
+    "support_email": "maydel.fernandez.alonso@tuebingen",
+    "cache": false,
     "ethics": "Pilot study",
     "pls": "https://www.tscnlab.org/",
-    "empty_msg": "You have no pending surveys",
-    "post_url": "https://tuspl22-momentum.srv.mwn.de/api/v1",
-    "conditions": [],
-    "cache": false,
-    "created_by": "Maydel Fernandez-Alonso"
+    "conditions": [
+      "Control",
+      "Treatment"
+    ],
+    "_type": "properties"
   },
   "modules": [
     {
@@ -29,7 +29,12 @@
         "message": "The first step is to provide your participant ID",
         "start_offset": 0,
         "duration": 1,
-        "times": [{ "hours": 0, "minutes": 0 }],
+        "times": [
+          {
+            "hours": 0,
+            "minutes": 0
+          }
+        ],
         "random": false,
         "random_interval": 0,
         "sticky": false,
@@ -37,7 +42,9 @@
         "timeout": false,
         "timeout_after": 0
       },
-      "graph": { "display": false },
+      "graph": {
+        "display": false
+      },
       "unlock_after": [],
       "params": {
         "type": "survey",
@@ -79,7 +86,12 @@
         "message": "Remember to log your watch wear!",
         "start_offset": 0,
         "duration": 20,
-        "times": [{ "hours": 0, "minutes": 0 }],
+        "times": [
+          {
+            "hours": 0,
+            "minutes": 0
+          }
+        ],
         "random": false,
         "random_interval": 0,
         "sticky": true,
@@ -87,7 +99,9 @@
         "timeout": false,
         "timeout_after": 0
       },
-      "graph": { "display": false },
+      "graph": {
+        "display": false
+      },
       "unlock_after": [],
       "params": {
         "type": "survey",
@@ -110,7 +124,11 @@
                 "rand_group": "",
                 "radio": true,
                 "modal": false,
-                "options": ["Off-wrist", "On-wrist", "Other"],
+                "options": [
+                  "Off-wrist",
+                  "On-wrist",
+                  "Other"
+                ],
                 "shuffle": false,
                 "hide_id": "none",
                 "hide_value": "",
@@ -251,55 +269,6 @@
     },
     {
       "_type": "module",
-      "id": "random_alerts",
-      "name": "Instructions to take watch off",
-      "condition": "*",
-      "alerts": {
-        "title": "ActiCut",
-        "message": "Time to take watch off",
-        "start_offset": 1,
-        "duration": 20,
-        "times": [{ "hours": 15, "minutes": 0 }],
-        "random": true,
-        "random_interval": 300,
-        "sticky": false,
-        "sticky_label": "general info",
-        "timeout": false,
-        "timeout_after": 0
-      },
-      "graph": { "display": false },
-      "unlock_after": [],
-      "params": {
-        "type": "survey",
-        "_type": "params",
-        "submit_text": "Submit",
-        "id": "vg8r6yq5rffmlgsjas",
-        "sections": [
-          {
-            "id": "x5ngzvuzkr4s1lxb",
-            "name": "randomalertsinstructions",
-            "_type": "section",
-            "shuffle": false,
-            "questions": [
-              {
-                "type": "instruction",
-                "id": "rand_instructions",
-                "_type": "question",
-                "text": "Time to take the watch off! Please follow these steps: <br>\n1. Press the button of the watch. <br>\n2. Take the watch off and place it in a convenient and secure place. <br>\n3. Start a timer of a random amount of time between 30 minutes and 4 hours. <br>\n4. Add a new entry to the log. <br>\nOnce the timer ends, please put the watch back on and press the button again.",
-                "required": true,
-                "rand_group": "",
-                "hide_id": "none",
-                "hide_value": "",
-                "hide_if": false
-              }
-            ]
-          }
-        ],
-        "shuffle": false
-      }
-    },
-    {
-      "_type": "module",
       "id": "sleep_diary_morning",
       "name": "Sleep Diary Morning",
       "condition": "*",
@@ -308,7 +277,12 @@
         "message": "Complete it within 1hr of waking up",
         "start_offset": 0,
         "duration": 20,
-        "times": [{ "hours": 7, "minutes": 0 }],
+        "times": [
+          {
+            "hours": 7,
+            "minutes": 0
+          }
+        ],
         "random": false,
         "random_interval": 0,
         "sticky": false,
@@ -316,7 +290,9 @@
         "timeout": false,
         "timeout_after": 72000000
       },
-      "graph": { "display": false },
+      "graph": {
+        "display": false
+      },
       "unlock_after": [],
       "params": {
         "type": "survey",
@@ -472,7 +448,13 @@
                 "rand_group": "",
                 "radio": true,
                 "modal": false,
-                "options": ["Very poor", "Poor", "Fair", "Good", "Very good"],
+                "options": [
+                  "Very poor",
+                  "Poor",
+                  "Fair",
+                  "Good",
+                  "Very good"
+                ],
                 "shuffle": false,
                 "hide_id": "none",
                 "hide_value": "",
@@ -504,6 +486,41 @@
         ],
         "shuffle": false
       }
+    },
+    {
+      "id": "apinyz41zw81i935",
+      "name": "PVT",
+      "condition": "Control",
+      "alerts": {
+        "title": "Welcome to the study",
+        "message": "Tap to open the app",
+        "times": [],
+        "random": false,
+        "random_interval": 0,
+        "sticky": false,
+        "sticky_label": "Start here",
+        "timeout": false,
+        "timeout_after": 0,
+        "start_offset": 0,
+        "duration": 0
+      },
+      "graph": {
+        "display": false
+      },
+      "unlock_after": [],
+      "_type": "module",
+      "params": {
+        "id": "yyrrdhsysc6yn9tg",
+        "_type": "params",
+        "type": "pvt",
+        "trials": 5,
+        "min_waiting": 200,
+        "max_waiting": 300,
+        "max_reaction": 350,
+        "exit": false,
+        "show": true
+      }
     }
-  ]
+  ],
+  "_type": "study"
 }
