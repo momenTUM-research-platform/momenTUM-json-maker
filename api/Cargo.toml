@@ -23,6 +23,8 @@ sha2 = "0.10"
 serde-xml-rs = "0.6.0"
 rand = "0.8.5"
 lazy_static = "1.4.0"
+serde_urlencoded = "0.7.1"
+fake = "2.6.1"
 
 
 [dependencies.rocket_db_pools]

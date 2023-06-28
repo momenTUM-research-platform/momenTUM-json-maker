@@ -1,5 +1,7 @@
 {
+  "_id": { "$oid": "948437a602ad6f0d50b52608" },
   "_type": "study",
+  "timestamp": 1687439270546,
   "properties": {
     "_type": "properties",
     "study_id": "acticut_v6",

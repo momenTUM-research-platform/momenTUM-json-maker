@@ -1,4 +1,7 @@
 {
+  "_id": { "$oid": "649447a602ad6f0d50b52609" },
+  "_type": "study",
+  "timestamp": 1687439279546,
   "properties": {
     "study_name": "Study",
     "study_id": "study_v1",
@@ -521,6 +524,5 @@
         "show": true
       }
     }
-  ],
-  "_type": "study"
+  ]
 }

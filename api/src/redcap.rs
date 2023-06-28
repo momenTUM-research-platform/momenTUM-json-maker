@@ -15,14 +15,13 @@ enum Entry {
     Entries(Vec<i8>),
 }
 
-#[derive(Serialize, FromForm)]
+#[derive(Clone, Serialize, FromForm, Deserialize)]
 pub struct Log {
     pub data_type: String,
     pub user_id: String,
     pub study_id: String,
     pub module_index: i32,
     pub platform: String,
-
     pub page: String,
     pub event: String,
     pub timestamp: String,

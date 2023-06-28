@@ -346,10 +346,12 @@ use std::str::FromStr;
 pub use study::Study;
 pub use study::Params;
 pub use study::Alert;
+pub use redcap::Log;
+pub use redcap::Response;
 
 
 use crate::error::Error;
-use crate::redcap::{import_response, Log, Response};
+use crate::redcap::{import_response};
 use crate::users::User;
 
 mod error;
