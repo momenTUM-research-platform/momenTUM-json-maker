@@ -220,9 +220,6 @@ pub async fn export_one_response(
                         if record_id_value == &record_id {
                             let record_entry = Entry::Object(record.clone());
                             combined_response.insert("redcap_response".to_string(), record_entry);
-            
-                            // Print the contents of combined_response
-                            
                         }
                     }
                 }
@@ -230,7 +227,6 @@ pub async fn export_one_response(
             
             let json = serde_json::to_string(&combined_response).unwrap();
 
-            // Return the combined response
             Ok(json)
         }
         reqwest::StatusCode::FORBIDDEN => {
