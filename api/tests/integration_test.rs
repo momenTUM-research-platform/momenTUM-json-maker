@@ -90,6 +90,7 @@ mod integration_tests {
 
         let form_data = serde_urlencoded::to_string(&_response)
             .expect("Failed to serialize Response to form data");
+        
         let response = _client
             .post("/api/v1/response")
             .header(ContentType::Form)

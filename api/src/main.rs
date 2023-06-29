@@ -331,6 +331,7 @@ use mongodb::{
     bson::{doc, oid::ObjectId, DateTime},
     options::FindOneOptions,
 };
+use redcap::export_one_response;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::fs::NamedFile;
 use rocket::futures::stream::TryStreamExt;
@@ -343,15 +344,14 @@ use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
-pub use study::Study;
-pub use study::Params;
-pub use study::Alert;
 pub use redcap::Log;
 pub use redcap::Response;
-
+pub use study::Alert;
+pub use study::Params;
+pub use study::Study;
 
 use crate::error::Error;
-use crate::redcap::{import_response};
+use crate::redcap::import_response;
 use crate::users::User;
 
 mod error;
@@ -397,7 +397,7 @@ pub fn status() -> &'static str {
 }
 
 #[get("/api/v1/studies/<study_id>")]
- pub async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy {
+pub async fn fetch_study(db: Connection<DB>, mut study_id: String) -> PotentialStudy {
     if study_id.ends_with(".json") {
         study_id = study_id.replace(".json", "");
     }
@@ -441,7 +441,10 @@ pub async fn all_studies(db: Connection<DB>) -> Result<Json<Vec<Study>>> {
 }
 
 #[get("/api/v1/studies/all/<study_id>")]
-pub async fn all_studies_of_study_id(db: Connection<DB>, study_id: String) -> Result<Json<Vec<Study>>> {
+pub async fn all_studies_of_study_id(
+    db: Connection<DB>,
+    study_id: String,
+) -> Result<Json<Vec<Study>>> {
     let cursor = db
         .database(ACTIVE_DB)
         .collection::<Study>("studies")
@@ -489,6 +492,11 @@ pub async fn save_log(submission: Form<Log>, db: Connection<DB>) -> Result<()> {
         .await?;
 
     Ok(())
+}
+#[get("/api/v1/response/<study_id>/<user_id>")]
+pub async fn get_response(study_id: String, user_id: String, db: Connection<DB>) -> Result<String> {
+    let response = export_one_response(db, study_id, user_id).await?;
+    Ok(response)
 }
 
 #[post("/api/v1/redcap/<username>", data = "<study>")]
@@ -552,14 +560,14 @@ pub struct CORS;
 
 #[rocket::async_trait]
 impl Fairing for CORS {
-     fn info(&self) -> Info {
+    fn info(&self) -> Info {
         Info {
             name: "Add CORS headers to responses",
             kind: Kind::Response,
         }
     }
 
-     async fn on_response<'r>(
+    async fn on_response<'r>(
         &self,
         _request: &'r Request<'_>,
         response: &mut rocket::Response<'r>,
@@ -573,7 +581,6 @@ impl Fairing for CORS {
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
     }
 }
-
 
 #[launch]
 pub fn rocket() -> _ {
@@ -599,7 +606,8 @@ pub fn rocket() -> _ {
                 create_redcap_project,
                 all_studies_of_study_id,
                 add_user,
-                docs_assets
+                docs_assets,
+                get_response
             ],
         )
 }
