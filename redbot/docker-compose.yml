@@ -11,6 +11,13 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
   redbot:
+    environment:
+      - REDBOT_HOST=tuspl22-sleeptalker.srv.mwn.de
+      - REDBOT_ENABLE_MISSION_CONTROL=true
+      - NODE_RED_ENABLE_PROJECTS=false
+      - REDBOT_ENVIRONMENT=production
+    user: 1000:1000
+    restart: always
     container_name: redbot
     build: .
     volumes:
@@ -19,3 +26,5 @@ services:
 volumes:
   redbot:
     external: true
+# If you ever have trouble with renewing certificates in Nginx-Proxy-Manager, make sure to turn off "force SSL" of the proxy host. I have no idea why this is necessary but it worked.
+# Related Issue: https://github.com/NginxProxyManager/nginx-proxy-manager/issues/2267
