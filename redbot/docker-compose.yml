@@ -1,16 +1,6 @@
-version: "3"
+version: '3.3'
 services:
-  nginxmanager:
-    image: "jc21/nginx-proxy-manager:latest"
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "81:81"
-      - "443:443"
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-  redbot:
+  redbot1:
     environment:
       - REDBOT_HOST=tuspl22-sleeptalker.srv.mwn.de
       - REDBOT_ENABLE_MISSION_CONTROL=true
@@ -18,13 +8,37 @@ services:
       - REDBOT_ENVIRONMENT=production
     user: 1000:1000
     restart: always
-    container_name: redbot
-    build: .
     volumes:
-      - redbot:/data
+      - '/mnt/redbot/redbot1:/data'
+    ports:
+      - '1880:1880'
+    container_name: redbot1
+    image: guidone/redbot
+    networks:
+      - redbotnet
 
-volumes:
-  redbot:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    networks:
+      - redbotnet
+      - outside
+    container_name: nginx
+    environment:
+      DB_SQLITE_FILE: '/data/database.sqlite'
+    volumes:
+      - '/mnt/redbot/nginx/data:/data'
+      - '/mnt/redbot/nginx/letsencrypt:/etc/letsencrypt'
+  
+networks:
+  guidonet:
+    driver: bridge
+  outside:
     external: true
+# Source: https://redbot.notion.site/Deploying-RedBot-with-Nginx-844c4fe1497845f198db27d82ecb97a5
+
 # If you ever have trouble with renewing certificates in Nginx-Proxy-Manager, make sure to turn off "force SSL" of the proxy host. I have no idea why this is necessary but it worked.
 # Related Issue: https://github.com/NginxProxyManager/nginx-proxy-manager/issues/2267
