@@ -13,7 +13,7 @@ services:
     ports:
       - '1880:1880'
     container_name: redbot1
-    image: guidone/redbot
+    build: .
     networks:
       - redbotnet
 
