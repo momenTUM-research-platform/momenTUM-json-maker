@@ -194,14 +194,12 @@ pub async fn export_one_response(
     }
     let db_record = db_record.expect("Record should be present");
 
-
     // Retrieve record from REDCap using the API token and key
     let payload = ExportPayload {
         token: key.api_key.clone(),
         content: "record".to_string(),
         format: "json".to_string(),
         r#type: "flat".to_string(),
-        // data: serde_json::to_string(&vec![record_id.clone()]).unwrap(),
     };
 
     let client = reqwest::Client::new();

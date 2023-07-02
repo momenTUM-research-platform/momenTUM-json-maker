@@ -43,8 +43,9 @@ pub enum Error {
 
     #[error("Study parsing error: {0}")]
     StudyParsing(String),
-    // #[error("Rocket error")]
-    // RocketError(#[from] rocket::serde::json::Error<'static>),
+
+    #[error("Study already exists")]
+    StudyExists(String),
 
     #[error("Record not found in the database")]
     RecordNotFoundInDB,
@@ -92,6 +93,8 @@ impl<'r> Responder<'r, 'static> for Error {
                 response::status::Custom(Status::InternalServerError, err.to_string())
                     .respond_to(req)
             }
+
+            Error::StudyExists(err) => response::status::Custom(Status::BadRequest, err).respond_to(req),
             Error::RecordNotFoundInDB => response::status::NotFound(self.to_string()).respond_to(req),
             Error::InvalidResponseData => response::status::BadRequest(Some(self.to_string())).respond_to(req),
             Error::StudyParsing(err) => response::status::BadRequest(Some(err)).respond_to(req), // Error::RocketError(err) => {
