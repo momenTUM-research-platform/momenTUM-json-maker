@@ -7,22 +7,16 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(untagged)]
-enum Entry {
-    Integer(i64),
-    Text(String),
-    Entries(Vec<i8>),
-}
+const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
+pub type ApiKey = String;
 
-#[derive(Serialize, FromForm)]
+#[derive(Clone, Serialize, FromForm, Deserialize)]
 pub struct Log {
     pub data_type: String,
     pub user_id: String,
     pub study_id: String,
     pub module_index: i32,
     pub platform: String,
-
     pub page: String,
     pub event: String,
     pub timestamp: String,
@@ -35,7 +29,7 @@ pub struct Log {
 /// data_type: "survey_response"
 ///
 /// Entries: Contains the responses from the PVT in milliseconds
-#[derive(Serialize, FromForm)]
+#[derive(Serialize, Deserialize, FromForm, Clone, Debug)]
 pub struct Response {
     pub data_type: String,
     pub user_id: String,
@@ -52,6 +46,16 @@ pub struct Response {
     pub alert_time: String,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum Entry {
+    Integer(i64),
+    Text(String),
+    Entries(Vec<i8>),
+    Object(HashMap<String, Entry>),
+    Response(Response),
+}
+
 /// Structure of the request body as sent to REDCap
 ///
 /// Most data is serialized in the `data` field.
@@ -63,8 +67,6 @@ pub struct Payload {
     r#type: String,
     data: String,
 }
-
-const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
 
 pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     // Get API key from DB
@@ -153,7 +155,89 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     }
 }
 
-pub type ApiKey = String;
+/// Structure of the request body as sent to REDCap
+///
+#[derive(Serialize, Deserialize)]
+pub struct ExportPayload {
+    token: String,
+    content: String,
+    format: String,
+    r#type: String,
+}
+
+pub async fn export_one_response(
+    db: Connection<DB>,
+    study_id: String,
+    user_id: String,
+) -> Result<String> {
+    // Get API key from DB
+    let key = db
+        .database(ACTIVE_DB)
+        .collection::<Key>("keys")
+        .find_one(doc! { "study_id": &study_id}, None)
+        .await?;
+    if key.is_none() {
+        return Err(Error::NoCorrespondingAPIKey);
+    }
+    let key = key.expect("Key should be present");
+    let record_id = user_id.to_string();
+
+    // Retrieve record from the database
+    let db_record = db
+        .database(ACTIVE_DB)
+        .collection::<HashMap<String, Entry>>("responses")
+        .find_one(doc! { "record_id": &record_id }, None)
+        .await?;
+
+    if db_record.is_none() {
+        return Err(Error::RecordNotFoundInDB);
+    }
+    let db_record = db_record.expect("Record should be present");
+
+    // Retrieve record from REDCap using the API token and key
+    let payload = ExportPayload {
+        token: key.api_key.clone(),
+        content: "record".to_string(),
+        format: "json".to_string(),
+        r#type: "flat".to_string(),
+    };
+
+    let client = reqwest::Client::new();
+    let response = client.post(REDCAP_API_URL).form(&payload).send().await?;
+
+    match response.status() {
+        reqwest::StatusCode::OK => {
+            let mut combined_response: HashMap<String, Entry> = HashMap::new();
+            let db_entry = Entry::Object(db_record);
+            combined_response.insert("mongodb_response".to_string(), db_entry);
+            let redcap_records: Vec<HashMap<String, Entry>> = response.json().await?;
+            // Iterate over the redcap_records
+            for record in redcap_records {
+                if let Some(record_id_entry) = record.get("field_record_id") {
+                    if let Entry::Text(record_id_value) = record_id_entry {
+                        if record_id_value == &record_id {
+                            let record_entry = Entry::Object(record.clone());
+                            combined_response.insert("redcap_response".to_string(), record_entry);
+                        }
+                    }
+                }
+            }
+            
+            let json = serde_json::to_string(&combined_response).unwrap();
+
+            Ok(json)
+        }
+        reqwest::StatusCode::FORBIDDEN => {
+            println!("Forbidden: {:#?}", response.text().await.unwrap());
+            Err(Error::RedcapAuthenication)
+        }
+        _ => {
+            let content = response.text().await.unwrap();
+            println!("Error: {content:#?}");
+            Err(Error::Redcap(content))
+        }
+    }
+}
 
 /// Create Redcap project for a study
 ///
@@ -329,7 +413,6 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
                     }
                 }
             }
-            _ => continue, // not implemented for other
         }
     }
     println!("{dictionary:#?}");

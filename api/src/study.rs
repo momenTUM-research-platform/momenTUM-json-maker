@@ -1,3 +1,5 @@
+use std::fmt;
+
 use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
@@ -222,15 +224,44 @@ impl Params {
         match self {
             Params::Survey(survey) => Some(survey.id.clone()),
             Params::Pvt(pvt) => Some(pvt.id.clone()),
-            _ => None,
         }
     }
     pub fn get_name(&self) -> Option<String> {
         match self {
             Params::Survey(survey) => Some(survey.r#type.clone()),
             Params::Pvt(pvt) => Some(pvt.r#type.clone()),
-            _ => None,
         }
+    }
+}
+
+impl fmt::Debug for Params {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Params::Pvt(pvt) => write!(f, "Params::Pvt({:?})", pvt),
+            Params::Survey(survey) => write!(f, "Params::Survey({:?})", survey),
+        }
+    }
+}
+
+impl fmt::Debug for Pvt {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Customize the formatting of `Pvt` fields here
+        write!(
+            f,
+            "Pvt {{ min_waiting: {}, max_waiting: {}, max_reaction: {} }}",
+            self.min_waiting, self.max_waiting, self.max_reaction
+        )
+    }
+}
+
+impl fmt::Debug for Survey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Customize the formatting of `Pvt` fields here
+        write!(
+            f,
+            "Pvt {{ Sections Length: {}, submit_text: {} }}",
+            self.sections.len(), self.submit_text
+        )
     }
 }
 
@@ -277,75 +308,3 @@ impl BasicQuestion for Question {
     }
 }
 
-#[cfg(test)]
-mod test {
-    #[test]
-    fn deserialize_sleep_study() {
-        let json = include_str!("../../studies/sleep.json");
-        let study: super::Study = serde_json::from_str(json).unwrap();
-        assert_eq!(study.properties.created_by, "Anna Biller")
-    }
-    #[test]
-    fn deserialize_monster_study() {
-        let json = include_str!("../../studies/monster.json");
-        let study: super::Study = serde_json::from_str(json).unwrap();
-        assert_eq!(study.properties.created_by, "Constantin Goeldel")
-    }
-
-    #[test]
-    fn deserialize_pilot_study() {
-        let json = include_str!("../../studies/pilot.json");
-        let study: super::Study = serde_json::from_str(json).unwrap();
-        assert_eq!(study.properties.study_id, "acticut_v1")
-    }
-    #[test]
-    fn deserialize_alert() {
-        let json = r#"{
-            "title": "Wear LOG",
-            "message": "Remember to log your watch wear!",
-            "duration": 20,
-            "times": [
-                {
-                    "hours": 18,
-                    "minutes": 30
-                }
-            ],
-            "random": false,
-            "random_interval": 0,
-            "sticky": true,
-            "sticky_label": "logs",
-            "timeout": false,
-            "timeout_after": 0,
-            "start_offset": 0
-        }"#;
-        let alert: super::Alert = serde_json::from_str(json).unwrap();
-        assert_eq!(alert.title, "Wear LOG");
-    }
-    #[test]
-    fn test_pvt() {
-        let json = include_str!("../../studies/monster.json");
-        let study: super::Study = serde_json::from_str(json).unwrap();
-        let pvt = &study.modules[2].params;
-        match pvt {
-            super::Params::Pvt(pvt) => {
-                assert_eq!(pvt.min_waiting, 200);
-                assert!(pvt.max_waiting > 200);
-                assert!(pvt.max_reaction > pvt.max_waiting);
-            }
-            _ => panic!("Expected a pvt module"),
-        }
-    }
-
-    #[test]
-    fn test_survey() {
-        let json = include_str!("../../studies/monster.json");
-        let study: super::Study = serde_json::from_str(json).unwrap();
-        let survey = &study.modules[0].params;
-        match survey {
-            super::Params::Survey(survey) => {
-                assert_eq!(survey.sections.len(), 4);
-            }
-            _ => panic!("Expected a survey module"),
-        }
-    }
-}

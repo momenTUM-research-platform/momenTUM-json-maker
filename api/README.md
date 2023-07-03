@@ -13,7 +13,7 @@
     cargo build
 
 ## Testing
-    cargo test
+    cargo test tests
 
 
 ### To resynchronize `.gitignore`
