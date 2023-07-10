@@ -3,4 +3,4 @@ address = "::1"
 port = 8000
 
 [default.databases.mongodb]
-url = "mongodb://tuspl22-redcap-db.srv.mwn.de/momenTUM?retryWrites=true&w=majority"
+url = "mongodb://tuspl22-redcap-db.taila8062.ts.net/momenTUM?retryWrites=true&w=majority"

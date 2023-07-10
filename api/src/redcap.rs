@@ -126,13 +126,15 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
         .insert_one(&record_including_raw, None)
         .await?;
 
-    println!("Record: {record:#?}");
+    let data = serde_json::to_string(&vec![record]).unwrap();
+    println!("Record: {}", data);
+
     let payload = Payload {
         token: key.api_key,
         content: "record".to_string(),
         format: "json".to_string(),
         r#type: "flat".to_string(),
-        data: serde_json::to_string(&vec![record]).unwrap(),
+        data: data,
     };
 
     let response = reqwest::Client::new()
@@ -179,7 +181,7 @@ pub async fn export_one_response(
     if key.is_none() {
         return Err(Error::NoCorrespondingAPIKey);
     }
-    let key = key.expect("Key should be present");
+    let key: Key = key.expect("Key should be present");
     let record_id = user_id.to_string();
 
     // Retrieve record from the database
@@ -222,7 +224,7 @@ pub async fn export_one_response(
                     }
                 }
             }
-            
+
             let json = serde_json::to_string(&combined_response).unwrap();
 
             Ok(json)
@@ -342,70 +344,61 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
     for (i, module) in study.modules.iter().enumerate() {
         match &module.params {
             Params::Pvt(pvt) => {
+                let data = serde_json::to_string(&vec![pvt]).unwrap();
+                println!("PVT: {}", data);
                 if i == 0 {
                     dictionary.push(MetaData::create(
                         "record_id".to_string(),
-                        &pvt.id,
+                        &module.id,
                         "text",
                         "Record ID",
                     ))
                 }
                 dictionary.push(MetaData::create(
-                    format!("participant_id_{}", i),
-                    &pvt.id,
-                    "text",
-                    "Participant ID",
-                ));
-                dictionary.push(MetaData::create(
                     format!("response_time_in_ms_{}", i),
-                    &pvt.id,
+                    &module.id,
                     "text",
                     "Response Time in Milliseconds",
                 ));
                 dictionary.push(MetaData::create(
                     format!("response_time_{}", i),
-                    &pvt.id,
+                    &module.id,
                     "text",
                     "Response Time",
                 ));
-                dictionary.push(MetaData::create(pvt.id.clone(), &pvt.id, "text", "PVT"));
+                dictionary.push(MetaData::create(
+                    "reaction_times".to_string(),
+                    &module.id,
+                    "text",
+                    "PVT",
+                ));
             }
             Params::Survey(survey) => {
                 if i == 0 {
                     dictionary.push(MetaData::create(
                         "record_id".to_string(),
-                        &survey.id,
+                        &module.id,
                         "text",
                         "Record ID",
                     ))
                 }
-                // dictionary.push(MetaData::create(
-                //     format!("participant_id_{}", i),
-                //     &survey.id,
-                //     "text",
-                //     "Participant ID",
-                // ));
                 dictionary.push(MetaData::create(
                     format!("response_time_in_ms_{i}"),
-                    &survey.id,
+                    &module.id,
                     "text",
                     "Response Time in Milliseconds",
                 ));
                 dictionary.push(MetaData::create(
                     format!("response_time_{i}"),
-                    &survey.id,
+                    &module.id,
                     "text",
                     "Response Time",
                 ));
                 for section in survey.sections.iter() {
                     for question in section.questions.iter() {
-                        // if let Question::Instruction { .. } = question {
-                        //     continue; // Skip instruction questions
-                        // }
-
                         let field = MetaData::create(
                             question.get_id().to_string(),
-                            &survey.id,
+                            &module.id,
                             question.get_response_data_type(),
                             question.get_text(),
                         );
@@ -452,15 +445,10 @@ struct RepeatingInstrument {
 pub async fn enable_repeating_instruments(study: &Study, api_key: ApiKey) -> Result<()> {
     let mut repeating_instruments: Vec<RepeatingInstrument> = Vec::new();
     for module in study.modules.iter() {
-        match &module.params {
-            Params::Survey(survey) => {
-                repeating_instruments.push(RepeatingInstrument {
-                    form_name: format!("module_{}", survey.id.clone()),
-                    custom_form_label: String::new(),
-                });
-            }
-            _ => continue,
-        }
+        repeating_instruments.push(RepeatingInstrument {
+            form_name: format!("module_{}", &module.id.clone()),
+            custom_form_label: String::new(),
+        });
     }
     println!("{repeating_instruments:#?}");
 
