@@ -8,8 +8,8 @@ services:
       - "81:81"
       - "443:443"
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - nginx:/data
+      - nginx:/etc/letsencrypt
   redbot:
     container_name: redbot
     build: .
@@ -29,4 +29,6 @@ volumes:
   redbot:
     external: true
   mysql-db:
+    external: true
+  nginx: 
     external: true
