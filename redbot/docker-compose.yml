@@ -23,7 +23,7 @@ services:
       MYSQL_ROOT_PASSWORD: Gerrard@8@CNolan@1892
       MYSQL_DATABASE: lightbotData
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql-db:/var/lib/mysql
 
 volumes:
   redbot:
