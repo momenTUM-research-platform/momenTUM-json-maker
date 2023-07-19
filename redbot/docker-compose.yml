@@ -15,7 +15,18 @@ services:
     build: .
     volumes:
       - redbot:/data
+      
+  mysql-db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Gerrard@8@CNolan@1892
+      MYSQL_DATABASE: lightbotData
+    volumes:
+      - mysql-data:/var/lib/mysql
 
 volumes:
   redbot:
+    external: true
+  mysql-db:
     external: true
