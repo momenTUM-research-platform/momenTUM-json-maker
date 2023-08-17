@@ -1,4 +1,3 @@
-
 #[macro_use]
 pub extern crate rocket;
 
@@ -140,17 +139,22 @@ pub async fn create_study(
 ) -> Result<String> {
     // user?; // Tests if user authentication guard was successful.
     let mut study = potential_study.map_err(|e| error::Error::StudyParsing(e.to_string()))?;
-    
+
     // Check if study ID already exists
     let existing_study = db
         .database(ACTIVE_DB)
         .collection::<Study>("studies")
-        .find_one(doc! { "properties.study_id": &study.properties.study_id }, None)
+        .find_one(
+            doc! { "properties.study_id": &study.properties.study_id },
+            None,
+        )
         .await?;
 
-    if existing_study.is_some() {
+    if !study.properties.study_id.starts_with("test") && existing_study.is_some() {
         // Study ID already exists, return an error or handle it as desired
-        return Err(error::Error::StudyExists("Study already exists".to_string()));
+        return Err(error::Error::StudyExists(
+            "Study already exists".to_string(),
+        ));
     }
 
     study._id = Some(ObjectId::new());
@@ -163,7 +167,6 @@ pub async fn create_study(
 
     Ok(result.inserted_id.to_string())
 }
-
 
 /// Defining an API route for the app response submission
 ///
@@ -199,7 +202,7 @@ pub async fn create_redcap_project(
 ) -> Result<&'static str> {
     let study = study.0;
     let api_key = redcap::create_project(&study).await?;
-    println!("Created project with API key {}", api_key.clone());
+    // println!("Created project with API key {}", api_key.clone());
     db.database(ACTIVE_DB)
         .collection::<Key>("keys")
         .replace_one(

@@ -15,11 +15,12 @@ export function Settings() {
   return (
     <Menu as="div" className=" inline-block text-left">
       <div>
-        <Menu.Button className="pointer-events-auto ml-4 flex items-center gap-3 rounded-md py-2 px-3 text-md leading-5 text-black hover:text-blue-500 focus:outline-none`
-">
- <ChevronDownIcon className="block h-4 w-4" aria-hidden="true" />
+        <Menu.Button
+          className="pointer-events-auto ml-4 flex items-center gap-3 rounded-md py-2 px-3 text-md leading-5 text-black hover:text-blue-500 focus:outline-none`
+"
+        >
+          <ChevronDownIcon className="block h-4 w-4" aria-hidden="true" />
           Settings
-          
         </Menu.Button>
       </div>
 
@@ -47,12 +48,15 @@ export function Settings() {
                     className="relative flex items-start py-4"
                   >
                     <div className="min-w-0 flex-1 text-sm">
-                      <label htmlFor="comments" className="font-medium text-gray-700">
+                      <label
+                        htmlFor="comments"
+                        className="font-medium text-gray-700"
+                      >
                         Live Validation
                       </label>
                       <p id="comments-description" className="text-gray-500">
-                        Turn on live validation to see errors in the form as you type. Can hurt
-                        performance on large forms.
+                        Turn on live validation to see errors in the form as you
+                        type. Can hurt performance on large forms.
                       </p>
                     </div>
                     <div className="ml-3 flex h-5 items-center">
@@ -83,7 +87,10 @@ export function Settings() {
                     className="relative flex items-start py-4"
                   >
                     <div className="min-w-0 flex-1 text-sm">
-                      <label htmlFor="candidates" className="font-medium text-gray-700">
+                      <label
+                        htmlFor="candidates"
+                        className="font-medium text-gray-700"
+                      >
                         Advanced Hiding Logic
                       </label>
                       <p id="candidates-description" className="text-gray-500">
@@ -118,12 +125,19 @@ export function Settings() {
                     className="relative flex items-start py-4"
                   >
                     <div className="min-w-0 flex-1 text-sm">
-                      <label htmlFor="editable-ids" className="font-medium text-gray-700">
+                      <label
+                        htmlFor="editable-ids"
+                        className="font-medium text-gray-700"
+                      >
                         Editable IDs
                       </label>
-                      <p id="editable-ids-description" className="text-gray-500">
-                        Show option to manually edit the IDs of modules. Improves discoverability in
-                        RedCap but you'll have to comply with their strict character limitations.
+                      <p
+                        id="editable-ids-description"
+                        className="text-gray-500"
+                      >
+                        Show option to manually edit the IDs of modules.
+                        Improves discoverability in RedCap but you'll have to
+                        comply with their strict character limitations.
                       </p>
                     </div>
                     <div className="ml-3 flex h-5 items-center">

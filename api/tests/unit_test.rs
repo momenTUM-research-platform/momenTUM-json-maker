@@ -9,7 +9,7 @@ mod database_tests {
     use api;
 
     fn greet() {
-        println!("Hello!")
+        println!("Hello! Setting up the test base .....");
     }
 
     #[test]
@@ -28,27 +28,32 @@ mod database_tests {
     }
     #[test]
     fn deserialize_alert() {
-        let json = r#"{
-            "title": "Wear LOG",
-            "message": "Remember to log your watch wear!",
-            "duration": 20,
-            "times": [
-                {
-                    "hours": 18,
-                    "minutes": 30
-                }
-            ],
-            "random": false,
-            "random_interval": 0,
-            "sticky": true,
-            "sticky_label": "logs",
-            "timeout": false,
-            "timeout_after": 0,
-            "start_offset": 0
-        }"#;
+        let json = r#"
+            {
+                "title": "Wear LOG",
+                "message": "Remember to log your watch wear!",
+                "duration": 20,
+                "times": [
+                    {
+                        "hours": 18,
+                        "minutes": 30
+                    }
+                ],
+                "random": false,
+                "random_interval": 0,
+                "sticky": true,
+                "sticky_label": "logs",
+                "timeout": false,
+                "timeout_after": 0,
+                "start_offset": 0
+            }
+        "#;
+    
         let alert: api::Alert = serde_json::from_str(json).unwrap();
+    
         assert_eq!(alert.title, "Wear LOG");
     }
+    
     #[test]
     fn test_pvt() {
         let json = include_str!("../../studies/angle.json");

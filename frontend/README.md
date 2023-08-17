@@ -9,7 +9,14 @@
 
 ### End-to-End testing with playwrite
 
-#### 1. Run
+#### 0. Make sure the example study has a Unique ID
+
+#### 1. Jumpstart the server and make sure it's running locally
+
+#### 2. Start the frontend and host it locally
+        pnpm dev
+
+#### 3. Run
         yarn ptest
 
 ### End-to-End testing with cypress

@@ -15,6 +15,8 @@
 ## Testing
     cargo test tests
 
+#### Note: The mongodb url needs to be valid.
+
 
 ### To resynchronize `.gitignore`
     git rm -r --cached .

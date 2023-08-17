@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::Read;
 use api::lazy_static::lazy_static;
 use api::rocket;
 use api::DB;
@@ -29,6 +31,14 @@ lazy_static! {
 
         Arc::new(Mutex::new(client.expect("valid rocket instance")))
     };
+}
+
+#[allow(dead_code)]
+pub fn read_file_content(file_path: &str) -> String {
+    let mut file = File::open(file_path).expect("failed to open file");
+    let mut content = String::new();
+    file.read_to_string(&mut content).expect("failed to read file");
+    content
 }
 
 pub fn setup() -> &'static Arc<Mutex<Client>> {
