@@ -12,6 +12,7 @@ services:
       - nginx:/etc/letsencrypt
   redbot:  
     image: nodered/node-red
+    restart: always
     volumes:
       - redbot_redbot:/data
       
@@ -27,9 +28,10 @@ services:
       - redbot_mysql-db:/var/lib/mysql
 
 volumes:
-  redbot_redbot:
-    external: true
   nginx: 
     external: true 
   redbot_mysql-db:
     external: true
+  redbot_redbot:
+    external: true
+     
