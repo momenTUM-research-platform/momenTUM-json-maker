@@ -12,8 +12,6 @@ services:
       - nginx:/etc/letsencrypt
   redbot:  
     image: nodered/node-red
-    environment:
-      - NODE_OPTIONS=--max-old-space-size=4096
     volumes:
       - redbot_redbot:/data
       
@@ -34,4 +32,4 @@ volumes:
   redbot_mysql-db:
     external: true
   redbot_redbot:
-     external: true
+    external: true
