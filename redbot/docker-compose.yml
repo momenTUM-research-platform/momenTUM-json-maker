@@ -8,14 +8,28 @@ services:
       - "81:81"
       - "443:443"
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-  redbot:
-    container_name: redbot
-    build: .
+      - nginx:/data
+      - nginx:/etc/letsencrypt
+  redbot:  
+    image: nodered/node-red
     volumes:
-      - redbot:/data
+      - redbot_redbot:/data
+      
+  mysql-db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Klopp@8@CNolan@1892
+      MYSQL_DATABASE: lightbotData
+    ports:
+      - "3306:3306" 
+    volumes:
+      - redbot_mysql-db:/var/lib/mysql
 
 volumes:
-  redbot:
+  nginx: 
+    external: true 
+  redbot_mysql-db:
+    external: true
+  redbot_redbot:
     external: true
