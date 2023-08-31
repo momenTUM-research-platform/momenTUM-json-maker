@@ -8,7 +8,7 @@ export const question = (questions: SchemaEnum[]) => {
       id: {
         $id: "#/properties/modules/items/properties/sections/items/properties/questions/items/anyOf/0/properties/id",
         type: "string",
-        
+
         pattern: "^[a-z0-9_]+$",
         title: "Question ID",
         description:
@@ -21,7 +21,8 @@ export const question = (questions: SchemaEnum[]) => {
         type: "string",
         minLength: 3,
         title: "Text",
-        description: "The label displayed alongside the question. Basic HTML supported.",
+        description:
+          "The label displayed alongside the question. Basic HTML supported.",
         default: "",
         examples: [
           "Hello! Welcome to the study! This module only shows for those enrolled in the control condition.",
@@ -73,7 +74,10 @@ export const question = (questions: SchemaEnum[]) => {
           "An identifier that groups a set of elements together so that only one will randomly appear every time a module is accessed. Note: To identify which element was visible, it will be given a response value of 1. If the element can record a response this value will be replaced with that response. All hidden elements will record no response.",
         default: "",
         oneOf: [
-          { const: "", title: "None (This will create an empty field, don't worry)" },
+          {
+            const: "",
+            title: "None (This will create an empty field, don't worry)",
+          },
           { const: "A", title: "A" },
           { const: "B", title: "B" },
           { const: "C", title: "C" },
@@ -88,7 +92,16 @@ export const question = (questions: SchemaEnum[]) => {
         title: "Type",
         description: "The primary type of this question. ",
         default: "instruction",
-        enum: ["instruction", "datetime", "multi", "text", "slider", "media", "yesno"],
+        enum: [
+          "instruction",
+          "datetime",
+          "multi",
+          "text",
+          "slider",
+          "media",
+          "yesno",
+          "photo",
+        ],
       },
     },
     dependencies: {
@@ -98,6 +111,13 @@ export const question = (questions: SchemaEnum[]) => {
             properties: {
               type: {
                 const: "instruction",
+              },
+            },
+          },
+          {
+            properties: {
+              type: {
+                enum: ["photo"],
               },
             },
           },
@@ -197,7 +217,8 @@ export const question = (questions: SchemaEnum[]) => {
               shuffle: {
                 type: "boolean",
                 title: "Shuffle?",
-                description: "Denotes whether the selections should be shuffled.",
+                description:
+                  "Denotes whether the selections should be shuffled.",
               },
               options: {
                 type: "array",
@@ -218,7 +239,8 @@ export const question = (questions: SchemaEnum[]) => {
               subtype: {
                 type: "string",
                 title: "Subtype",
-                description: "The type of media. Accepted values are video, audio, and image.",
+                description:
+                  "The type of media. Accepted values are video, audio, and image.",
                 enum: ["video", "audio", "image"],
                 default: "video",
               },
@@ -263,6 +285,7 @@ export const question = (questions: SchemaEnum[]) => {
               },
             },
           },
+          
         ],
       },
     },

@@ -4,7 +4,7 @@ mod common;
 mod integration_tests {
 
     use super::common;
-    use crate::common::setup;
+    use crate::common::{read_file_content, setup};
     use api::Log;
     use api::Response;
     use fake::faker::company::en::{Bs, CatchPhase};
@@ -14,7 +14,7 @@ mod integration_tests {
     use serde_urlencoded;
 
     fn greet() {
-        println!("Hello!")
+        println!("Hello! Setting up the test base .....");
     }
 
     #[test]
@@ -32,14 +32,6 @@ mod integration_tests {
         let response = _client.get("/api/v1/status").dispatch();
         assert_eq!(response.status(), Status::Ok);
         assert_eq!(response.content_type(), Some(ContentType::Plain));
-    }
-
-    #[test]
-    fn test_fetch_study() {
-        let _client = setup().lock().unwrap();
-        let response = _client.get("/api/v1/studies/acticut_v6").dispatch();
-        assert_eq!(response.status(), Status::Ok);
-        assert_eq!(response.content_type(), Some(ContentType::JSON));
     }
 
     #[test]
@@ -90,7 +82,7 @@ mod integration_tests {
 
         let form_data = serde_urlencoded::to_string(&_response)
             .expect("Failed to serialize Response to form data");
-        
+
         let response = _client
             .post("/api/v1/response")
             .header(ContentType::Form)
@@ -99,4 +91,73 @@ mod integration_tests {
 
         assert_eq!(response.status(), Status::Unauthorized);
     }
+
+    #[test]
+    fn test_fetch_study() {
+        let _client = setup().lock().unwrap();
+        let response = _client.get("/api/v1/studies/acticut_v6").dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+        // TBD
+        // let study_json = json!({
+        //     "_id": "789",
+        //     "properties": {
+        //         "study_id": "789",
+        //         // other study properties
+        //     },
+        //     // other study fields
+        // });
+        // assert_eq!(response.status(), Status::Ok);
+        // let response_json: Value =
+        //     serde_json::from_str(response.into_string().unwrap().as_str()).unwrap();
+        // assert_eq!(response_json, study_json);
+    }
+
+    #[test]
+    fn test_fetch_study_not_found() {
+        let _client = setup().lock().unwrap();
+        // Mock a 404 response
+        let response = _client.get("/api/v1/studies/456").dispatch();
+        assert_eq!(response.status(), Status::NotFound);
+        // Add more assertions based on your expected error handling
+    }
+
+    #[test]
+    fn test_create_study() {
+        let _client = setup().lock().unwrap();
+        let potential_study = read_file_content("./tests/uploads/example.json");
+
+        let response = _client
+            .post("/api/v1/study")
+            .header(ContentType::JSON)
+            .body(potential_study)
+            .dispatch();
+
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(ContentType::Text));
+        
+        let body_str = response.into_string().unwrap();
+        assert!(body_str.starts_with("ObjectId"));
+    }
+    #[test]
+    fn test_all_studies_of_study_id() {
+        let _client = setup().lock().unwrap();
+
+        let study_id = "test_study".to_string();
+
+        let response = _client
+            .get(format!("/api/v1/studies/all/{}", study_id))
+            .dispatch();
+
+        assert_eq!(response.status(), Status::Ok);
+        // let studies: Vec<Study> = serde_json::from_str(&response.into_string().unwrap()).unwrap();
+        // Assert further based on the expected behavior
+    }
+
+    // TODO
+    // all_studies,
+    // create_redcap_project,
+    // add_user,
+    // docs_assets,
 }

@@ -201,6 +201,17 @@ pub enum Question {
         hide_value: Option<StringOrBool>,
         hide_if: Option<bool>,
     },
+    #[serde(rename = "photo")]
+    Photo {
+        id: String,
+        _type: String,
+        text: String,
+        required: bool,
+        rand_group: Option<String>,
+        hide_id: Option<String>,
+        hide_value: Option<StringOrBool>,
+        hide_if: Option<bool>,
+    },
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -289,6 +300,7 @@ impl BasicQuestion for Question {
             Question::Multi { id, .. } => id,
             Question::Media { id, .. } => id,
             Question::Instruction { id, .. } => id,
+            Question::Photo { id, .. } => id,
         }
     }
 
@@ -301,6 +313,7 @@ impl BasicQuestion for Question {
             Question::Multi { text, .. } => text,
             Question::Media { text, .. } => text,
             Question::Instruction { text, .. } => text,
+            Question::Photo { id, .. } => id,
         }
     }
     fn get_response_data_type(&self) -> &str {

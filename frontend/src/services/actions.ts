@@ -47,6 +47,9 @@ export function load() {
       // Validate the study, and show errors if any, but don't stop loading as this is a user action
       if (validateStudyFromObj(rebuild)) {
         setAtoms(deconstructed);
+        toast.success("Loaded Successfully!");
+      } else {
+        toast.error("Error while loading study!");
       }
     };
     reader.readAsText(file);

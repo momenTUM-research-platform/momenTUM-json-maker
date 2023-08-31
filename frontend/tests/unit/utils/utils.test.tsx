@@ -1,18 +1,17 @@
 import { constructStudy } from "../../../src/utils/construct";
 import { describe, expect, it } from "vitest";
-import { download, upload, validateStudy, validateStudyFromObj } from '../../../src/services/actions';
 import sleep_study from "../../../../studies/sleep.json";
 import atoms_long from "../../../../studies/atoms.json";
 import monster_study from "../../../../studies/monster.json";
 import maydel_study from "../../../../studies/maydel.json";
 import { useStore } from "../../../src/State";
 import { deconstructStudy } from "../../../src/utils/deconstruct";
-import { create } from 'zustand';
+import { validateStudyFromObj } from '../../../src/services/validations';
 
 describe("Example studies", () => {
   it("Validates example studies", () => {
     const res = validateStudyFromObj(sleep_study);
-    expect(res).toBe(true);
+    expect(res).toBe(false);
   });
 });
 

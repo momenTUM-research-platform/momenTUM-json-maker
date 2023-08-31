@@ -61,9 +61,11 @@ export function RedCap({ close }: { close: () => void }) {
         <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
       </div>
       <div className="mt-3 mb-2 text-center sm:mt-5">
+      <Dialog open={false} onClose={() => {}}>
         <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
           Create RedCap Project
         </Dialog.Title>
+        </Dialog>
       </div>
       {step === -1 ? (
         <div>

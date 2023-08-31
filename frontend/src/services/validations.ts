@@ -7,7 +7,6 @@ import { module as module_schema } from "../../schema/module";
 import { properties as properties_schema } from "../../schema/properties";
 import { isStudy } from "../types/guards";
 import toast from "react-hot-toast";
-import test from "../../schema/activity6.json";
 import { study_object as study_schema } from "../../schema/study_object";
 import { betterAjvErrors } from "@apideck/better-ajv-errors";
 
