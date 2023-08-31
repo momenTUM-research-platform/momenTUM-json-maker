@@ -115,6 +115,13 @@ export const question = (questions: SchemaEnum[]) => {
             },
           },
           {
+            properties: {
+              type: {
+                enum: ["photo"],
+              },
+            },
+          },
+          {
             required: ["subtype"],
             properties: {
               subtype: {
@@ -278,13 +285,7 @@ export const question = (questions: SchemaEnum[]) => {
               },
             },
           },
-          {
-            properties: {
-              type: {
-                enum: ["photo"],
-              },
-            },
-          },
+          
         ],
       },
     },
