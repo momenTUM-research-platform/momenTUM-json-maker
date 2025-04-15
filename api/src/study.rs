@@ -28,6 +28,8 @@ pub struct Properties {
     pub conditions: Vec<String>,
     pub cache: bool,
     pub created_by: String,
+    #[serde(default)]
+    pub redcap_server_api_url: Option<String>
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Modules {

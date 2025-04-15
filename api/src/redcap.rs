@@ -6,11 +6,17 @@ use rocket_db_pools::Connection;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
+use lazy_static::lazy_static;
 
-const REDCAP_API_URL: &str = "https://tuspl22-redcap.srv.mwn.de/redcap/api/";
+lazy_static! {
+    pub static ref REDCAP_API_URL: String = {
+        env::var("REDCAP_API_URL")
+            .unwrap_or_else(|_| "https://tuspl22-redcap.srv.mwn.de/redcap/api/".to_string())
+    };
+}
 pub type ApiKey = String;
 
-#[derive(Clone, Serialize, FromForm, Deserialize)]
+#[derive(Clone, Serialize, rocket::form::FromForm, Deserialize)]
 pub struct Log {
     pub data_type: String,
     pub user_id: String,
@@ -22,14 +28,15 @@ pub struct Log {
     pub timestamp: String,
     pub timestamp_in_ms: i64,
 }
-/// Structure of a response from the app
+
+/// Structure of a response from the app.
 ///
 /// Sent by the app as a POST request with form-data body. Deserialized by Rocket.
 ///
 /// data_type: "survey_response"
 ///
 /// Entries: Contains the responses from the PVT in milliseconds
-#[derive(Serialize, Deserialize, FromForm, Clone, Debug)]
+#[derive(Serialize, Deserialize, rocket::form::FromForm, Clone, Debug)]
 pub struct Response {
     pub data_type: String,
     pub user_id: String,
@@ -37,7 +44,6 @@ pub struct Response {
     pub module_index: i32,
     pub platform: String,
     pub module_id: String,
-
     pub module_name: String,
     pub responses: Option<String>, // JSON of type HashMap<String, Response>
     pub entries: Option<Vec<i8>>,
@@ -56,8 +62,7 @@ pub enum Entry {
     Response(Response),
 }
 
-/// Structure of the request body as sent to REDCap
-///
+/// Structure of the request body as sent to REDCap.
 /// Most data is serialized in the `data` field.
 #[derive(Serialize, Deserialize)]
 pub struct Payload {
@@ -66,6 +71,27 @@ pub struct Payload {
     format: String,
     r#type: String,
     data: String,
+}
+
+/// --- NEW HELPER FUNCTION ---
+/// This async helper queries the "studies" collection for a document whose 
+/// "properties.study_id" matches the provided study_id. It then tries to extract 
+/// the optional field `redcap_server_api_url` from the study's properties. If found,
+/// that URL is returned; otherwise, it logs the fallback and returns the global fallback.
+async fn get_redcap_api_url(db: &Connection<DB>, study_id: &str) -> Result<String> {
+    // Here we use the Study type, which now should include an optional field:
+    //   pub redcap_server_api_url: Option<String>
+    let study_doc = db.database(ACTIVE_DB)
+        .collection::<Study>("studies")
+        .find_one(doc! { "properties.study_id": study_id }, None)
+        .await?;
+    if let Some(study) = study_doc {
+        if let Some(url) = study.properties.redcap_server_api_url.clone() {
+            return Ok(url);
+        }
+    }
+    println!("No redcap_server_api_url found for study {}. Using fallback REDCAP_API_URL: {}", study_id, *REDCAP_API_URL);
+    Ok(REDCAP_API_URL.clone())
 }
 
 pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
@@ -80,7 +106,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     }
     let key = key.expect("Key should be present");
 
-    // Create Redcap record, including module index for uniqueness
+    // Create Redcap record
     let mut record: HashMap<String, Entry> = HashMap::from([
         (
             String::from("field_record_id"),
@@ -129,6 +155,9 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     let data = serde_json::to_string(&vec![record]).unwrap();
     println!("Record: {}", data);
 
+    // Use helper function to get the target URL from the study document.
+    let target_url = get_redcap_api_url(&db, &res.study_id).await?;
+    
     let payload = Payload {
         token: key.api_key,
         content: "record".to_string(),
@@ -138,7 +167,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     };
 
     let response = reqwest::Client::new()
-        .post(REDCAP_API_URL)
+        .post(target_url.as_str())
         .form(&payload)
         .send()
         .await?;
@@ -157,8 +186,7 @@ pub async fn import_response(db: Connection<DB>, res: Response) -> Result<()> {
     }
 }
 
-/// Structure of the request body as sent to REDCap
-///
+/// Structure of the request body as sent to REDCap.
 #[derive(Serialize, Deserialize)]
 pub struct ExportPayload {
     token: String,
@@ -172,7 +200,6 @@ pub async fn export_one_response(
     study_id: String,
     user_id: String,
 ) -> Result<String> {
-    // Get API key from DB
     let key = db
         .database(ACTIVE_DB)
         .collection::<Key>("keys")
@@ -184,19 +211,16 @@ pub async fn export_one_response(
     let key: Key = key.expect("Key should be present");
     let record_id = user_id.to_string();
 
-    // Retrieve record from the database
     let db_record = db
         .database(ACTIVE_DB)
         .collection::<HashMap<String, Entry>>("responses")
         .find_one(doc! { "record_id": &record_id }, None)
         .await?;
-
     if db_record.is_none() {
         return Err(Error::RecordNotFoundInDB);
     }
     let db_record = db_record.expect("Record should be present");
 
-    // Retrieve record from REDCap using the API token and key
     let payload = ExportPayload {
         token: key.api_key.clone(),
         content: "record".to_string(),
@@ -204,8 +228,15 @@ pub async fn export_one_response(
         r#type: "flat".to_string(),
     };
 
+    // Retrieve the target URL for the study from the database
+    let target_url = get_redcap_api_url(&db, &study_id).await?;
+
     let client = reqwest::Client::new();
-    let response = client.post(REDCAP_API_URL).form(&payload).send().await?;
+    let response = client
+        .post(target_url.as_str())
+        .form(&payload)
+        .send()
+        .await?;
 
     match response.status() {
         reqwest::StatusCode::OK => {
@@ -213,7 +244,6 @@ pub async fn export_one_response(
             let db_entry = Entry::Object(db_record);
             combined_response.insert("mongodb_response".to_string(), db_entry);
             let redcap_records: Vec<HashMap<String, Entry>> = response.json().await?;
-            // Iterate over the redcap_records
             for record in redcap_records {
                 if let Some(record_id_entry) = record.get("field_record_id") {
                     if let Entry::Text(record_id_value) = record_id_entry {
@@ -224,9 +254,7 @@ pub async fn export_one_response(
                     }
                 }
             }
-
             let json = serde_json::to_string(&combined_response).unwrap();
-
             Ok(json)
         }
         reqwest::StatusCode::FORBIDDEN => {
@@ -241,9 +269,9 @@ pub async fn export_one_response(
     }
 }
 
-/// Create Redcap project for a study
-///
-/// Automated by using the super API token
+/// Automated project creation using the super API token.
+/// Here, for simplicity, we continue to use the fallback REDCAP_API_URL
+/// since there might not be a DB connection available in this context.
 pub async fn create_project(study: &Study) -> Result<ApiKey> {
     let super_api_token = env::var("REDCAP_SUPER_API_TOKEN").unwrap();
 
@@ -263,8 +291,12 @@ pub async fn create_project(study: &Study) -> Result<ApiKey> {
         data: serde_json::to_string(&vec![project]).unwrap(),
     };
 
+    // Here, since we're in a different context and might not have a DB connection,
+    // continue to use the fallback REDCAP_API_URL.
+    let target_url = REDCAP_API_URL.clone();
+
     let response = reqwest::Client::new()
-        .post(REDCAP_API_URL)
+        .post(target_url.as_str())
         .form(&payload)
         .send()
         .await?;
@@ -313,7 +345,7 @@ impl<'a> MetaData<'a> {
         field_label: &'a str,
     ) -> Self {
         MetaData {
-            field_name: String::from("field_") + &field_name, // field_name must not start with a number
+            field_name: String::from("field_") + &field_name,
             form_name: String::from("module_") + form_name,
             section_header: "",
             field_type,
@@ -335,9 +367,7 @@ impl<'a> MetaData<'a> {
     }
 }
 
-/// Metadata = Fields of the study in Redcap
-///
-/// https://tuspl22-redcap.srv.mwn.de/redcap/api/help/index.php?content=imp_metadata
+/// Imports metadata into REDCap.
 pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
     let mut dictionary: Vec<MetaData> = Vec::new();
 
@@ -419,7 +449,7 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
     };
 
     let response = reqwest::Client::new()
-        .post(REDCAP_API_URL)
+        .post(REDCAP_API_URL.as_str())
         .form(&payload)
         .send()
         .await?;
@@ -436,6 +466,7 @@ pub async fn import_metadata(study: &Study, api_key: ApiKey) -> Result<()> {
         }
     }
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 struct RepeatingInstrument {
     form_name: String,
@@ -446,7 +477,7 @@ pub async fn enable_repeating_instruments(study: &Study, api_key: ApiKey) -> Res
     let mut repeating_instruments: Vec<RepeatingInstrument> = Vec::new();
     for module in study.modules.iter() {
         repeating_instruments.push(RepeatingInstrument {
-            form_name: format!("module_{}", &module.id.clone()),
+            form_name: format!("module_{}", &module.id),
             custom_form_label: String::new(),
         });
     }
@@ -461,7 +492,7 @@ pub async fn enable_repeating_instruments(study: &Study, api_key: ApiKey) -> Res
     };
 
     let response = reqwest::Client::new()
-        .post(REDCAP_API_URL)
+        .post(REDCAP_API_URL.as_str())
         .form(&payload)
         .send()
         .await?;
@@ -508,7 +539,7 @@ struct UserData<'a> {
     lock_records_all_forms: u8,
     lock_records: u8,
     lock_records_customization: u8,
-    forms: HashMap<&'a str, u8>, // Needs to be set with the new form
+    forms: HashMap<&'a str, u8>,
     forms_export: HashMap<&'a str, u8>,
 }
 
@@ -560,7 +591,7 @@ pub async fn import_user(username: &str, api_key: ApiKey) -> Result<()> {
     };
 
     let response = reqwest::Client::new()
-        .post(REDCAP_API_URL)
+        .post(REDCAP_API_URL.as_str())
         .form(&payload)
         .send()
         .await?;
