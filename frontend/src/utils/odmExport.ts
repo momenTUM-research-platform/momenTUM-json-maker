@@ -1,5 +1,8 @@
 import { Study, Question } from "../types/schema";
 
+/**
+ * Escape special XML characters to ensure valid XML output.
+ */
 function escapeXml(unsafe: string): string {
   return unsafe
     .replace(/&/g, "&amp;")
@@ -9,6 +12,9 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/**
+ * Map a question type to a REDCap field type.
+ */
 function getFieldType(question: Question): string {
   switch (question.type) {
     case "text":
@@ -25,17 +31,31 @@ function getFieldType(question: Question): string {
   }
 }
 
+/**
+ * Generate a universal REDCap-compatible ODM XML string.
+ * This function creates one MetaDataVersion that includes one FormDef and two ItemGroupDefs per module.
+ * It also produces system ItemDefs and survey question ItemDefs.
+ *
+ * - The record ID field is only produced once (in the first module).
+ * - Each module always produces response time fields and a "Complete?" field with its own CodeList.
+ *
+ * @param study - The study JSON object.
+ * @returns The ODM XML as a string.
+ */
 export function generateOdmXml(study: Study): string {
   const { study_name, instructions } = study.properties;
-  const description = study_name;
+  const description = study_name; // Use study name for the description.
+  // Remove spaces from study name for OIDs.
   const sanitizedStudyName = study_name.replace(/\s+/g, "");
+  // Use current timestamp in ISO format (without milliseconds).
   const now = new Date();
   const formattedTimestamp = now.toISOString().split('.')[0];
 
-  // Escape dynamic study properties.
+  // Escape study-level properties to ensure XML validity.
   const safeStudyName = escapeXml(study_name);
   const safeInstructions = escapeXml(instructions);
 
+  // Build the GlobalVariables block (same for all modules)
   const globalVariablesXml =
     "<GlobalVariables>" +
       "<StudyName>" + safeStudyName + "</StudyName>" +
@@ -56,6 +76,7 @@ export function generateOdmXml(study: Study): string {
       "<redcap:ProtectedEmailModeCustomText></redcap:ProtectedEmailModeCustomText>" +
       "<redcap:ProtectedEmailModeTrigger>ALL</redcap:ProtectedEmailModeTrigger>" +
       "<redcap:ProtectedEmailModeLogo></redcap:ProtectedEmailModeLogo>" +
+      // Build one repeating instrument per module:
       "<redcap:RepeatingInstrumentsAndEvents>" +
         "<redcap:RepeatingInstruments>" +
           (study.modules && study.modules.length > 0 ? study.modules
@@ -65,13 +86,16 @@ export function generateOdmXml(study: Study): string {
       "</redcap:RepeatingInstrumentsAndEvents>" +
     "</GlobalVariables>";
 
+  // Create a MetaDataVersion OID based on study name and timestamp.
   const metaDataOID = "Metadata." + sanitizedStudyName + "_" + formattedTimestamp.replace(/[-:T]/g, "").slice(0, 12);
 
+  // Arrays to accumulate XML fragments.
   let formDefs: string[] = [];
   let itemGroupDefs: string[] = [];
   let itemDefs: string[] = [];
   let codeLists: string[] = [];
 
+  // For system fields: always include response_time fields. Record ID is included only in the first module.
   const defaultFields = [];
   if (study.modules && study.modules.length > 0) {
     defaultFields.push({ id: "field_record_id", label: "Record ID" });
@@ -87,6 +111,7 @@ export function generateOdmXml(study: Study): string {
     });
   });
 
+  // Build ItemDef for each default field.
   defaultFields.forEach(f => {
     itemDefs.push(
       "<ItemDef OID=\"" + f.id + "\" Name=\"" + f.id +
@@ -97,8 +122,10 @@ export function generateOdmXml(study: Study): string {
     );
   });
 
+  // Process each module to produce its form and fields.
   study.modules?.forEach((module, index) => {
     const moduleId = module.id;
+    // Build one FormDef per module.
     formDefs.push(
       "<FormDef OID=\"Form.module_" + moduleId + "\" Name=\"Module " + moduleId +
       "\" Repeating=\"No\" redcap:FormName=\"module_" + moduleId + "\">" +
@@ -107,6 +134,7 @@ export function generateOdmXml(study: Study): string {
       "</FormDef>"
     );
 
+    // First ItemGroupDef for module fields (system fields and survey questions)
     let itemRefs = [];
     if (index === 0 && study.modules && study.modules.length > 0) {
       itemRefs.push("<ItemRef ItemOID=\"field_record_id\" Mandatory=\"No\" redcap:Variable=\"field_record_id\"/>");
@@ -116,6 +144,7 @@ export function generateOdmXml(study: Study): string {
     itemRefs.push("<ItemRef ItemOID=\"field_response_time_" + index +
       "\" Mandatory=\"No\" redcap:Variable=\"field_response_time_" + index + "\"/>");
 
+    // Process survey questions in this module.
     if (module.params && "sections" in module.params && Array.isArray(module.params.sections)) {
       module.params.sections.forEach((section: any) => {
         if (section.questions && Array.isArray(section.questions)) {
@@ -138,6 +167,7 @@ export function generateOdmXml(study: Study): string {
       });
     }
 
+    // Create the first ItemGroupDef for this module.
     itemGroupDefs.push(
       "<ItemGroupDef OID=\"module_" + moduleId + ".fields\" Name=\"Module " + moduleId +
       "\" Repeating=\"No\">" +
@@ -145,6 +175,7 @@ export function generateOdmXml(study: Study): string {
       "</ItemGroupDef>"
     );
 
+    // For each module, create the "Complete?" field and its group.
     itemDefs.push(
       "<ItemDef OID=\"module_" + moduleId + "_complete\" Name=\"module_" + moduleId +
       "_complete\" DataType=\"text\" Length=\"1\" redcap:Variable=\"module_" + moduleId +
