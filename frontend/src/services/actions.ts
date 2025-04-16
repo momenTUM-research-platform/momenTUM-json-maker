@@ -82,10 +82,23 @@ export async function upload(study: any): Promise<string> {
       redirect: "follow",
     });
     const body = await response.text();
-    if (body.includes("ObjectId(")) {
-      return body.slice(10, -2); // ID of the uploaded study
-    } else {
-      throw body;
+    
+    try {
+      // Try parsing the response as JSON
+      const parsed = JSON.parse(body);
+      // If the JSON contains a permalink property, return the JSON string
+      if (parsed && parsed.permalink) {
+        return JSON.stringify(parsed);
+      } else {
+        throw body;
+      }
+    } catch (jsonError) {
+      // Fallback for legacy response format:
+      if (body.includes("ObjectId(")) {
+        return body.slice(10, -2); // Legacy: extract the inserted ID
+      } else {
+        throw body;
+      }
     }
   } catch (error) {
     let errorKind = error;
@@ -100,7 +113,6 @@ export async function upload(study: any): Promise<string> {
     throw `Error: ${errorKind}`;
   }
 }
-
 export async function download(study_id: string): Promise<any> {
   const uri = API_URL + "/studies/" + study_id;
   console.debug("[download] Fetching study from:", uri);
