@@ -12,6 +12,7 @@ mod integration_tests {
     use fake::Fake;
     use rocket::http::{ContentType, Status};
     use serde_urlencoded;
+    use serde_json::Value;
 
     fn greet() {
         println!("Hello! Setting up the test base .....");
@@ -138,7 +139,8 @@ mod integration_tests {
         assert_eq!(response.content_type(), Some(ContentType::Text));
         
         let body_str = response.into_string().unwrap();
-        assert!(body_str.starts_with("ObjectId"));
+        let json: serde_json::Value = serde_json::from_str(&body_str).unwrap();
+        assert!(json["permalink"].as_str().unwrap().starts_with("ObjectId"));
     }
     #[test]
     fn test_all_studies_of_study_id() {

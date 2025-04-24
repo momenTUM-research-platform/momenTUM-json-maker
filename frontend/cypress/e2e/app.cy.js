@@ -1,8 +1,11 @@
 
 describe("test the form", () => {
+  beforeEach(() => {
+    cy.viewport(1600, 900); // makes sure sidebar items like "Actions" are visible
+  });
   it("enters the properties", () => {
     cy.visit("http://localhost:3000/")
-    cy.contains("MomenTUM-JSON-Maker")
+    cy.contains('momenTUM Study Designer');
     cy.contains("Actions").click().type("A") // auto generate
     cy.contains("Created by").click().type("Me")
     cy.contains("Instructions").click().type("A")
