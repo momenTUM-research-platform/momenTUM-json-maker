@@ -10,8 +10,9 @@ pub enum Error {
     #[error("Study not found")]
     StudyNotFound,
 
-    #[error("Authorization header is malformed. Please provide it in the following form: `email:password` base64 encoded. \n Error: {0} ")]
+    #[error("Authorization header is malformed. Please provide it in the following form: `email:password` base64 encoded. \nError: {0}")]
     AuthMalformed(String),
+
     #[error("No email provided")]
     AuthNoEmail,
 
@@ -33,12 +34,13 @@ pub enum Error {
     #[error("{0}")]
     Redcap(String),
 
-    #[error("Database Error")]
+    #[error("Database error: {0}")]
     DB(#[from] mongodb::error::Error),
 
-    #[error("Request error")]
+    #[error("Request error: {0}")]
     Request(#[from] reqwest::Error),
-    #[error("Response deserialization error")]
+
+    #[error("Response deserialization error: {0}")]
     ResponseDeserialization(#[from] serde_json::Error),
 
     #[error("Study parsing error: {0}")]
@@ -52,11 +54,14 @@ pub enum Error {
 
     #[error("Invalid response data")]
     InvalidResponseData,
+
+    #[error("Other error: {0}")]
+    Other(String),
 }
 
 impl<'r> Responder<'r, 'static> for Error {
     fn respond_to(self, req: &'r Request<'_>) -> response::Result<'static> {
-        println!("Returning error: {self}");
+        println!("Returning error: {}", self);
         match self {
             Error::StudyNotFound => response::status::NotFound(self.to_string()).respond_to(req),
             Error::AuthMalformed(_) => {
@@ -74,7 +79,6 @@ impl<'r> Responder<'r, 'static> for Error {
             Error::NotAdmin => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
             }
-
             Error::NoCorrespondingAPIKey => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
             }
@@ -93,14 +97,21 @@ impl<'r> Responder<'r, 'static> for Error {
                 response::status::Custom(Status::InternalServerError, err.to_string())
                     .respond_to(req)
             }
-
-            Error::StudyExists(err) => response::status::Custom(Status::BadRequest, err).respond_to(req),
-            Error::RecordNotFoundInDB => response::status::NotFound(self.to_string()).respond_to(req),
-            Error::InvalidResponseData => response::status::BadRequest(Some(self.to_string())).respond_to(req),
-            Error::StudyParsing(err) => response::status::BadRequest(Some(err)).respond_to(req), // Error::RocketError(err) => {
-                                                                                                 //     response::status::Custom(Status::InternalServerError, err.to_string())
-                                                                                                 //         .respond_to(req)
-                                                                                                 // }
+            Error::StudyExists(err) => {
+                response::status::Custom(Status::BadRequest, err).respond_to(req)
+            }
+            Error::RecordNotFoundInDB => {
+                response::status::NotFound(self.to_string()).respond_to(req)
+            }
+            Error::InvalidResponseData => {
+                response::status::BadRequest(Some(self.to_string())).respond_to(req)
+            }
+            Error::StudyParsing(err) => {
+                response::status::BadRequest(Some(err)).respond_to(req)
+            }
+            Error::Other(err) => {
+                response::status::Custom(Status::InternalServerError, err).respond_to(req)
+            }
         }
     }
 }

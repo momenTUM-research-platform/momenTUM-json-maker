@@ -2,6 +2,7 @@
 pub extern crate rocket;
 
 pub extern crate lazy_static;
+use serde_json::json;
 
 use mongodb::options::ReplaceOptions;
 use mongodb::{
@@ -150,12 +151,13 @@ pub async fn create_study(
         )
         .await?;
 
-    if !study.properties.study_id.starts_with("test") && existing_study.is_some() {
-        // Study ID already exists, return an error or handle it as desired
-        return Err(error::Error::StudyExists(
-            "Study already exists".to_string(),
-        ));
-    }
+        if !study.properties.study_id.starts_with("test") && existing_study.is_some() {
+            let existing = existing_study.unwrap();
+            return Ok(json!({
+                "message": "Study already exists. Using existing study.",
+                "permalink": existing._id.unwrap().to_string()
+            }).to_string());
+        }
 
     study._id = Some(ObjectId::new());
     study.timestamp = Some(DateTime::now().timestamp_millis());
@@ -165,7 +167,10 @@ pub async fn create_study(
         .insert_one(&*study, None)
         .await?;
 
-    Ok(result.inserted_id.to_string())
+    Ok(json!({
+        "message": "New study created",
+        "permalink": result.inserted_id.to_string()
+    }).to_string())
 }
 
 /// Defining an API route for the app response submission

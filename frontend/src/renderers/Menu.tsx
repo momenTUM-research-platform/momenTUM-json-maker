@@ -9,13 +9,14 @@ import {
   CloudArrowUpIcon,
   QrCodeIcon,
 } from "@heroicons/react/24/outline";
-import { load, save } from "../services/actions";
+import { load, save, saveRedcapFileForManual, updateProjectToken } from "../services/actions";
 import { classNames } from "./Calendar";
 import { useStore } from "../State";
+import { toast } from "react-hot-toast";
 
 export function Menu() {
-  const { setModal } = useStore();
-
+  const { setModal, study } = useStore();
+  
   const actions = [
     {
       name: "Save Study",
@@ -31,23 +32,31 @@ export function Menu() {
     },
     {
       name: "Upload",
-      description: "Save your study on the server and receive a link you can share with anyone.",
+      description:
+        "Save your study on the server and receive a link you can share with anyone.",
       action: () => setModal("upload"),
-
       icon: CloudArrowUpIcon,
     },
     {
       name: "Download",
-      description: "Download any study by its study id or permalink from the server.",
+      description:
+        "Download any study by its study id or permalink from the server.",
       action: () => setModal("download"),
       icon: CloudArrowDownIcon,
     },
     {
-      name: "Create Redcap Project",
+      name: "Create REDCap Project",
       description:
-        "Automagically creates a project in Redcap with your study and stores the responses from your participants in it.",
+        "Automagically creates a project in REDCap with your study and stores the responses from your participants in it.",
       action: () => setModal("redcap"),
       icon: BookOpenIcon,
+    },
+    {
+      name: "Save REDCap File",
+      description:
+        "Generate and save the ODM file for manual REDCap upload.",
+      action: saveRedcapFileForManual,
+      icon: ArrowDownTrayIcon,
     },
     {
       name: "Show QR Code",
@@ -56,13 +65,8 @@ export function Menu() {
       action: () => setModal("qr"),
       icon: QrCodeIcon,
     },
-    //   {
-    //     name: "Reports",
-    //     description: "Get detailed reports that will help you make more informed decisions",
-    //     href: "#",
-    //     icon: DocumentChartBarIcon,
-    //   },
   ];
+
   return (
     <Popover className="">
       {({ open }) => (
@@ -72,9 +76,8 @@ export function Menu() {
               "pointer-events-auto ml-4 flex items-center gap-3 rounded-md py-2 px-3 text-md leading-5 text-black hover:text-blue-500 focus:outline-none"
             )}
           >
-           <ChevronDownIcon className="block h-4 w-4" aria-hidden="true" />
+            <ChevronDownIcon className="block h-4 w-4" aria-hidden="true" />
             <span>Actions</span>
-         
           </Popover.Button>
 
           <Transition
@@ -108,7 +111,9 @@ export function Menu() {
                 <div className="bg-gray-50 p-5 sm:p-8">
                   <div className="-m-3 flow-root rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-100">
                     <span className="flex items-center">
-                      <span className="text-base font-medium text-gray-900">Documentation</span>
+                      <span className="text-base font-medium text-gray-900">
+                        Documentation
+                      </span>
                       <span className="ml-3 inline-flex items-center rounded-full bg-indigo-100 px-3 py-0.5 text-xs font-medium leading-5 text-main">
                         New
                       </span>
@@ -116,14 +121,14 @@ export function Menu() {
                     <span className="mt-1 block text-sm text-gray-500">
                       Access to the documentation and guides{" "}
                       <a
-                        className="text-main underline "
+                        className="text-main underline"
                         href="https://make.momentumresearch.eu/api/docs/designer/index.html"
                       >
                         here.
                       </a>{" "}
                       Other documentation is in the Github repository{" "}
                       <a
-                        className="text-main underline "
+                        className="text-main underline"
                         href="https://github.com/momenTUM-research-platform/momenTUM-json-maker/wiki"
                       >
                         here.

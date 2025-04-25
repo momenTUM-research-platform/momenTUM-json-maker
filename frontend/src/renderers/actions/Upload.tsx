@@ -1,6 +1,5 @@
 import { Dialog } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { resolve } from "path";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { classNames } from "../Calendar";
@@ -27,18 +26,17 @@ const steps = [
     description: "Everything worked as expected",
   },
 ];
+
 export function Upload({ close }: { close: () => void }) {
   const [step, setStep] = useState(0);
   const { atoms, setModal, setPermalink } = useStore();
-  const study: Study = useMemo(() => constructStudy(atoms), []);
+  const study: Study = useMemo(() => constructStudy(atoms), [atoms]);
+  
   useEffect(() => {
     if (step < 0 || step > 3) return;
     const actions = [
-      //  Authenticate
-      () =>
-        new Promise((resolve, reject) => {
-          resolve(null);
-        }), // Not yet implemented
+      // Authentication (stub)
+      () => new Promise((resolve, reject) => resolve(null)),
       // Validate
       () =>
         new Promise((resolve, reject) =>
@@ -49,9 +47,17 @@ export function Upload({ close }: { close: () => void }) {
       // Finished
       () => new Promise((resolve, reject) => resolve(null)),
     ];
+
     actions[step]()
       .then((result) => {
-        if (step === 2) setPermalink(result as string);
+        if (step === 2) {
+          // Parse the JSON response returned from the API
+          const data = JSON.parse(result as string);
+          // Set the permalink from the response
+          setPermalink(data.permalink);
+          // Show a toast message so user knows the study already exists or was created
+          toast.success(data.message);
+        }
         setStep(step + 1);
       })
       .catch((e) => toast.error(e));
