@@ -8,8 +8,9 @@ import {
   CloudArrowDownIcon,
   CloudArrowUpIcon,
   QrCodeIcon,
+  TableCellsIcon,
 } from "@heroicons/react/24/outline";
-import { load, save, saveRedcapFileForManual, updateProjectToken } from "../services/actions";
+import { load, save, saveRedcapFileForManual } from "../services/actions";
 import { classNames } from "./Calendar";
 import { useStore } from "../State";
 import { toast } from "react-hot-toast";
@@ -64,6 +65,12 @@ export function Menu() {
         "See the QR code for the study you are currently working on. You can scan this code with the Momentum app to participate in the study.",
       action: () => setModal("qr"),
       icon: QrCodeIcon,
+    },
+    {
+      name: "View Study Checklist",
+      description: "Preview all study settings in a table for a quick sanity check before uploading.",
+      action: () => setModal("checklist"),
+      icon: TableCellsIcon,
     },
   ];
 

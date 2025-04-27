@@ -41,3 +41,5 @@ package-lock.json
 
 frontend/pnpm-lock.yaml
 frontend/playwright-report/
+
+frontend/cypress/screenshots/

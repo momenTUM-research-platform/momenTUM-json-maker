@@ -40,7 +40,7 @@ export interface State {
   direction: "TB" | "LR";
   atoms: Atoms;
   conditions: string[];
-  modal: null | "download" | "upload" | "qr" | "redcap";
+  modal: null | "download" | "upload" | "qr" | "redcap" | "checklist";
   permalink: string | null;
   liveValidation: boolean;
   editableIds: boolean;

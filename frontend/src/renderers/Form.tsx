@@ -1,6 +1,7 @@
+import React, { useMemo, useState } from "react";
 import FormComponent from "@rjsf/fluent-ui";
 import validator from "@rjsf/validator-ajv8";
-import { useMemo, useState } from "react";
+import debounce from "lodash/debounce";
 import { properties } from "../../schema/properties";
 import { section } from "../../schema/section";
 import { question } from "../../schema/question";
@@ -15,6 +16,12 @@ import { surveySchema } from "./uischema/SurveySchema";
 import { ParamsPVtSchema } from "./uischema/ParamsPVTSchema";
 import { useStore } from '../State';
 
+/**
+ * Form renders a JSON-schema-driven form for any atom node.
+ * It auto-saves state on change (debounced) to avoid stale onBlur races,
+ * merges partial formData onto existing content to preserve all keys,
+ * and hides legacy fields when needed.
+ */
 export function Form({ id }: { id: string }) {
   const {
     atoms,
@@ -25,48 +32,48 @@ export function Form({ id }: { id: string }) {
     liveValidation,
     editableIds,
   } = useStore();
+
+  // Grab the atom for this node
   const atom = atoms.get(id);
+  if (!atom) {
+    console.error(`Atom ${id} does not exist.`);
+    return null;
+  }
+
+  // Debounce persisting to avoid racing stale onBlur calls
+  const debouncedSave = useMemo(() => debounce(saveAtoms, 300), [saveAtoms]);
+
+  // Build enums for dropdowns
   const [questionIds, setQuestionIds] = useState<SchemaEnum[]>([]);
   const [moduleIds, setModuleIds] = useState<SchemaEnum[]>([]);
-
   useMemo(() => {
     const qIds: SchemaEnum[] = [{ id: "none", text: "None" }];
     const mIds: SchemaEnum[] = [];
-    for (const [key, value] of atoms.entries()) {
+    atoms.forEach((value, key) => {
       if (value.content._type === "question") {
         qIds.push({ id: key, text: value.content.text });
       } else if (value.content._type === "module" && key !== id) {
         mIds.push({ id: key, text: value.content.name });
       }
-    }
+    });
     setQuestionIds(qIds);
     setModuleIds(mIds);
-  }, [atoms.size]);
+  }, [atoms]);
 
-  if (!atom) {
-    console.error(
-      "Atom " + id + " does not exist. This should never be the case!"
-    );
-    return <></>;
-  }
-
+  // Schema factory functions
   const studyForm = () => ({
     $id: "#",
     type: "object",
     title: "Study",
     description:
-      "This is the entrypoint to the Study Designer. Please start by clicking on properties or on the green '+' symbol",
+      "Entrypoint. Click on properties or the green '+' symbol to begin.",
   });
+  const paramsForm = () =>
+    atom.content._type === "params" && atom.content.type === "survey"
+      ? paramsSurvey(questionIds)
+      : paramsPVT;
 
-  const paramsForm = () => {
-    if (atom.content._type === "params" && atom.content.type === "survey") {
-      return paramsSurvey(questionIds);
-    } else {
-      return paramsPVT;
-    }
-  };
-
-  const schema: { [key in AtomVariants]: () => Object } = {
+  const schemaMap: Record<AtomVariants, () => object> = {
     study: studyForm,
     properties: () => properties,
     module: () => module(conditions, questionIds, moduleIds),
@@ -74,47 +81,49 @@ export function Form({ id }: { id: string }) {
     params: paramsForm,
     question: () => question(questionIds),
   };
-  const formSchema = schema[atom.content._type]();
+  const formSchema = schemaMap[atom.content._type]();
 
+  // Build uiSchema with hiding logic
   const hiddenFields = ["id", "post_url"];
   const hidingLogic = ["hide_id", "hide_value", "hide_if", "rand_group"];
-  const uiSchema: { [key: string]: any } = {
+  const uiSchema: Record<string, any> = {
     ...propertiesSchema,
     ...modulesSchema,
     ...surveySchema,
     ...ParamsPVtSchema,
     "ui:submitButtonOptions": { norender: true },
-
-    // @ts-ignore
     "ui:title": <TitleWidget Title={formSchema.title} />,
-
-    "ui:description": (
-      // @ts-ignore
-      <DescriptionWidget description={formSchema.description} />
-    ),
+    "ui:description": <DescriptionWidget description={formSchema.description} />,
   };
-
-  hiddenFields.forEach(
-    (field) => !editableIds && (uiSchema[field] = { "ui:widget": "hidden" })
-  );
-  hidingLogic.forEach(
-    (field) => !showHidingLogic && (uiSchema[field] = { "ui:widget": "hidden" })
-  );
+  if (!editableIds) hiddenFields.forEach(f => (uiSchema[f] = { "ui:widget": "hidden" }));
+  if (!showHidingLogic) hidingLogic.forEach(f => (uiSchema[f] = { "ui:widget": "hidden" }));
 
   return (
     <div className="px-10 py-5">
       <FormComponent
-        onChange={({ formData }) => setAtom(id, formData)}
-        onBlur={saveAtoms}
-        children={true}
-        liveValidate={liveValidation}
         schema={formSchema}
         formData={atom.content}
-        validator={validator}
-        noValidate={!liveValidation}
         uiSchema={uiSchema}
+        validator={validator}
         idPrefix="form"
+        liveValidate={liveValidation}
+        noValidate={!liveValidation}
         showErrorList="bottom"
+        /**
+         * onChange: merge incoming partial formData onto existing content
+         *          to preserve all keys (nested and hidden fields).
+         *          Then schedule a debounced save.
+         */
+        onChange={({ formData }) => {
+          const old = useStore.getState().atoms.get(id)!.content;
+          setAtom(id, { ...old, ...formData });
+          debouncedSave();
+        }}
+        /**
+         * Remove onBlur: we persist only via debounced onChange
+         * to avoid stale blur races.
+         */
+        children={true}
       />
     </div>
   );

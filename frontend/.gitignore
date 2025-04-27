@@ -5,3 +5,4 @@ node_modules/
 
 /react--ct/tests-examples/
 /tests-examples/
+cypress/screenshots/

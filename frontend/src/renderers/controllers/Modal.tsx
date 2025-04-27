@@ -5,6 +5,7 @@ import { Download } from "../actions/Download";
 import { QR } from "../QR";
 import { Fragment } from "react";
 import { RedCap } from "../actions/RedcapProjectCreation";
+import { ChecklistModal } from "../ChecklistModal";
 
 export function Modal() {
   const { modal, setModal } = useStore();
@@ -15,6 +16,7 @@ export function Modal() {
     download: <Download close={() => setModal(null)} />,
     qr: <QR close={() => setModal(null)} />,
     redcap: <RedCap close={() => setModal(null)} />,
+    checklist: <ChecklistModal />,
   };
 
   return (
@@ -44,7 +46,7 @@ export function Modal() {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                {modals[modal!]}
+              {modal && modals[modal]}
               </Dialog.Panel>
             </Transition.Child>
           </div>
