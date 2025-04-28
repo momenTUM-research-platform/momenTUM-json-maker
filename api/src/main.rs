@@ -250,11 +250,11 @@ pub fn catch_malformed_request(req: &Request) -> String {
     format!("{req}")
 }
 
-/// Catches all OPTION requests in order to get the CORS related Fairing triggered.
-// #[options("/<_..>")]
-// pub fn all_options() {
-//     /* Intentionally left empty */
-// }
+// Catches all OPTION requests in order to get the CORS related Fairing triggered.
+#[options("/<_..>")]
+pub fn all_options() {
+    /* Intentionally left empty */
+}
 
 pub struct CORS;
 
@@ -307,7 +307,8 @@ pub fn rocket() -> _ {
                 all_studies_of_study_id,
                 add_user,
                 docs_assets,
-                get_response
+                get_response,
+                all_options
             ],
         )
 }

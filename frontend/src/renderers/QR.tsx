@@ -4,73 +4,119 @@ import QRCode from "react-qr-code";
 import { useMemo, useState } from "react";
 import { useStore } from "../State";
 import { constructStudy } from "../utils/construct";
+import { API_URL } from "../App";
 
 export function QR({ close }: { close: () => void }) {
   const { permalink, atoms } = useStore();
   const [selection, setSelection] = useState(0);
-  const study = useMemo(() => constructStudy(atoms), [atoms]);
-  const study_id = study.properties.study_id;
-  const url =
-    "https://tuspl22-momentum.srv.mwn.de/api/v1/studies/" +
-    (selection === 1 ? permalink : study_id);
 
-  if (!permalink)
+  const study = useMemo(() => constructStudy(atoms), [atoms]);
+  const studyId = study.properties.study_id;
+
+  const url = `${API_URL}/studies/` + (selection === 1 ? permalink : studyId);
+
+  if (!permalink) {
     return (
-      <div>
+      <div className="text-center p-6">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
           <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
         </div>
-        <div className="mt-3 mb-2 text-center sm:mt-5">
-          <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+        <div className="mt-4">
+          <Dialog.Title className="text-lg font-semibold text-gray-900">
             View QR Code
           </Dialog.Title>
+          <p className="mt-2 text-sm text-gray-600">
+            Please upload the study first to generate the QR code.
+          </p>
         </div>
-        Please upload the study first
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={close}
+            className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-4 py-2 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
+          >
+            Go back to editor
+          </button>
+        </div>
       </div>
     );
+  }
 
   return (
-    <div>
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-        <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+    <div className="p-6">
+      {/* Check icon */}
+      <div className="flex justify-center">
+        <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+          <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+        </div>
       </div>
-      <div className="mt-3 mb-2 text-center sm:mt-5">
-        <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+
+      {/* Title */}
+      <div className="mt-4 text-center">
+        <Dialog.Title className="text-lg font-semibold text-gray-900">
           View QR Code
         </Dialog.Title>
       </div>
-      <span className="isolate inline-flex  rounded-md shadow-sm">
-        <button
-          type="button"
-          onClick={() => setSelection(0)}
-          className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-        >
-          Study ID
-        </button>
-        <button
-          type="button"
-          onClick={() => setSelection(1)}
-          className="relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-        >
-          Permalink
-        </button>
-      </span>
-      <p className="text-xs pt-2 text-gray-500">
-        The <i>Study ID link </i> will lead to new versions of this study if you upload updates with
-        the same study ID again. The <i>Permalink</i> will not always show the content you just
-        uploaded, irrespective of future updates.
-      </p>
-      <div className="mt-2  sm:mt-4">
-        <QRCode value={url} />
+
+      {/* Selection buttons */}
+      <div className="mt-4 flex justify-center">
+        <span className="isolate inline-flex rounded-md shadow-sm">
+          <button
+            type="button"
+            onClick={() => setSelection(0)}
+            className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:ring-1 focus:ring-indigo-500"
+          >
+            Study ID
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelection(1)}
+            disabled={!permalink}
+            className="relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
+          >
+            Permalink
+          </button>
+        </span>
       </div>
-      <a className="mt-2 block underline text-main" href={url}>
-        Also accessible through this link
-      </a>
-      <div className="mt-5 sm:mt-4">
+
+      {/* Current Study ID */}
+      <p className="mt-2 text-sm text-center text-gray-500">
+        Current Study ID: <span className="font-medium">{studyId}</span>
+      </p>
+
+      {/* Left-aligned explanation */}
+      <div className="mt-2 text-xs text-gray-500 max-w-md mx-auto text-left">
+        <p>
+          The <i>Study ID</i> link points to the latest version of the study.
+        </p>
+        <p>
+          The <i>Permalink</i> points exactly to the uploaded version.
+        </p>
+      </div>
+
+      {/* QR code */}
+      <div className="mt-6 flex justify-center">
+        <QRCode value={url} size={192} />
+      </div>
+
+      {/* Link */}
+      <div className="mt-4 flex justify-center">
+        <a
+          className="text-sm underline text-main hover:text-indigo-700"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Also accessible through this link
+        </a>
+      </div>
+
+      {/* Close button */}
+      <div className="mt-6">
         <button
           type="button"
-          className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
           onClick={close}
+          className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-4 py-2 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
         >
           Go back to editor
         </button>
